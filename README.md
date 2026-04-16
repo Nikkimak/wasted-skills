@@ -2,6 +2,10 @@
 
 Portable custom Codex skills maintained as a standalone repository.
 
+Small, portable, and of highly questionable value.
+
+These skills will not make anyone smarter, more talented, more employable, or more deserving of imaginary skill credits. They are mostly here to be used, copied, updated, and mildly regretted.
+
 ## Included Skills
 
 - `apply-project-playbook` — applies the bundled project structure and documentation playbook to a new or existing coding project
