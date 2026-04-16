@@ -1,0 +1,4 @@
+interface:
+  display_name: "Apply Project Playbook"
+  short_description: "Apply the repo/docs playbook"
+  default_prompt: "Use $apply-project-playbook to analyze a project and apply the canonical repo and documentation playbook."
