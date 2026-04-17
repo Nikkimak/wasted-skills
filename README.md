@@ -10,6 +10,25 @@ These skills will not make anyone smarter, more talented, more employable, or mo
 
 - `unfuck-project-docs` — organizes project documentation, workspace structure, and repo boundaries using the bundled canonical playbook as guidance
 
+### `unfuck-project-docs`
+
+Use this skill when a project needs one serious cleanup pass, not routine maintenance.
+
+What it does:
+
+- reviews the current project structure, docs, and repo boundaries
+- decides whether the project actually needs migration or structural cleanup
+- proposes a minimal plan before changing anything
+- asks for explicit approval before edits or git-boundary changes
+- creates a safety backup before the first approved mutation
+- reorganizes canonical docs and workspace structure around a clearer source-of-truth model
+
+What to expect:
+
+- it is best for initial setup, one-time migration, or major documentation cleanup
+- it is intentionally conservative and should stay in discovery until approval is given
+- it is not meant to be the default skill for normal day-to-day feature work
+
 ## Repository Purpose
 
 This repository is the publishable container for custom skills.
