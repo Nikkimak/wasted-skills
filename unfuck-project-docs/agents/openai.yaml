@@ -1,0 +1,4 @@
+interface:
+  display_name: "Unfuck Project Docs"
+  short_description: "Untangle project docs and workspace structure"
+  default_prompt: "Use $unfuck-project-docs to inspect the real project first, keep the bundled references read-only, choose the smallest safe mode, determine and explicitly confirm the repo model, produce a compact approval request with mandatory fields, create a preflight backup before the first approved mutation, and only then organize and fix the project's docs and workspace structure using the canonical playbook."

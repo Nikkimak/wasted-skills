@@ -8,7 +8,7 @@ These skills will not make anyone smarter, more talented, more employable, or mo
 
 ## Included Skills
 
-- `apply-project-playbook` — applies the bundled project structure and documentation playbook to a new or existing coding project
+- `unfuck-project-docs` — organizes project documentation, workspace structure, and repo boundaries using the bundled canonical playbook as guidance
 
 ## Repository Purpose
 

@@ -1,9 +1,9 @@
 ---
-name: apply-project-playbook
-description: Apply the canonical project repo and documentation playbook to a new or existing coding project. Use when Codex needs to bootstrap a project workspace, split or verify parent repo versus runtime repo boundaries, choose minimal versus standard versus full documentation scope, create canonical bootstrap/docs files from templates, or upgrade an existing project to the playbook model without violating the source-of-truth rules.
+name: unfuck-project-docs
+description: Organize and clean up project documentation, workspace structure, and repo boundaries for a real coding project using the bundled canonical playbook as read-only guidance. Use when Codex needs to untangle project docs, bootstrap or repair canonical project documentation, split or verify parent repo versus runtime repo boundaries, choose minimal versus standard versus full documentation scope, or upgrade an existing project to a clearer source-of-truth model.
 ---
 
-# Apply Project Playbook
+# Unfuck Project Docs
 
 Use this skill to apply the bundled canonical playbook to a real project.
 
