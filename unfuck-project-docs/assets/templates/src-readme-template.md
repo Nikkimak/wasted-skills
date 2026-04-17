@@ -1,5 +1,8 @@
 # Runtime README
 
+Keep this file short and runtime-facing.
+It is a local contributor entrypoint, not the canonical replacement for `context/current/runtime-map.md`.
+
 ## What Exists Here
 
 - services and apps in this runtime repo

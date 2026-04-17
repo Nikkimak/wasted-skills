@@ -6,6 +6,7 @@ Use this matrix to decide which files are required.
 
 - project-level `AGENTS.md`
 - `WORKPLAN.md`
+- `context/README.md`
 - `context/current/project-state.md`
 - `context/current/runtime-map.md`
 - `context/current/repo-map.md`
@@ -14,7 +15,7 @@ Use this matrix to decide which files are required.
 
 ## Required In `standard` And Above
 
-- `context/runbooks/deploy.md`
+- `context/runbooks/deploy.md` when the project has a real deploy surface or operational procedure worth preserving
 - `context/components/` guides where ownership would otherwise be unclear
 
 ## Required Only If The Project Needs Them

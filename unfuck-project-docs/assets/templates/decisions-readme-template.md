@@ -1,6 +1,6 @@
 ---
 title: Decisions Index
-doc_type: decision
+doc_type: decision_index
 status: approved
 source_of_truth: true
 owner: project

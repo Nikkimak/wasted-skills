@@ -369,6 +369,31 @@ If an engineer opens only `src/`, they should be able to make a narrow local cha
 
 If that threshold is not met, the runtime repo is under-documented.
 
+### Runtime Structure Contract
+
+Runtime structure needs explicit enforcement too.
+The exact folder names may vary, but the ownership model must not be ambiguous.
+
+Each runtime repo should make these responsibility classes easy to locate:
+
+- transport or interface entrypoints
+- application or service orchestration
+- domain logic and state transitions
+- persistence or data access
+- provider or external integration adapters
+- tests
+
+Not every project needs each class as a top-level folder.
+The rule is that these concerns must not collapse into one ambiguous mutable blob.
+
+Runtime enforcement rules:
+
+- exactly one runtime owner of business correctness per domain
+- transport layers do not own domain state transitions
+- persistence layers do not own business decisions
+- integration layers do not become hidden domain owners
+- runtime-facing docs stay short and local; canonical architecture truth stays in the parent workspace docs
+
 ## Git Model
 
 Repository boundary:
@@ -441,6 +466,24 @@ Rule:
 - task material is execution support, not canonical project wiki truth
 - do not hide accepted architecture or live runtime facts only inside task packets
 - if this layer exists, keep it outside `context/` to avoid mixing queue/execution state with project truth
+
+### 1b. Context Index
+
+File:
+
+- `context/README.md`
+
+Purpose:
+
+- short index for the project wiki
+- source-of-truth summary for the `context/` layer
+- pointer to current-state docs, decision docs, runbooks, and the chosen future-work area
+
+Rule:
+
+- this file is the canonical entrypoint into `context/`
+- it should stay short and navigational
+- it should not become a second copy of the current-state docs or decision docs
 
 ### 2. Current Project Wiki
 
@@ -612,8 +655,9 @@ This can be YAML frontmatter or another structured header, but the semantics sho
 
 Operational rule:
 
-- for `context/current/*`, `context/decisions/*`, the project's chosen future-work area, `context/runbooks/*`, and `context/components/*`, metadata should be treated as required, not optional
+- for `context/README.md`, `context/current/*`, `context/decisions/*`, the project's chosen future-work area, `context/runbooks/*`, and `context/components/*`, metadata should be treated as required, not optional
 - `knowledge/*` may use lighter metadata if needed, because it is reference material rather than live project truth
+- bootstrap files such as `AGENTS.md`, queue summaries such as `WORKPLAN.md`, and runtime bridge docs such as `src/README.md` may use lighter metadata unless the project explicitly standardizes them
 - if metadata is declared required, the project should ideally validate it with automation or review checklists
 - do not impose heavyweight frontmatter that the team will not maintain
 
@@ -650,10 +694,12 @@ superseded_by: null
 Recommended `doc_type` values:
 
 - `workplan`
+- `context_index`
 - `project_state`
 - `runtime_map`
 - `repo_map`
 - `decision`
+- `decision_index`
 - `feature_status`
 - `vision`
 - `domain_design`
@@ -965,6 +1011,7 @@ One more rule matters just as much:
 Use this to judge whether the structure is genuinely high quality.
 
 - Can you identify the owner service for any business rule in under 30 seconds?
+- Can you identify the transport, service, domain, persistence, and integration boundaries inside the relevant runtime owner without guesswork?
 - Does exactly one service own the domain state machine and source-of-truth write?
 - Are adapters, workers, MCP tools, and workflows unable to bypass that owner?
 - Are secrets and runtime-mutated env files kept outside git?
@@ -1014,6 +1061,21 @@ frontend/
 These are patterns, not mandatory folder names.
 The real standard is ownership clarity and decomposition quality.
 
+### Allowed Runtime Layout Patterns
+
+Use a layout close to one of these shapes unless there is a strong reason not to:
+
+- multi-service runtime repo with `services/`, optional `packages/`, `workers/`, `infra/`, and `scripts/`
+- single backend app with an internal `app/` decomposition such as routers, services, repos, domain, schemas, and integrations
+- frontend app with a `src/` decomposition such as app, screens, components, features, api, hooks, theme, lib, and routes
+- shared runtime packages repo with clear consuming apps or services and explicit package ownership
+
+Rule:
+
+- prefer an existing recognized runtime shape over inventing novel top-level folders
+- invent a new folder only when it represents a real ownership boundary, not a naming preference
+- if a new folder does not correspond to a durable responsibility class, do not create it
+
 ### File Decomposition Rules
 
 Prefer splitting by responsibility, not by arbitrary technical category.
@@ -1034,13 +1096,13 @@ Bad splits:
 
 ### File Size Heuristics
 
-These are heuristics, not laws, but they are useful for LLM-friendly maintenance.
+Use these as default decomposition review thresholds for LLM-friendly runtime maintenance.
 
 - under `150` lines: usually easy to reason about
 - `150-300` lines: still acceptable if cohesive
-- `300-500` lines: review for decomposition
-- over `500` lines: should usually be split
-- over `800` lines: treat as a god-file unless there is a strong reason
+- `300-500` lines: decomposition review required
+- over `500` lines: split or document a clear reason to keep the file intact
+- over `800` lines: treat as a god-file and split unless there is an exceptional reason
 
 The problem is not raw line count alone.
 The real risk is when a file mixes:
@@ -1053,7 +1115,14 @@ The real risk is when a file mixes:
 
 That is where LLM-assisted changes become fragile.
 
+Review trigger rule:
+
+- if a runtime file crosses a review threshold, either decompose it or make the exception explicit in review or local service guidance
+- do not silently normalize oversized mixed-responsibility files as acceptable structure
+
 ### Function Size Heuristics
+
+Use these as extraction triggers, not as casual style suggestions.
 
 - handlers should usually be thin
 - orchestration functions should be readable in one screen
@@ -1124,6 +1193,17 @@ If a screen starts combining:
 - mutation retries
 
 split it.
+
+### Runtime Anti-Patterns
+
+Treat these as structural smells that should trigger cleanup planning:
+
+- giant `utils` modules that absorb unrelated responsibilities
+- giant cross-domain routers or controllers
+- service modules that mix transport, orchestration, persistence, and provider logic together
+- frontend screens that become the hidden owner of data flow, validation, mutations, and rendering policy
+- integration adapters that quietly become the source of business truth
+- new top-level folders added without a clear ownership reason
 
 ## Documentation Shape
 
@@ -1244,8 +1324,9 @@ If this is not documented clearly, LLM agents will leak logic into the wrong ser
 
 ## Minimal File Templates
 
-Each canonical project doc template below should begin with the required metadata header described in `Document Metadata Model`.
-The bullet lists below describe the semantic content that should follow that header.
+Each template below that belongs to a canonical doc class with required metadata should begin with the metadata header described in `Document Metadata Model`.
+Bootstrap files and runtime bridge docs may use lighter metadata when appropriate.
+The bullet lists below describe the semantic content that should follow.
 
 ### `AGENTS.md` in a Project Root
 
@@ -1296,6 +1377,21 @@ Should not contain:
 - the only copy of accepted architecture
 - the only copy of live runtime truth
 - the canonical queue summary if `WORKPLAN.md` exists
+
+### `context/README.md`
+
+Should contain:
+
+- short explanation of what belongs in `context/`
+- source-of-truth rules for current docs, decisions, runbooks, and future-work docs
+- concise read order into `context/current/` and `context/decisions/`
+- links to the chosen future-work area and runbooks when they exist
+
+Should not contain:
+
+- full copies of current-state docs
+- accepted decision content that belongs in `context/decisions/*`
+- long delivery history or mutable execution notes
 
 ### `context/current/project-state.md`
 
@@ -1363,6 +1459,8 @@ Should contain:
 - rollback entrypoint
 - common failure interpretation
 
+Use this when the project has a real deploy surface or operational procedure worth preserving.
+
 ### `src/README.md`
 
 Should contain:
@@ -1372,6 +1470,12 @@ Should contain:
 - local run/build/test minimum
 - deploy trigger surface for this repo
 - links to any deeper runtime-facing docs in `src/docs/` if they exist
+
+Should not contain:
+
+- the only live runtime topology for the project
+- a second mutable replacement for `context/current/runtime-map.md`
+- long-form architectural rationale that belongs in parent workspace docs
 
 ## Default Project Creation Checklist
 
@@ -1383,13 +1487,13 @@ When creating a new project, do this immediately:
 4. if `src/` is nested inside the project workspace, ignore it from the parent repo
 5. add `src/README.md`
 6. ensure `src/` meets the runtime self-sufficiency threshold for narrow local changes
-7. define source-of-truth rules in `context/README.md`
+7. create `context/README.md` and define source-of-truth rules in it
 8. create `context/current/project-state.md`
 9. create `context/current/runtime-map.md`
 10. create `context/current/repo-map.md`
 11. create `context/decisions/README.md`
 12. create the chosen future-work area only if the project needs it early, for example `context/features/README.md`
-13. create `context/runbooks/deploy.md`
+13. create `context/runbooks/deploy.md` if the project already has a real deploy surface or operational procedure worth documenting
 14. document service ownership in `context/components/`
 15. define deploy truth and environment model
 16. define service-internal layout rules before files start growing
@@ -1431,6 +1535,7 @@ Minimum viable set:
 
 - project-level `AGENTS.md`
 - `WORKPLAN.md`
+- `context/README.md`
 - `context/current/project-state.md`
 - `context/current/runtime-map.md`
 - `context/current/repo-map.md`
@@ -1454,11 +1559,12 @@ If you want the shortest rule set:
 - `knowledge/` = reusable library
 - `context/` = project wiki
 - `WORKPLAN.md` = next
+- `context/README.md` = index and source-of-truth entrypoint for the project wiki
 - `context/current/` = live now
 - `context/decisions/` = accepted
 - the chosen future-work area (for example `context/features/`) = future and in-progress change work
 - `context/runbooks/` = how to operate
-- `src/README.md` = runtime map and contributor entrypoint
+- `src/README.md` = runtime contributor entrypoint and local bridge doc, not the canonical runtime map
 - `src/` must remain self-sufficient for narrow local changes
 - task packets, if used, belong in a dedicated task layer outside `context/`
 - each service and each document set should be decomposed by ownership instead of growing into giant mixed files

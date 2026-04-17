@@ -17,6 +17,7 @@ Typical required outputs:
 
 - `AGENTS.md`
 - `WORKPLAN.md`
+- `context/README.md`
 - `context/current/project-state.md`
 - `context/current/runtime-map.md`
 - `context/current/repo-map.md`
@@ -35,7 +36,7 @@ Choose `standard` when some of these are true:
 
 Typical additions on top of `minimal`:
 
-- `context/runbooks/deploy.md`
+- `context/runbooks/deploy.md` if the project has a real deploy surface or operational procedure worth preserving
 - `context/components/*`
 - a chosen future-work area if active design work needs it
 

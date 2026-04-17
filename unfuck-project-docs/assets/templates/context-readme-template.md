@@ -1,6 +1,6 @@
 ---
 title: Context Index
-doc_type: knowledge_reference
+doc_type: context_index
 status: approved
 source_of_truth: true
 owner: project
@@ -13,6 +13,9 @@ superseded_by: null
 # Context
 
 Use this directory as the canonical project wiki for this project.
+
+Keep this file short.
+It is the entrypoint into `context/`, not a second copy of the project wiki.
 
 ## Source Of Truth Rules
 
@@ -30,3 +33,8 @@ Use this directory as the canonical project wiki for this project.
 3. `current/repo-map.md`
 4. `decisions/README.md`
 5. then only task-specific docs
+
+## Linked Areas
+
+- chosen future-work area: `<path or n/a>`
+- runbooks: `<path or n/a>`
