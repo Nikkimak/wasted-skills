@@ -1,4 +1,4 @@
 interface:
   display_name: "Apply Project Playbook"
   short_description: "Apply the repo/docs playbook"
-  default_prompt: "Use $apply-project-playbook to analyze a project and apply the canonical repo and documentation playbook."
+  default_prompt: "Use $apply-project-playbook to inspect the real project first, keep the bundled references read-only, choose the smallest safe mode, determine and explicitly confirm the repo model, produce a compact approval request with mandatory fields, create a preflight backup before the first approved mutation, and only then apply and verify the canonical repo and documentation playbook."

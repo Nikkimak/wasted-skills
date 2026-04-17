@@ -14,6 +14,28 @@ Keep the canonical source of truth in:
 
 Do not treat this skill as a replacement for the canonical playbook. Use it as the execution layer that decides scope, selects templates, and verifies the result.
 
+Protected sources:
+
+- do not edit the canonical playbook files in `references/` as part of applying this skill to a project
+- do not edit bundled templates unless the user explicitly asks to improve the skill itself
+- when this skill is used on a target project, treat the bundled references as read-only authority
+
+## Execution Contract
+
+When this skill is used, the agent should assume the user wants the playbook applied to a real project, not merely described in the abstract, unless the user explicitly asks for analysis only.
+
+Default stance:
+
+- inspect the actual project before proposing structure changes
+- choose the smallest safe mode that removes ambiguity
+- perform discovery and planning before any project mutation
+- do not modify any project files until the user explicitly approves the proposed plan
+- materialize missing canonical files only after that approval exists
+- update existing canonical docs instead of creating parallel replacements
+- verify the result against the bundled references before calling the work done
+
+Do not stop at a generic recommendation if the project can be inspected and updated directly.
+
 ## Workflow
 
 1. Read the canonical playbook and project bootstrap files first.
@@ -24,6 +46,164 @@ Do not treat this skill as a replacement for the canonical playbook. Use it as t
 6. Read `references/implementation-checklist.md` before making edits.
 7. Use the templates in `assets/templates/` only for the files that are actually needed.
 8. Verify the final state against the implementation checklist and the canonical playbook.
+
+## Approval Gate
+
+This skill operates in two explicit phases:
+
+1. discovery
+2. execution
+
+Discovery is allowed without approval:
+
+- inspect the project
+- inspect repo boundaries
+- inspect git state in read-only ways
+- inspect existing docs and bootstrap files
+- choose a proposed mode
+- identify the minimal required file and structure changes
+
+Execution is not allowed without approval:
+
+- creating, deleting, renaming, or editing project files
+- changing git boundaries or repo layout
+- running git mutations that change tracked state or repository topology
+- creating canonical docs from templates
+- rewriting or splitting existing project docs
+
+Before entering execution, the agent must:
+
+- provide a brief summary of the current project state
+- state the proposed mode and repo model
+- list the files or areas it plans to create or update
+- mention any risky or boundary-related operations
+- state the backup plan it will create before the first mutation
+- ask the user for explicit permission to proceed
+
+If the user has not clearly approved execution, remain in discovery mode.
+
+## Git Guardrails
+
+Git inspection is part of discovery and is allowed in read-only form:
+
+- inspect whether the parent workspace repo exists
+- inspect whether the runtime repo exists
+- inspect whether the runtime repo is nested or sibling
+- inspect current git status, branch, and tracked boundaries
+
+Git mutations require explicit approval:
+
+- `git init`
+- editing `.gitignore` for nested repo boundaries
+- moving files across repo boundaries
+- creating or restructuring parent/runtime repo separation
+- any other action that changes tracked state, history, or topology
+
+The agent must explicitly surface the proposed repo model and ask the user to confirm it before applying changes that depend on that model.
+
+## Required Initial Assessment
+
+Before choosing a mode or creating docs, establish these facts from the real project:
+
+- what directory is the actual project root
+- whether there is a parent workspace repo, a runtime repo, or both
+- whether the runtime repo is nested or sibling to the parent repo
+- which files or directories trigger deploys
+- whether canonical bootstrap files already exist
+- whether `context/`, `knowledge/`, `WORKPLAN.md`, and `src/README.md` already exist
+- whether current docs mix live truth, accepted decisions, and future plans in the same files
+
+If one of these facts is unclear, inspect further before deciding scope.
+
+## Decision Heuristics
+
+Use these heuristics to reduce agent drift:
+
+- default to `minimal` unless there is concrete evidence that `standard` or `full` is needed
+- choose `standard` when runtime boundaries, deploy rules, or ownership boundaries would remain unclear under `minimal`
+- choose `full` only when the project genuinely has multi-service or multi-repo coordination needs, persistent task packets, or durable future-work tracking needs
+- do not create a dedicated future-work area unless active design or rollout work clearly needs one
+- prefer updating and splitting mixed legacy docs over rewriting the entire documentation layer at once
+- prioritize navigability and source-of-truth clarity before pursuing completeness
+
+## Editing Rules
+
+Apply the playbook with explicit operational discipline:
+
+- read the nearest existing bootstrap files before writing new ones
+- never modify project files on the agent's own authority
+- never modify the bundled canonical playbook references during project application
+- preserve useful project-specific content when adapting templates
+- do not replace a stronger existing document with a weaker template-shaped version
+- do not create duplicate "current state" files in multiple locations
+- do not create empty ceremonial directories just because the full playbook mentions them
+- if git topology needs to change, inspect first and request approval before destructive or boundary-altering actions
+- if the request is analysis-only, produce a concrete gap report and recommended next edits instead of making changes
+- after approval, keep execution scoped to the approved plan or explicitly re-ask if the plan changes materially
+
+## Expected Output
+
+When reporting after discovery, before approval, the agent should report:
+
+- the current project shape in brief
+- which mode it recommends and why
+- which repo model it recommends and whether git topology changes are needed
+- which files or areas it proposes to change
+- what backup scope it plans to capture before editing
+- which assumptions or blockers still exist
+- a direct request for permission to proceed
+
+When closing out work after execution, the agent should report:
+
+- which mode was chosen and why
+- which repo model was found or created
+- which canonical files were created, updated, or verified
+- what was intentionally left out of scope
+- what risks, ambiguities, or follow-up items remain
+
+Avoid vague summaries such as "set up docs" or "applied structure". The close-out should make it obvious whether the playbook was actually materialized.
+
+## Mandatory Approval Fields
+
+The approval request before execution must include all of these fields in compact form:
+
+- `mode`: the proposed `minimal`, `standard`, or `full` mode
+- `repo_model`: the proposed parent/runtime repo model
+- `git_topology_impact`: `none` or a brief description of the topology change requested
+- `backup_decision`: `required` by default, or `user_declined` only if the user explicitly opts out
+- `backup_scope`: what will be snapshotted before the first mutation
+- `planned_changes`: the files or areas to create, update, split, or reorganize
+- `risks_or_unknowns`: any unresolved ambiguity, especially around repo boundaries or large document splits
+
+Do not enter execution until the user has approved these fields.
+
+## Preflight Backup Policy
+
+If the user approves execution, create a preflight backup before the first project mutation.
+
+Backup rules:
+
+- create a timestamped snapshot directory under `<project-root>/.playbook-backups/`
+- treat `.playbook-backups/` as outside canonical project truth
+- do not modify older backup snapshots once created
+- do not use the backup directory as working space for canonical docs
+- treat the backup directory as local safety data, not as part of the intended project diff
+- do not stage, commit, or present backup files as canonical project changes
+- include a manifest that records the proposed mode, repo model, backup scope, and planned changes
+
+Scope rules:
+
+- by default, back up only the files and directories the agent plans to change
+- if the plan includes splitting or restructuring large mixed docs, back up the full affected doc set, not just the extracted fragments
+- if the plan includes broad documentation reorganization, back up the relevant canonical doc areas such as `context/`, `WORKPLAN.md`, bootstrap files, and other approved targets
+- if git exists, include read-only git context in the manifest such as branch, `HEAD` when available, and whether the working tree was dirty
+- if git exists and `.playbook-backups/` is not ignored, warn that it will remain local untracked safety data unless the user separately approves an ignore-rule change
+
+Plan-change rule:
+
+- if the approved execution scope changes materially later, re-ask for approval and create a new timestamped snapshot for the newly affected scope before mutating it
+
+The backup directory is write-once for the initial snapshot and then should be left untouched during the rest of execution unless the user explicitly asks otherwise.
 
 ## Non-Negotiable Rules
 
@@ -67,3 +247,17 @@ Prioritize these templates first:
 - `src-readme-template.md`
 
 Use `future-work-status-template.md` only when the project actually needs a future-work area.
+
+## Definition Of Done
+
+Do not consider the playbook application complete until all relevant items below are true:
+
+- execution was explicitly approved by the user before project files were changed
+- the repo model was explicitly confirmed before git topology-changing actions were taken
+- a preflight backup was created before the first approved mutation, unless the user explicitly declined it
+- the project has a clear startup path for future agents
+- the active source-of-truth hierarchy is explicit and non-contradictory
+- the chosen mode matches the actual project complexity
+- required canonical docs for that mode exist or were explicitly verified as already adequate
+- runtime repo boundaries are verified, or the remaining blocker is stated explicitly
+- the final report names what was changed, what was verified, and what still needs decisions from the user
