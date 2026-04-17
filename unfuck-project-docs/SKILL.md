@@ -1,11 +1,14 @@
 ---
 name: unfuck-project-docs
-description: Organize and clean up project documentation, workspace structure, and repo boundaries for a real coding project using the bundled canonical playbook as read-only guidance. Use when Codex needs to untangle project docs, bootstrap or repair canonical project documentation, split or verify parent repo versus runtime repo boundaries, choose minimal versus standard versus full documentation scope, or upgrade an existing project to a clearer source-of-truth model.
+description: Organize and clean up project documentation, workspace structure, and repo boundaries for a real coding project using the bundled canonical playbook as read-only guidance. Use when Codex needs to do an initial bootstrap, one-time migration, or major structural cleanup of project docs; untangle messy canonical documentation; split or verify parent repo versus runtime repo boundaries; choose minimal versus standard versus full documentation scope; or upgrade an existing project to a clearer source-of-truth model. Do not use this skill for routine day-to-day edits in a project that is already organized.
 ---
 
 # Unfuck Project Docs
 
 Use this skill to apply the bundled canonical playbook to a real project.
+
+This is a bootstrap, migration, and structural-cleanup skill.
+It is not the default operating mode for routine project work after the project is already organized.
 
 Keep the canonical source of truth in:
 
@@ -35,6 +38,14 @@ Default stance:
 - verify the result against the bundled references before calling the work done
 
 Do not stop at a generic recommendation if the project can be inspected and updated directly.
+
+Invocation boundary:
+
+- use this skill for initial setup of a new project
+- use this skill for one-time migration of an older messy project into the canonical structure
+- use this skill for major structural cleanup when source-of-truth, repo boundaries, or canonical docs are broken or unclear
+- do not use this skill as the default tool for routine feature work, small documentation updates, or normal ongoing project maintenance once the project is already organized
+- if the project already follows the intended structure closely, prefer ordinary project work without invoking this skill again
 
 ## Workflow
 
@@ -119,12 +130,20 @@ If one of these facts is unclear, inspect further before deciding scope.
 
 Use these heuristics to reduce agent drift:
 
+- first decide whether this skill should be used at all, not just which mode to choose
+- if the project is already structurally sound and the requested work is ordinary maintenance, do not enter execution under this skill
 - default to `minimal` unless there is concrete evidence that `standard` or `full` is needed
 - choose `standard` when runtime boundaries, deploy rules, or ownership boundaries would remain unclear under `minimal`
 - choose `full` only when the project genuinely has multi-service or multi-repo coordination needs, persistent task packets, or durable future-work tracking needs
 - do not create a dedicated future-work area unless active design or rollout work clearly needs one
 - prefer updating and splitting mixed legacy docs over rewriting the entire documentation layer at once
 - prioritize navigability and source-of-truth clarity before pursuing completeness
+
+Use-skill decision rule:
+
+- if the main problem is "this project is messy or not yet set up", this skill is appropriate
+- if the main problem is "make a normal change inside an already organized project", this skill is not the right default
+- if unsure, stay in discovery and explicitly tell the user whether the project appears to need one-time structural adoption or only normal maintenance
 
 ## Editing Rules
 
@@ -146,6 +165,7 @@ Apply the playbook with explicit operational discipline:
 When reporting after discovery, before approval, the agent should report:
 
 - the current project shape in brief
+- whether this project appears to need one-time structural adoption at all
 - which mode it recommends and why
 - which repo model it recommends and whether git topology changes are needed
 - which files or areas it proposes to change
