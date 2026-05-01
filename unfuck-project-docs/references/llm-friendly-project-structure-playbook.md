@@ -81,6 +81,15 @@ Practical rule for coding agents:
 - if both repos already exist, verify their boundaries instead of recreating them
 - if nested git boundaries are broken or ambiguous, fix that before treating the playbook as applied
 
+Execution boundary when this playbook is applied through the `unfuck-project-docs` skill:
+
+- inspect and plan first
+- present the proposed mode, repo model, documentation strategy, planned changes, and risks
+- ask whether to update existing docs only or also create missing canonical guides/docs
+- ask whether to create the recommended preflight backup
+- stop and wait for explicit user approval before any project mutation
+- create the approved backup before the first mutation
+
 Minimum expected result after playbook application:
 
 - a project workspace repo exists for project memory and control-plane docs

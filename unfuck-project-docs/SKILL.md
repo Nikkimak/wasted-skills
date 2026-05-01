@@ -32,12 +32,16 @@ Default stance:
 - inspect the actual project before proposing structure changes
 - choose the smallest safe mode that removes ambiguity
 - perform discovery and planning before any project mutation
+- stop after discovery and wait for explicit user approval before entering execution
+- if the project already has substantial documentation, ask whether to update/split existing docs only or also create missing canonical guides/docs
+- ask explicitly whether to create the recommended preflight backup before the first mutation
 - do not modify any project files until the user explicitly approves the proposed plan
 - materialize missing canonical files only after that approval exists
 - update existing canonical docs instead of creating parallel replacements
 - verify the result against the bundled references before calling the work done
 
 Do not stop at a generic recommendation if the project can be inspected and updated directly.
+The required stop after discovery is not a generic recommendation stop; it is a mandatory approval boundary.
 
 Invocation boundary:
 
@@ -51,8 +55,8 @@ Invocation boundary:
 
 1. Read the canonical playbook and project bootstrap files first.
 2. Inspect the project shape, repo layout, runtime surfaces, and existing docs.
-3. Read `references/mode-selection.md` to choose `minimal`, `standard`, or `full`.
-4. Read `references/git-topology-checklist.md` if repo boundaries are missing, ambiguous, or need to be created.
+3. Read `references/git-topology-checklist.md` if repo boundaries are missing, ambiguous, or may affect the documentation scope.
+4. Read `references/mode-selection.md` to choose `minimal`, `standard`, or `full` after the repo model is understood.
 5. Read `references/canonical-docs-matrix.md` to determine the required file set for the chosen mode.
 6. Read `references/implementation-checklist.md` before making edits.
 7. Use the templates in `assets/templates/` only for the files that are actually needed.
@@ -86,10 +90,16 @@ Before entering execution, the agent must:
 
 - provide a brief summary of the current project state
 - state the proposed mode and repo model
+- state the proposed documentation strategy, especially if the project already has existing docs
 - list the files or areas it plans to create or update
 - mention any risky or boundary-related operations
 - state the backup plan it will create before the first mutation
+- ask whether to create or update missing canonical guides/docs now, especially when existing documentation already exists
+- ask whether to create the recommended preflight backup before the first mutation
 - ask the user for explicit permission to proceed
+
+After presenting that discovery report, stop and wait for the user's reply.
+Do not create, edit, rename, move, or delete project files in the same turn as the initial approval request unless the user had already approved execution earlier in the conversation.
 
 If the user has not clearly approved execution, remain in discovery mode.
 
@@ -122,6 +132,7 @@ Before choosing a mode or creating docs, establish these facts from the real pro
 - which files or directories trigger deploys
 - whether canonical bootstrap files already exist
 - whether `context/`, `knowledge/`, `WORKPLAN.md`, and `src/README.md` already exist
+- whether there is already substantial project documentation that should be updated or split instead of replaced
 - whether current docs mix live truth, accepted decisions, and future plans in the same files
 
 If one of these facts is unclear, inspect further before deciding scope.
@@ -136,6 +147,7 @@ Use these heuristics to reduce agent drift:
 - choose `standard` when runtime boundaries, deploy rules, or ownership boundaries would remain unclear under `minimal`
 - choose `full` only when the project genuinely has multi-service or multi-repo coordination needs, persistent task packets, or durable future-work tracking needs
 - do not create a dedicated future-work area unless active design or rollout work clearly needs one
+- if the project already has substantial documentation, prefer updating or splitting the strongest existing docs over creating parallel guide files
 - prefer updating and splitting mixed legacy docs over rewriting the entire documentation layer at once
 - prioritize navigability and source-of-truth clarity before pursuing completeness
 
@@ -168,15 +180,20 @@ When reporting after discovery, before approval, the agent should report:
 - whether this project appears to need one-time structural adoption at all
 - which mode it recommends and why
 - which repo model it recommends and whether git topology changes are needed
+- which documentation strategy it recommends and why
 - which files or areas it proposes to change
 - what backup scope it plans to capture before editing
 - which assumptions or blockers still exist
+- a direct question about whether to create or update missing canonical guides/docs now
+- a direct question about whether to create the recommended preflight backup
 - a direct request for permission to proceed
 
 When closing out work after execution, the agent should report:
 
 - which mode was chosen and why
 - which repo model was found or created
+- which documentation strategy was chosen and why
+- whether the approved backup was created or explicitly declined by the user
 - which canonical files were created, updated, or verified
 - what was intentionally left out of scope
 - what risks, ambiguities, or follow-up items remain
@@ -189,8 +206,9 @@ The approval request before execution must include all of these fields in compac
 
 - `mode`: the proposed `minimal`, `standard`, or `full` mode
 - `repo_model`: the proposed parent/runtime repo model
+- `documentation_strategy`: `audit_only`, `update_existing_docs`, or `create_missing_canonical_docs`, plus a brief note when splits or guide creation are proposed
 - `git_topology_impact`: `none` or a brief description of the topology change requested
-- `backup_decision`: `required` by default, or `user_declined` only if the user explicitly opts out
+- `backup_decision`: `create_backup` unless the user explicitly declines; this must be asked, not assumed silently
 - `backup_scope`: what will be snapshotted before the first mutation
 - `planned_changes`: the files or areas to create, update, split, or reorganize
 - `risks_or_unknowns`: any unresolved ambiguity, especially around repo boundaries or large document splits

@@ -21,8 +21,7 @@ Use this checklist when creating or verifying repo boundaries.
 
 ## If The Project Is Greenfield
 
-- create or verify the parent repo
-- create or verify the runtime repo
+- plan the parent repo and runtime repo model
 - choose nested versus sibling layout consciously
 - ensure the chosen layout is documented in project `AGENTS.md`
 
@@ -35,4 +34,8 @@ Use this checklist when creating or verifying repo boundaries.
 
 ## Approval Rule
 
-If applying the playbook requires creating repos, changing nested boundaries, or doing other git operations that need approval in the current environment, request that approval explicitly before proceeding.
+If applying the playbook requires creating repos, changing nested boundaries, editing ignore rules, or doing any other git mutation:
+
+- request explicit user approval before proceeding
+- stop and wait for the user's reply
+- do not rely on sandbox or tool-level permission prompts as a substitute for the skill's approval gate

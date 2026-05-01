@@ -15,7 +15,8 @@ Use this skill to apply those sources to real projects.
 
 Operational rule:
 
-- if the skill and the canonical playbook appear to disagree, follow the canonical playbook
+- follow the canonical playbook for the target structure, source-of-truth rules, and resulting file set
+- follow this skill's execution protocol for discovery, approval gates, backups, and execution sequencing
 - update the skill later if needed, but do not silently invent a parallel standard here
 
 Interpretation of responsibilities:
@@ -23,5 +24,5 @@ Interpretation of responsibilities:
 - canonical playbook = normative structure and rules
 - project-agents reference = normative guidance for what the project-level `AGENTS.md` should cover
 - raw project-agents template = reusable template body used during execution
-- this skill = execution guidance, checklists, and reusable templates
+- this skill = execution guidance, approval gates, backups, checklists, and reusable templates
 - templates = accelerators, not a replacement for project-specific judgment
