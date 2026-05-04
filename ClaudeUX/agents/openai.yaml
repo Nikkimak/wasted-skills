@@ -1,0 +1,4 @@
+interface:
+  display_name: "ClaudeUX"
+  short_description: "Pragmatic UI operator: inspect, implement, preview, repair"
+  default_prompt: "Use $ClaudeUX to handle this as pragmatic UI work: recover project context first, inspect the real files that own the interface, implement directly when the scope is clear, preserve existing product vocabulary unless the user wants a new direction, and verify through preview, screenshots, or logs before calling the work done. Ask only the questions that materially change the result."
