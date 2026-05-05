@@ -1,6 +1,6 @@
 ---
 name: unfuck-project-docs
-description: Organize and clean up project documentation, workspace structure, and repo boundaries for a real coding project using the bundled canonical playbook as read-only guidance. Use when Codex needs to do an initial bootstrap, one-time migration, or major structural cleanup of project docs; untangle messy canonical documentation; split or verify parent repo versus runtime repo boundaries; choose minimal versus standard versus full documentation scope; or upgrade an existing project to a clearer source-of-truth model. Do not use this skill for routine day-to-day edits in a project that is already organized.
+description: Organize and clean up project documentation, workspace structure, and repo boundaries for a real coding project using the bundled canonical playbook as read-only guidance. Use when Codex needs to do an initial bootstrap, one-time migration, or major structural cleanup of project docs; untangle messy canonical documentation; choose between a single project-root git repo, a split model where `src/` has its own git repo, or an advanced multi-runtime split under `src/`; verify or reshape existing git boundaries; choose minimal versus standard versus full documentation scope; or upgrade an existing project to a clearer source-of-truth model. Do not use this skill for routine day-to-day edits in a project that is already organized.
 ---
 
 # Unfuck Project Docs
@@ -32,7 +32,11 @@ Default stance:
 - inspect the actual project before proposing structure changes
 - choose the smallest safe mode that removes ambiguity
 - perform discovery and planning before any project mutation
+- detect whether any relevant git topology already exists before proposing repo changes
 - stop after discovery and wait for explicit user approval before entering execution
+- if git already exists, ask explicitly whether to keep the current git topology before proposing a change
+- if git does not exist yet, present the supported initialization options before proposing `git init`
+- if the user explicitly asks for multiple separately versioned runtimes under `src/`, or the existing project already uses them, surface that as a custom multi-runtime repo model instead of forcing the simpler defaults
 - if the project already has substantial documentation, ask whether to update/split existing docs only or also create missing canonical guides/docs
 - ask explicitly whether to create the recommended preflight backup before the first mutation
 - do not modify any project files until the user explicitly approves the proposed plan
@@ -55,7 +59,7 @@ Invocation boundary:
 
 1. Read the canonical playbook and project bootstrap files first.
 2. Inspect the project shape, repo layout, runtime surfaces, and existing docs.
-3. Read `references/git-topology-checklist.md` if repo boundaries are missing, ambiguous, or may affect the documentation scope.
+3. Read `references/git-topology-checklist.md` before choosing the repo model.
 4. Read `references/mode-selection.md` to choose `minimal`, `standard`, or `full` after the repo model is understood.
 5. Read `references/canonical-docs-matrix.md` to determine the required file set for the chosen mode.
 6. Read `references/implementation-checklist.md` before making edits.
@@ -89,7 +93,9 @@ Execution is not allowed without approval:
 Before entering execution, the agent must:
 
 - provide a brief summary of the current project state
+- report the detected git state
 - state the proposed mode and repo model
+- state whether the plan keeps the current git topology or changes it
 - state the proposed documentation strategy, especially if the project already has existing docs
 - list the files or areas it plans to create or update
 - mention any risky or boundary-related operations
@@ -107,28 +113,36 @@ If the user has not clearly approved execution, remain in discovery mode.
 
 Git inspection is part of discovery and is allowed in read-only form:
 
-- inspect whether the parent workspace repo exists
-- inspect whether the runtime repo exists
-- inspect whether the runtime repo is nested or sibling
-- inspect current git status, branch, and tracked boundaries
+- inspect whether any git repo already exists at the project root or intended runtime path
+- inspect whether the project root has a git repo and whether `src/` has its own git repo
+- inspect whether there is one git repo for the whole project or a split model where `src/` owns its own history
+- inspect whether there are multiple separately versioned runtime repos under `src/`
+- inspect current git status, branch, and tracked boundaries for each detected repo
+
+Git choice rules:
+
+- if git already exists, ask explicitly whether to keep the current git topology before proposing topology-changing work
+- if git does not exist yet, present `single_repo` and `split_src_repo` as the default initialization choices
+- if the user explicitly requests multiple separately versioned runtimes under `src/`, or the existing project already has them, use `multi_runtime_split` instead of forcing the simpler defaults
 
 Git mutations require explicit approval:
 
 - `git init`
 - editing `.gitignore` for nested repo boundaries
 - moving files across repo boundaries
-- creating or restructuring parent/runtime repo separation
+- creating or restructuring project-root versus `src/` repo separation
 - any other action that changes tracked state, history, or topology
 
-The agent must explicitly surface the proposed repo model and ask the user to confirm it before applying changes that depend on that model.
+The agent must explicitly surface the detected git state, the proposed repo model, and whether the current topology will be preserved or changed before applying changes that depend on that model.
 
 ## Required Initial Assessment
 
 Before choosing a mode or creating docs, establish these facts from the real project:
 
 - what directory is the actual project root
-- whether there is a parent workspace repo, a runtime repo, or both
-- whether the runtime repo is nested or sibling to the parent repo
+- whether any git repo already exists, and which path or paths it covers
+- whether the project root has a git repo, whether `src/` has a git repo, or whether one repo owns both
+- whether `src/` contains multiple independently deployable runtime repos
 - which files or directories trigger deploys
 - whether canonical bootstrap files already exist
 - whether `context/`, `knowledge/`, `WORKPLAN.md`, and `src/README.md` already exist
@@ -150,6 +164,9 @@ Use these heuristics to reduce agent drift:
 - if the project already has substantial documentation, prefer updating or splitting the strongest existing docs over creating parallel guide files
 - prefer updating and splitting mixed legacy docs over rewriting the entire documentation layer at once
 - prioritize navigability and source-of-truth clarity before pursuing completeness
+- preserve an existing git topology by default unless the user explicitly approves changing it
+- if no git exists yet, do not silently assume split repos; present the supported options and recommend one only when there is a concrete reason
+- if the project genuinely needs multiple separately versioned runtime repos under `src/`, surface that as an explicit advanced model instead of overloading `split_src_repo`
 
 Use-skill decision rule:
 
@@ -177,6 +194,7 @@ Apply the playbook with explicit operational discipline:
 When reporting after discovery, before approval, the agent should report:
 
 - the current project shape in brief
+- the detected git state
 - whether this project appears to need one-time structural adoption at all
 - which mode it recommends and why
 - which repo model it recommends and whether git topology changes are needed
@@ -205,7 +223,10 @@ Avoid vague summaries such as "set up docs" or "applied structure". The close-ou
 The approval request before execution must include all of these fields in compact form:
 
 - `mode`: the proposed `minimal`, `standard`, or `full` mode
-- `repo_model`: the proposed parent/runtime repo model
+- `git_state`: the detected git boundaries, or `no_git_found`
+- `repo_model`: `single_repo`, `split_src_repo`, or `multi_runtime_split`
+- `runtime_git_paths`: `n/a` for `single_repo`, `src/` for `split_src_repo`, or the explicit list of separately versioned runtime paths for `multi_runtime_split`
+- `git_topology_decision`: `keep_existing_git`, `create_single_repo`, `create_split_src_repo`, `create_multi_runtime_split`, or a brief description of the approved topology change
 - `documentation_strategy`: `audit_only`, `update_existing_docs`, or `create_missing_canonical_docs`, plus a brief note when splits or guide creation are proposed
 - `git_topology_impact`: `none` or a brief description of the topology change requested
 - `backup_decision`: `create_backup` unless the user explicitly declines; this must be asked, not assumed silently
@@ -227,7 +248,7 @@ Backup rules:
 - do not use the backup directory as working space for canonical docs
 - treat the backup directory as local safety data, not as part of the intended project diff
 - do not stage, commit, or present backup files as canonical project changes
-- include a manifest that records the proposed mode, repo model, backup scope, and planned changes
+- include a manifest that records the proposed mode, repo model, git topology decision, backup scope, and planned changes
 
 Scope rules:
 
@@ -261,7 +282,7 @@ The backup directory is write-once for the initial snapshot and then should be l
 - `references/mode-selection.md`
   Read when it is unclear how much of the documentation system should be materialized.
 - `references/git-topology-checklist.md`
-  Read when creating or verifying parent repo versus runtime repo separation.
+  Read when creating or verifying project-root git versus split `src/` git separation.
 - `references/implementation-checklist.md`
   Read when executing the playbook on a project.
 - `references/canonical-docs-matrix.md`
@@ -290,6 +311,10 @@ Use `future-work-status-template.md` only when the project actually needs a futu
 
 Do not consider the playbook application complete until all relevant items below are true:
 
+- existing git presence was checked before topology changes were proposed
+- if git already existed, the user explicitly answered whether to keep it
+- if git did not exist, the user was offered the supported initialization choices before `git init`
+- if `multi_runtime_split` was used, the runtime repo paths were made explicit before execution
 - execution was explicitly approved by the user before project files were changed
 - the repo model was explicitly confirmed before git topology-changing actions were taken
 - a preflight backup was created before the first approved mutation, unless the user explicitly declined it
@@ -297,5 +322,5 @@ Do not consider the playbook application complete until all relevant items below
 - the active source-of-truth hierarchy is explicit and non-contradictory
 - the chosen mode matches the actual project complexity
 - required canonical docs for that mode exist or were explicitly verified as already adequate
-- runtime repo boundaries are verified, or the remaining blocker is stated explicitly
+- `src/` git boundaries are verified, or the remaining blocker is stated explicitly
 - the final report names what was changed, what was verified, and what still needs decisions from the user

@@ -12,18 +12,25 @@ superseded_by: null
 
 # Repo Map
 
+## Repo Model
+
+- chosen model: `single_repo`, `split_src_repo`, or `multi_runtime_split`
+- runtime git paths: `n/a`, `src/`, or `<explicit list under src/>`
+- how `src/` is versioned: tracked by the project-root repo, owns its own `.git`, or contains nested runtime repos
+
 ## Physical Layout
 
-- where the parent workspace repo lives
-- where the runtime repo lives
-- whether layout is nested or sibling
+- where the workspace control-plane layer lives
+- where `src/` lives
+- which repo or path owns deploy-triggering changes
 
 ## Ownership
 
-- which repo owns deploy-triggering changes
 - where major code surfaces live
 
 ## Git Boundaries
 
-- confirm that parent and runtime repos are separate histories
-- confirm that the parent does not track runtime repo files incorrectly
+- if `single_repo` is chosen, confirm that one repo owns both layers and that the deploy-triggering `src/` path is documented
+- if `split_src_repo` is chosen, confirm that the project-root repo and `src/` repo are separate histories
+- if `split_src_repo` is chosen, confirm that the project-root repo does not track `src/` incorrectly
+- if `multi_runtime_split` is chosen, list each separately versioned runtime repo path under `src/` and confirm which deploy surface it owns

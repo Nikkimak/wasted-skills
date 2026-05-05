@@ -31,26 +31,70 @@ If that cannot happen in a few minutes without human retelling, the workspace is
 
 The most important structural decision is:
 
-- keep project memory and deployable code in separate git repositories
+- choose the git topology consciously before materializing documentation or runtime boundaries
 
-Recommended model:
+Supported repo models:
 
-1. parent workspace repo
-2. `src/` runtime/code repo
+1. `single_repo`
+2. `split_src_repo`
+3. `multi_runtime_split`
 
-Git topology rule:
+`split_src_repo` remains the recommended default when project memory and deployable code need stronger isolation.
+
+`single_repo` is acceptable when:
+
+- the project is small or early-stage
+- one repo is operationally simpler
+- the user explicitly wants one repo
+- an existing one-repo topology should be preserved
+
+`split_src_repo` is preferred when:
+
+- deployable code and project memory should not share a git history
+- the runtime layer may grow into multiple deployable surfaces
+- CI, deploy, or ownership boundaries need stronger isolation
+- the user explicitly wants the split `src/` repo model
+
+`multi_runtime_split` is appropriate when:
+
+- the user explicitly wants multiple separately versioned runtimes under `src/`
+- the existing project already contains multiple independently deployable runtime repos
+- one runtime repo under `src/` is not enough to express deploy ownership cleanly
+
+`split_src_repo` rule:
 
 - the parent workspace and `src/` are independent git repositories
 - `src/` may live physically inside the parent workspace for convenience, but it must keep its own `.git`
 - if `src/` is nested, the parent repo should ignore that path instead of accidentally versioning runtime code
-- the parent repo must never become the deploy source for the runtime repo
+- the parent repo must never become the deploy source for `src/`
 - if the runtime layer later contains multiple independently deployable subprojects, those may also become separate git repos
+
+`multi_runtime_split` rule:
+
+- the project-root repo remains the control-plane repo
+- `src/` remains the canonical runtime container
+- multiple nested runtime repos may exist under `src/`
+- each runtime repo path under `src/` must be explicit in `context/current/repo-map.md`
+- the project-root repo must not accidentally version those nested runtime repos
 
 Physical layout note:
 
-- nested repos are acceptable and often convenient
-- sibling repos may behave more predictably with some tooling
-- choose the physical layout consciously; the real rule is split git ownership, not one mandatory folder arrangement
+- in `split_src_repo`, the split model means a nested `src/` repo with its own `.git`
+- in `multi_runtime_split`, `src/` stays the runtime container while nested runtime repos under it own their own histories
+- the project structure stays the same; only git ownership changes
+
+Existing-git rule:
+
+- if any relevant `.git` already exists, inspect it first
+- ask explicitly whether to keep the current git topology before proposing a change
+- do not silently split, merge, or replace an existing repo layout
+
+Greenfield rule:
+
+- if no git exists yet, offer `single_repo` and `split_src_repo` as the default choices
+- if `split_src_repo` is chosen, create the separate git repo inside `src/` and ignore `src/` from the project-root repo
+- if the user explicitly requests multiple separately versioned runtimes under `src/`, use `multi_runtime_split` and enumerate those runtime repo paths explicitly
+- document the chosen model in project `AGENTS.md` and `context/current/repo-map.md`
 
 Why this matters:
 
@@ -58,16 +102,19 @@ Why this matters:
 - production pushes are easier to reason about
 - agents are less likely to edit the wrong layer
 - context loading becomes cheaper
-- documentation can remain high-signal without turning the runtime repo into a notebook
+- documentation can remain high-signal without turning the runtime layer into a notebook
 
 ## Playbook Application Rule
 
 If a user says to apply this playbook to a project, the expected default meaning is:
 
-- create or verify the parent project workspace repo
-- create or verify the separate runtime repo in `src/` or the equivalent runtime path
-- ensure the two git histories are independent
-- ensure the parent repo ignores the nested runtime repo path when needed
+- inspect whether git already exists in the relevant project paths
+- if git already exists, ask whether to keep the current git topology before changing it
+- if no git exists yet, offer `single_repo` and `split_src_repo` before initializing git, and allow `multi_runtime_split` when the user explicitly asks for it
+- create or verify the chosen repo model
+- if `split_src_repo` is chosen, ensure the two git histories are independent
+- if `split_src_repo` is chosen, ensure the parent repo ignores `src/`
+- if `multi_runtime_split` is chosen, ensure each runtime repo path under `src/` is explicit and the parent repo ignores those nested repos correctly
 - create or verify the canonical documentation and bootstrap files described by this playbook
 
 In other words:
@@ -77,9 +124,12 @@ In other words:
 
 Practical rule for coding agents:
 
-- if the required parent repo or runtime repo does not exist yet, creating them is part of completing the playbook setup
-- if both repos already exist, verify their boundaries instead of recreating them
-- if nested git boundaries are broken or ambiguous, fix that before treating the playbook as applied
+- if no git exists yet, do not silently assume split repos; offer the supported choices first
+- if git already exists, preserve it by default unless the user explicitly approves a topology change
+- if the chosen repo model does not exist yet, creating it is part of completing the playbook setup
+- if split repos already exist, verify their boundaries instead of recreating them
+- if multiple runtime repos exist under `src/`, treat that as `multi_runtime_split` rather than forcing the simpler split model
+- if nested git boundaries are broken or ambiguous, surface the options and fix them only after approval
 
 Execution boundary when this playbook is applied through the `unfuck-project-docs` skill:
 
@@ -92,14 +142,17 @@ Execution boundary when this playbook is applied through the `unfuck-project-doc
 
 Minimum expected result after playbook application:
 
-- a project workspace repo exists for project memory and control-plane docs
-- a separate runtime repo exists for deployable code
-- the parent repo does not accidentally version runtime files from the nested repo
+- the chosen git model is explicit and documented
+- if `split_src_repo` is chosen, a project workspace repo exists for project memory and control-plane docs
+- if `split_src_repo` is chosen, a separate `src/` repo exists for deployable code
+- if `split_src_repo` is chosen, the parent repo does not accidentally version runtime files from the nested repo
+- if `single_repo` is chosen, one repo owns both layers and the deploy-triggering runtime path is documented clearly
+- if `multi_runtime_split` is chosen, the runtime repo paths under `src/` are enumerated explicitly and mapped to their deploy ownership
 - canonical docs and bootstrap files exist in the correct layer
 
-## Parent Workspace Model
+## Workspace Control-Plane Model
 
-Think of the parent workspace repo as a control plane for the project.
+Whether it lives in its own repo or inside a single project repo, think of the workspace control-plane layer as the control plane for the project.
 
 It contains four different documentation layers:
 
@@ -277,9 +330,12 @@ The important part is role separation, not folder spelling.
 
 ## Repository Roles
 
-### Parent Workspace Repo
+### Workspace Control-Plane Layer
 
-Use this repo for:
+In `split_src_repo`, this usually lives in the parent workspace repo.
+In `single_repo`, it lives in the main project repo outside the runtime subtree.
+
+Use this layer for:
 
 - current queue and execution priorities
 - project-level architecture decisions
@@ -291,18 +347,21 @@ Use this repo for:
 - deployment evidence
 - bootstrap instructions for coding agents
 
-Do not use this repo for:
+Do not use this layer for:
 
 - deploy-triggering code
 - runtime secrets
 - generated bundles
 - service build artifacts
-- migrations that belong to the runtime repo
+- migrations that belong to `src/`
 - long-lived code branches pretending to be documentation
 
-### `src/` Runtime Repo
+### Runtime Layer
 
-Use this repo for:
+In `split_src_repo`, this is the `src/` repo.
+In `single_repo`, this is the `src/` subtree tracked by the project-root repo.
+
+Use this layer for:
 
 - production code
 - non-secret runtime configuration under version control
@@ -313,7 +372,7 @@ Use this repo for:
 - runtime-facing contributor docs
 - service tests
 
-Do not use this repo as the canonical home for:
+Do not use this layer as the canonical home for:
 
 - execution history
 - architecture rationale
@@ -324,7 +383,7 @@ Do not use this repo as the canonical home for:
 
 ### Runtime-Owned Docs Rule
 
-The runtime repo must not be silent.
+The runtime layer must not be silent.
 
 At minimum, a contributor opening only `src/` should be able to:
 
@@ -333,7 +392,7 @@ At minimum, a contributor opening only `src/` should be able to:
 3. identify where a narrow behavior change belongs
 4. avoid violating obvious runtime boundaries
 
-That does not mean the runtime repo should duplicate the full parent workspace wiki.
+That does not mean the runtime layer should duplicate the full workspace wiki.
 It means contributor-critical runtime knowledge must remain locally available in `src/`.
 
 Required minimum runtime-owned docs:
@@ -341,7 +400,7 @@ Required minimum runtime-owned docs:
 - `src/README.md`
 - service-level `README.md` files where ownership would otherwise be unclear
 - local run/build/test guidance
-- deploy surface summary for this repo
+- deploy surface summary for `src/`
 - runtime config shape or examples for versioned non-secret config
 
 Recommended pattern for larger repos:
@@ -358,7 +417,7 @@ These bridge docs are allowed inside `src/` when they are:
 - short
 - runtime-facing
 - explicitly derivative of canonical parent docs
-- limited to the local assumptions a contributor needs in this repo
+- limited to the local assumptions a contributor needs in `src/`
 
 Good examples:
 
@@ -374,16 +433,16 @@ Bad examples:
 
 ### Runtime Self-Sufficiency Threshold
 
-If an engineer opens only `src/`, they should be able to make a narrow local change safely without mandatory reading in the parent repo, unless the task crosses architectural, rollout, or cross-service boundaries.
+If an engineer opens only `src/`, they should be able to make a narrow local change safely without mandatory reading in the workspace control-plane layer, unless the task crosses architectural, rollout, or cross-service boundaries.
 
-If that threshold is not met, the runtime repo is under-documented.
+If that threshold is not met, the runtime layer is under-documented.
 
 ### Runtime Structure Contract
 
 Runtime structure needs explicit enforcement too.
 The exact folder names may vary, but the ownership model must not be ambiguous.
 
-Each runtime repo should make these responsibility classes easy to locate:
+`src/` should make these responsibility classes easy to locate:
 
 - transport or interface entrypoints
 - application or service orchestration
@@ -405,11 +464,41 @@ Runtime enforcement rules:
 
 ## Git Model
 
-Repository boundary:
+Supported models:
+
+- `single_repo`
+- `split_src_repo`
+- `multi_runtime_split`
+
+Common rules:
+
+- detect whether git already exists before proposing topology changes
+- if git already exists, ask whether to keep it before changing it
+- document the chosen model in project `AGENTS.md` and `context/current/repo-map.md`
+- exactly one chosen git owner should exist for each relevant path
+- only the chosen deploy source should trigger production deploys
+
+### `single_repo`
+
+- one git history owns both the workspace control-plane layer and `src/`
+- keep logical separation between `context/`, `knowledge/`, bootstrap files, and the runtime subtree
+- document which repo, path, and workflow trigger deploys
+- if deploy automation uses path filters or similar gating, make sure those rules point at `src/` unless broader deploy triggers are explicitly intended
+- do not let project-memory docs masquerade as deploy-triggering runtime changes
+
+### `split_src_repo`
 
 - the parent workspace repo and the `src/` repo are separate git histories
 - this is true even if `src/` is physically nested under the parent workspace directory
 - do not treat `src/` as a normal folder owned by the parent repo
+
+### `multi_runtime_split`
+
+- the project-root repo remains the control-plane repo
+- `src/` stays the canonical runtime container
+- multiple nested runtime repos may exist under `src/`
+- each runtime repo path must be documented explicitly in `context/current/repo-map.md`
+- each runtime repo path must map cleanly to deploy ownership
 
 ### Parent Repo
 
@@ -426,11 +515,11 @@ Recommended mode:
 
 - canonical repo for deployable runtime code
 - owns its own commit history, branches, CI, and deploy-triggering changes
-- only runtime repos should trigger production deploys
+- only the `src/` repo should trigger production deploys in split-repo mode
 
 Rule:
 
-- production code is committed and pushed only from runtime repos
+- production code is committed and pushed only from the `src/` repo in split-repo mode
 - project memory may be versioned, but should not become the deploy source by accident
 - do not mirror runtime commits into the parent repo just because the directories are colocated
 
@@ -804,14 +893,16 @@ Project-level `AGENTS.md` should contain the actual workflow for that project:
 - canonical read order
 - documentation model for that project
 - source-of-truth rules
-- runtime repo boundaries
+- `src/` git boundaries
 - deploy and verification guidance at a high level
 - project-specific non-negotiable constraints
 
 Required minimum content for a project-level bootstrap:
 
 - what this project is
-- which repo is deployable runtime and which repo is project memory, if split
+- which git model is in use
+- which repo or path is deployable runtime
+- which repo or path owns project memory and control-plane docs
 - canonical read order for a fresh session
 - source-of-truth rules for this project
 - where runtime code lives
@@ -905,7 +996,7 @@ Definition-of-done minimum:
 
 ## Runtime Repo Structure
 
-A good runtime repo should expose service boundaries immediately.
+A good `src/` runtime surface should expose service boundaries immediately.
 
 Two acceptable patterns:
 
@@ -944,7 +1035,7 @@ src/
 └── ...
 ```
 
-Example with a smaller single-app runtime repo:
+Example with a smaller single-app `src/` runtime surface:
 
 ```text
 src/
@@ -975,20 +1066,20 @@ This blueprint is compatible with generator or improvement tools such as agent s
 
 Examples of acceptable runtime-only operations:
 
-- create a new runtime repo skeleton
-- enhance an existing runtime repo with CI/CD, infra, observability, or playground tooling
+- create a new `src/` runtime skeleton
+- enhance an existing `src/` runtime surface with CI/CD, infra, observability, or playground tooling
 - extract runtime logic into a cleaner package layout
 - upgrade generated runtime scaffolding
 
 Boundary rule:
 
-- these tools operate on `src/` or another runtime repo only
-- they do not replace the parent workspace repo
+- these tools operate on `src/` only
+- they do not replace the workspace control-plane layer
 - they do not become the canonical source of project architecture truth
 
 Recommended model:
 
-- use the parent workspace repo as the control plane for plans, decisions, current-state docs, and evidence
+- use the workspace control-plane layer as the control plane for plans, decisions, current-state docs, and evidence
 - use generated scaffolding only as an implementation accelerator for deployable runtime code
 
 Interpretation rule:
@@ -1026,7 +1117,7 @@ Use this to judge whether the structure is genuinely high quality.
 - Are secrets and runtime-mutated env files kept outside git?
 - Can an agent find the canonical queue, current runtime truth, and accepted decisions without ambiguity?
 - Does each major service have a README or equivalent entrypoint guidance?
-- Do migrations live with the runtime repo, not the project-memory repo?
+- Do migrations live with `src/`, not the project-memory layer?
 - Are projections and operator tools clearly treated as non-canonical unless explicitly stated otherwise?
 
 ### Recommended Service Layout
@@ -1074,7 +1165,7 @@ The real standard is ownership clarity and decomposition quality.
 
 Use a layout close to one of these shapes unless there is a strong reason not to:
 
-- multi-service runtime repo with `services/`, optional `packages/`, `workers/`, `infra/`, and `scripts/`
+- multi-service `src/` runtime surface with `services/`, optional `packages/`, `workers/`, `infra/`, and `scripts/`
 - single backend app with an internal `app/` decomposition such as routers, services, repos, domain, schemas, and integrations
 - frontend app with a `src/` decomposition such as app, screens, components, features, api, hooks, theme, lib, and routes
 - shared runtime packages repo with clear consuming apps or services and explicit package ownership
@@ -1291,7 +1382,7 @@ Common acceptable patterns:
 What matters is not the exact delivery tool.
 What matters is that the project documents:
 
-- which repo triggers deploy
+- which repo and path trigger deploy
 - what artifact is being deployed
 - what environments exist
 - where version truth lives
@@ -1326,7 +1417,7 @@ If this is not documented clearly, LLM agents will leak logic into the wrong ser
 - giant screen components
 - giant `utils` modules
 - one giant architecture doc that mixes live state, target design, and rollout steps
-- using the runtime repo as a general notebook
+- using `src/` as a general notebook
 - pushing project-memory docs together with production code by accident
 - relying on implicit status instead of explicit document metadata
 - treating a proposal as live truth because it was written recently
@@ -1425,7 +1516,7 @@ Should contain:
 
 Should contain:
 
-- all runtime repos and project-memory repos
+- the single project repo or the split pair of project-root repo and `src/` repo
 - physical workspace layout if relevant
 - which repo owns deploy-triggering changes
 - where major components live
@@ -1477,7 +1568,7 @@ Should contain:
 - runtime entrypoint summary
 - service/app ownership map
 - local run/build/test minimum
-- deploy trigger surface for this repo
+- deploy trigger surface for `src/`
 - links to any deeper runtime-facing docs in `src/docs/` if they exist
 
 Should not contain:
@@ -1490,24 +1581,28 @@ Should not contain:
 
 When creating a new project, do this immediately:
 
-1. create the project workspace repo with `README.md`, `WORKPLAN.md`, `context/`, `knowledge/`, `artifacts/`, and project bootstrap files
-2. if this project lives inside a larger multi-project workspace, add a project-level `AGENTS.md` even if a root routing bootstrap already exists
-3. create `src/` as a separate git repo
-4. if `src/` is nested inside the project workspace, ignore it from the parent repo
-5. add `src/README.md`
-6. ensure `src/` meets the runtime self-sufficiency threshold for narrow local changes
-7. create `context/README.md` and define source-of-truth rules in it
-8. create `context/current/project-state.md`
-9. create `context/current/runtime-map.md`
-10. create `context/current/repo-map.md`
-11. create `context/decisions/README.md`
-12. create the chosen future-work area only if the project needs it early, for example `context/features/README.md`
-13. create `context/runbooks/deploy.md` if the project already has a real deploy surface or operational procedure worth documenting
-14. document service ownership in `context/components/`
-15. define deploy truth and environment model
-16. define service-internal layout rules before files start growing
-17. if task packets will exist, create a dedicated task layer outside `context/`
-18. set a team rule to split code and docs before they become god-files
+1. detect whether git already exists in the intended project root or runtime path
+2. if git already exists, ask whether to keep the current git topology before changing boundaries
+3. if no git exists yet, ask the user to choose `single_repo` or `split_src_repo`, and switch to `multi_runtime_split` when they explicitly want multiple separately versioned runtimes under `src/`
+4. create the chosen workspace structure with `README.md`, `WORKPLAN.md`, `context/`, `knowledge/`, `artifacts/`, and project bootstrap files
+5. if this project lives inside a larger multi-project workspace, add a project-level `AGENTS.md` even if a root routing bootstrap already exists
+6. if `split_src_repo` is chosen, create `src/` as a separate git repo
+7. if `split_src_repo` is chosen, ignore `src/` from the parent repo
+8. if `multi_runtime_split` is chosen, create the approved separately versioned runtime repos under `src/` and ignore those paths from the parent repo
+9. add `src/README.md`
+10. ensure `src/` meets the runtime self-sufficiency threshold for narrow local changes
+11. create `context/README.md` and define source-of-truth rules in it
+12. create `context/current/project-state.md`
+13. create `context/current/runtime-map.md`
+14. create `context/current/repo-map.md`
+15. create `context/decisions/README.md`
+16. create the chosen future-work area only if the project needs it early, for example `context/features/README.md`
+17. create `context/runbooks/deploy.md` if the project already has a real deploy surface or operational procedure worth documenting
+18. document service ownership in `context/components/`
+19. define deploy truth and environment model
+20. define service-internal layout rules before files start growing
+21. if task packets will exist, create a dedicated task layer outside `context/`
+22. set a team rule to split code and docs before they become god-files
 
 ## Incremental Adoption For Existing Projects
 
@@ -1516,17 +1611,19 @@ Do not block adoption just because the repo is messy today.
 
 Recommended adoption order for an existing project:
 
-1. add or fix the project-level `AGENTS.md`
-2. create `src/README.md` if runtime ownership is unclear
-3. make the runtime repo self-sufficient for narrow local changes
-4. create `context/current/project-state.md`
-5. create `context/current/runtime-map.md`
-6. create `context/current/repo-map.md`
-7. create `context/decisions/README.md`
-8. move only the highest-value accepted rules into `context/decisions/`
-9. create `WORKPLAN.md` as the single active queue
-10. add a separate task layer only if task packets are actually needed
-11. split legacy mixed docs gradually instead of rewriting everything at once
+1. inspect the current git topology first
+2. if git already exists, ask whether to keep it before proposing topology changes
+3. add or fix the project-level `AGENTS.md`
+4. create `src/README.md` if runtime ownership is unclear
+5. make the runtime layer self-sufficient for narrow local changes
+6. create `context/current/project-state.md`
+7. create `context/current/runtime-map.md`
+8. create `context/current/repo-map.md`
+9. create `context/decisions/README.md`
+10. move only the highest-value accepted rules into `context/decisions/`
+11. create `WORKPLAN.md` as the single active queue
+12. add a separate task layer only if task packets are actually needed
+13. split legacy mixed docs gradually instead of rewriting everything at once
 
 Pragmatic rule:
 
@@ -1557,13 +1654,16 @@ Rule:
 
 - do not introduce full ceremony before the project needs it
 - do introduce the canonical read path and source-of-truth model as early as possible
-- keep `src/` self-sufficient before expanding the parent doc system
+- keep `src/` self-sufficient before expanding the workspace doc system
 
 ## Short Version
 
 If you want the shortest rule set:
 
-- parent repo = control plane and project memory
+- choose and document one git model: `single_repo`, `split_src_repo`, or `multi_runtime_split`
+- if git already exists, ask whether to keep it before changing topology
+- if no git exists yet, choose between a single repo, a split `src/` repo, or an explicit multi-runtime split when needed
+- the workspace control-plane layer = project memory and docs
 - `src/` = deployable runtime code
 - `knowledge/` = reusable library
 - `context/` = project wiki

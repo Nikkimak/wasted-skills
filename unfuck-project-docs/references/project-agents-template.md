@@ -9,7 +9,7 @@ Use this reference when checking whether the template still matches the intended
 The project-level `AGENTS.md` should cover, at minimum:
 
 - project summary and scope
-- repository model and runtime repo relationship
+- repository model and runtime layer relationship
 - canonical read order
 - source-of-truth rules
 - required update rules

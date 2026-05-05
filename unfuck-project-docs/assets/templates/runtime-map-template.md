@@ -23,7 +23,7 @@ superseded_by: null
 ## Deploy Topology
 
 - what deploys where
-- which repo triggers deploy
+- which repo and path trigger each deploy
 
 ## Integrations
 

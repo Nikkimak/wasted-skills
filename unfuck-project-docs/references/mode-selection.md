@@ -7,7 +7,7 @@ Use this rubric before materializing the playbook.
 Choose `minimal` when most of these are true:
 
 - the project is early-stage
-- there is one runtime repo
+- there is one `src/` runtime surface
 - there are one or two runtime surfaces at most
 - deploy/ops complexity is low
 - contributor count is low

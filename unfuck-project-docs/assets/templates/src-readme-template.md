@@ -5,7 +5,7 @@ It is a local contributor entrypoint, not the canonical replacement for `context
 
 ## What Exists Here
 
-- services and apps in this runtime repo
+- services and apps in `src/`
 
 ## Ownership Map
 
@@ -18,7 +18,7 @@ It is a local contributor entrypoint, not the canonical replacement for `context
 
 ## Deploy Surface
 
-- high-level deploy trigger summary for this repo
+- high-level deploy trigger summary for `src/`
 
 ## Runtime Boundaries
 

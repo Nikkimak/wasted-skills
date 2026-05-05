@@ -18,10 +18,17 @@ Use this checklist when applying the playbook to a project.
 
 ## 3. Assess Repo Boundaries And Existing Documentation
 
-- inspect whether the parent repo exists
-- inspect whether the runtime repo exists
-- deploy-triggering changes belong to the runtime repo
-- parent repo does not track runtime repo files incorrectly
+- detect whether any git repo already exists
+- if git exists, record which path or paths it covers and ask whether to keep it before proposing topology changes
+- if git does not exist yet, prepare the two default initialization choices and the advanced multi-runtime option if the user explicitly wants it
+- inspect whether the project-root repo exists
+- inspect whether `src/` has its own repo
+- inspect whether `src/` contains multiple separately versioned runtime repos
+- if `split_src_repo` is chosen, deploy-triggering changes belong to the `src/` repo
+- if `split_src_repo` is chosen, the project-root repo does not track `src/` incorrectly
+- if `single_repo` is chosen, the deploy-triggering `src/` path is documented explicitly
+- if `single_repo` is chosen, inspect whether deploy automation respects the documented `src/` boundary when that distinction matters
+- if `multi_runtime_split` is chosen, each runtime repo path under `src/` is documented explicitly and mapped to its deploy-triggering surface
 - inspect whether there is already substantial project documentation
 - identify which existing docs should be updated or split instead of replaced
 
@@ -34,7 +41,8 @@ Use this checklist when applying the playbook to a project.
 
 ## 5. Approval Gate
 
-- summarize current project state, proposed mode, repo model, planned changes, and risks
+- summarize current project state, detected git state, proposed mode, repo model, planned changes, and risks
+- include runtime repo paths when the topology is split
 - include the mandatory approval fields defined by `SKILL.md`
 - ask whether to create or update missing canonical guides/docs now, especially when existing documentation already exists
 - ask whether to create the recommended preflight backup before the first mutation
@@ -45,7 +53,7 @@ Use this checklist when applying the playbook to a project.
 ## 6. Create The Approved Preflight Backup
 
 - create the approved preflight backup before the first mutation
-- record the approved mode, repo model, documentation strategy, backup scope, and planned changes in the backup manifest
+- record the approved mode, repo model, git topology decision, documentation strategy, backup scope, and planned changes in the backup manifest
 
 ## 7. Apply Approved Repo Boundary Changes And Materialize Canonical Docs
 
@@ -63,6 +71,10 @@ Use this checklist when applying the playbook to a project.
 
 ## 8. Verify Hard Rules
 
+- the chosen git model is documented in `AGENTS.md` and `context/current/repo-map.md`
+- exactly one chosen git owner exists for each relevant path
+- if `multi_runtime_split` is chosen, each runtime repo under `src/` has an explicit owner path in `repo-map.md`
+- if `single_repo` is chosen, deploy automation does not accidentally treat docs-only root changes as `src/` deploys unless that behavior is explicitly intended
 - `WORKPLAN.md` remains the canonical queue summary
 - task layer is outside `context/`
 - `context/README.md` remains a short entrypoint and not a second wiki

@@ -13,10 +13,14 @@ It overrides higher-level workspace routing files for project-specific behavior.
 
 ## Repository Model
 
-- project workspace repo: `<path or explanation>`
-- deployable runtime repo: `<path or explanation>`
-- if `src/` is nested, clarify that it is a separate git repo
-- if repos are siblings instead, document that layout explicitly
+- repo model: `single_repo`, `split_src_repo`, or `multi_runtime_split`
+- workspace control-plane location: `<path or explanation>`
+- deployable runtime location: `src/`
+- runtime git paths: `n/a`, `src/`, or `<explicit list under src/>`
+- if current git topology is being preserved intentionally, say so explicitly
+- if `split_src_repo` is chosen, clarify that `src/` is a separate git repo and ignored by the project-root repo
+- if `multi_runtime_split` is chosen, enumerate each separately versioned runtime repo path under `src/`
+- state which repo and path trigger deploys
 
 ## Canonical Read Order
 
@@ -76,13 +80,13 @@ State clearly:
 - which service owns business correctness for each major domain
 - which layers are adapters only
 - what must not become a shadow backend
-- what a contributor can do safely using only the runtime repo
+- what a contributor can do safely using only `src/`
 
 ## Deploy Model
 
 Document at a high level:
 
-- which repo triggers deploy
+- which repo and path trigger deploy
 - what artifact is deployed
 - which environments exist
 - where rollback and smoke-test procedures live
@@ -100,7 +104,7 @@ Non-negotiable rules for this project:
 
 Useful paths:
 
-- runtime code: `<path>`
+- runtime code: `src/`
 - runtime-facing docs in src: `<path>`
 - current-state docs: `<path>`
 - decisions: `<path>`
