@@ -15,7 +15,7 @@ It overrides higher-level workspace routing files for project-specific behavior.
 
 - repo model: `single_repo`, `split_src_repo`, or `multi_runtime_split`
 - workspace control-plane location: `<path or explanation>`
-- deployable runtime location: `src/`
+- deployable runtime location: `src/` or `<explicit runtime paths under src/>`
 - runtime git paths: `n/a`, `src/`, or `<explicit list under src/>`
 - if current git topology is being preserved intentionally, say so explicitly
 - if `split_src_repo` is chosen, clarify that `src/` is a separate git repo and ignored by the project-root repo
@@ -118,6 +118,7 @@ Useful paths:
 - prefer canonical docs over chat history
 - do not assume reference notes are live truth
 - identify the owner service before changing business logic
+- split large runtime files by domain ownership and behavioral role, not by arbitrary helper dumping
 - keep code and canonical docs aligned in the same work cycle
 - keep `src/` self-sufficient for narrow local changes
 - do not create a full feature dossier for every small change

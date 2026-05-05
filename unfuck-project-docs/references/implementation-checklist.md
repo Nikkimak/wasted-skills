@@ -18,6 +18,7 @@ Use this checklist when applying the playbook to a project.
 
 ## 3. Assess Repo Boundaries And Existing Documentation
 
+- confirm whether the target project is empty or near-empty
 - detect whether any git repo already exists
 - if git exists, record which path or paths it covers and ask whether to keep it before proposing topology changes
 - if git does not exist yet, prepare the two default initialization choices and the advanced multi-runtime option if the user explicitly wants it
@@ -31,6 +32,8 @@ Use this checklist when applying the playbook to a project.
 - if `multi_runtime_split` is chosen, each runtime repo path under `src/` is documented explicitly and mapped to its deploy-triggering surface
 - inspect whether there is already substantial project documentation
 - identify which existing docs should be updated or split instead of replaced
+- do not use sibling directories, adjacent repos, or similarly named projects as discovery context unless the user explicitly approved them as reference material
+- if the target project is empty and product shape is still unclear, stop and ask the user for the missing context instead of inferring it from nearby projects
 
 ## 4. Choose Scope
 
@@ -72,6 +75,7 @@ Use this checklist when applying the playbook to a project.
 ## 8. Verify Hard Rules
 
 - the chosen git model is documented in `AGENTS.md` and `context/current/repo-map.md`
+- project-level `AGENTS.md` includes runtime decomposition guidance for oversized runtime files
 - exactly one chosen git owner exists for each relevant path
 - if `multi_runtime_split` is chosen, each runtime repo under `src/` has an explicit owner path in `repo-map.md`
 - if `single_repo` is chosen, deploy automation does not accidentally treat docs-only root changes as `src/` deploys unless that behavior is explicitly intended

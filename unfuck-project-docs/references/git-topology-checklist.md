@@ -31,6 +31,8 @@ Use this checklist when creating or verifying repo boundaries.
 ## If The Project Is Greenfield
 
 - if no git exists, present `single_repo` and `split_src_repo` explicitly as the default choices
+- if the target project is empty or nearly empty, do not infer naming or architecture from sibling directories, adjacent repos, or similarly named projects
+- if the target project is empty and product shape is still unclear, ask the user for the missing context instead of scavenging nearby projects
 - if `split_src_repo` is chosen, create the separate repo inside `src/` and ignore `src/` from the project-root repo
 - if the user explicitly asks for multiple separately versioned runtimes, create `multi_runtime_split` under `src/` and document each runtime repo path explicitly
 - ensure the chosen model is documented in project `AGENTS.md`

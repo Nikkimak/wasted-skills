@@ -95,6 +95,9 @@ Greenfield rule:
 - if `split_src_repo` is chosen, create the separate git repo inside `src/` and ignore `src/` from the project-root repo
 - if the user explicitly requests multiple separately versioned runtimes under `src/`, use `multi_runtime_split` and enumerate those runtime repo paths explicitly
 - document the chosen model in project `AGENTS.md` and `context/current/repo-map.md`
+- if the target project is empty or nearly empty, do not import naming, structure, or architecture assumptions from sibling directories, adjacent repos, or similarly named projects
+- for an empty target project, use only the target project itself, the user's explicit instructions, and explicitly approved external references as context
+- if the target project is too empty to determine product shape safely, ask the user for the missing context instead of scavenging nearby projects
 
 Why this matters:
 
@@ -130,6 +133,7 @@ Practical rule for coding agents:
 - if split repos already exist, verify their boundaries instead of recreating them
 - if multiple runtime repos exist under `src/`, treat that as `multi_runtime_split` rather than forcing the simpler split model
 - if nested git boundaries are broken or ambiguous, surface the options and fix them only after approval
+- do not treat a neighboring project as source-of-truth context unless the user explicitly names it as an approved reference
 
 Execution boundary when this playbook is applied through the `unfuck-project-docs` skill:
 
@@ -895,6 +899,7 @@ Project-level `AGENTS.md` should contain the actual workflow for that project:
 - source-of-truth rules
 - `src/` git boundaries
 - deploy and verification guidance at a high level
+- runtime decomposition guidance for oversized files
 - project-specific non-negotiable constraints
 
 Required minimum content for a project-level bootstrap:
@@ -911,6 +916,7 @@ Required minimum content for a project-level bootstrap:
 - where accepted decisions live
 - how deploy works at a high level
 - what must be updated after runtime changes
+- how oversized runtime files should be split by domain ownership and behavioral role
 - hard boundaries the agent must not violate
 
 Rule:
@@ -1179,6 +1185,7 @@ Rule:
 ### File Decomposition Rules
 
 Prefer splitting by responsibility, not by arbitrary technical category.
+For runtime code, prefer splitting by domain ownership and behavioral role, not by arbitrary helper dumping.
 
 Good splits:
 
@@ -1219,6 +1226,7 @@ Review trigger rule:
 
 - if a runtime file crosses a review threshold, either decompose it or make the exception explicit in review or local service guidance
 - do not silently normalize oversized mixed-responsibility files as acceptable structure
+- when splitting a large runtime file, separate ownership zones and behavioral roles instead of extracting miscellaneous helpers into generic dump files
 
 ### Function Size Heuristics
 
@@ -1440,6 +1448,7 @@ Should contain:
 - where `current`, `decisions`, the chosen future-work area, and runbooks live for this project
 - what runtime-facing docs must remain inside `src/`
 - what to update after runtime changes
+- how oversized runtime files should be split by domain ownership and behavioral role
 - deploy model at a high level
 - hard architectural and ownership boundaries
 
@@ -1584,25 +1593,26 @@ When creating a new project, do this immediately:
 1. detect whether git already exists in the intended project root or runtime path
 2. if git already exists, ask whether to keep the current git topology before changing boundaries
 3. if no git exists yet, ask the user to choose `single_repo` or `split_src_repo`, and switch to `multi_runtime_split` when they explicitly want multiple separately versioned runtimes under `src/`
-4. create the chosen workspace structure with `README.md`, `WORKPLAN.md`, `context/`, `knowledge/`, `artifacts/`, and project bootstrap files
-5. if this project lives inside a larger multi-project workspace, add a project-level `AGENTS.md` even if a root routing bootstrap already exists
-6. if `split_src_repo` is chosen, create `src/` as a separate git repo
-7. if `split_src_repo` is chosen, ignore `src/` from the parent repo
-8. if `multi_runtime_split` is chosen, create the approved separately versioned runtime repos under `src/` and ignore those paths from the parent repo
-9. add `src/README.md`
-10. ensure `src/` meets the runtime self-sufficiency threshold for narrow local changes
-11. create `context/README.md` and define source-of-truth rules in it
-12. create `context/current/project-state.md`
-13. create `context/current/runtime-map.md`
-14. create `context/current/repo-map.md`
-15. create `context/decisions/README.md`
-16. create the chosen future-work area only if the project needs it early, for example `context/features/README.md`
-17. create `context/runbooks/deploy.md` if the project already has a real deploy surface or operational procedure worth documenting
-18. document service ownership in `context/components/`
-19. define deploy truth and environment model
-20. define service-internal layout rules before files start growing
-21. if task packets will exist, create a dedicated task layer outside `context/`
-22. set a team rule to split code and docs before they become god-files
+4. if the target project is empty or nearly empty, do not borrow naming, structure, or architecture from sibling directories or similarly named repos; ask the user for missing product context instead
+5. create the chosen workspace structure with `README.md`, `WORKPLAN.md`, `context/`, `knowledge/`, `artifacts/`, and project bootstrap files
+6. if this project lives inside a larger multi-project workspace, add a project-level `AGENTS.md` even if a root routing bootstrap already exists
+7. if `split_src_repo` is chosen, create `src/` as a separate git repo
+8. if `split_src_repo` is chosen, ignore `src/` from the parent repo
+9. if `multi_runtime_split` is chosen, create the approved separately versioned runtime repos under `src/` and ignore those paths from the parent repo
+10. add `src/README.md`
+11. ensure `src/` meets the runtime self-sufficiency threshold for narrow local changes
+12. create `context/README.md` and define source-of-truth rules in it
+13. create `context/current/project-state.md`
+14. create `context/current/runtime-map.md`
+15. create `context/current/repo-map.md`
+16. create `context/decisions/README.md`
+17. create the chosen future-work area only if the project needs it early, for example `context/features/README.md`
+18. create `context/runbooks/deploy.md` if the project already has a real deploy surface or operational procedure worth documenting
+19. document service ownership in `context/components/`
+20. define deploy truth and environment model
+21. define service-internal layout rules before files start growing
+22. if task packets will exist, create a dedicated task layer outside `context/`
+23. set a team rule to split code and docs before they become god-files
 
 ## Incremental Adoption For Existing Projects
 

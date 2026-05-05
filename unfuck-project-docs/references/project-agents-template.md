@@ -14,6 +14,7 @@ The project-level `AGENTS.md` should cover, at minimum:
 - source-of-truth rules
 - required update rules
 - runtime ownership boundaries
+- runtime decomposition guidance for oversized files
 - deploy model
 - project-specific non-negotiable boundaries
 - useful project paths

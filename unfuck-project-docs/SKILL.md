@@ -30,6 +30,7 @@ When this skill is used, the agent should assume the user wants the playbook app
 Default stance:
 
 - inspect the actual project before proposing structure changes
+- keep discovery scoped to the target project unless the user explicitly approves an external reference project or document
 - choose the smallest safe mode that removes ambiguity
 - perform discovery and planning before any project mutation
 - detect whether any relevant git topology already exists before proposing repo changes
@@ -140,6 +141,7 @@ The agent must explicitly surface the detected git state, the proposed repo mode
 Before choosing a mode or creating docs, establish these facts from the real project:
 
 - what directory is the actual project root
+- whether the target project is effectively empty or near-empty
 - whether any git repo already exists, and which path or paths it covers
 - whether the project root has a git repo, whether `src/` has a git repo, or whether one repo owns both
 - whether `src/` contains multiple independently deployable runtime repos
@@ -150,6 +152,7 @@ Before choosing a mode or creating docs, establish these facts from the real pro
 - whether current docs mix live truth, accepted decisions, and future plans in the same files
 
 If one of these facts is unclear, inspect further before deciding scope.
+Do not satisfy missing target-project context by borrowing structure or naming from sibling directories, adjacent repos, or similarly named projects unless the user explicitly approved that reference.
 
 ## Decision Heuristics
 
@@ -167,6 +170,7 @@ Use these heuristics to reduce agent drift:
 - preserve an existing git topology by default unless the user explicitly approves changing it
 - if no git exists yet, do not silently assume split repos; present the supported options and recommend one only when there is a concrete reason
 - if the project genuinely needs multiple separately versioned runtime repos under `src/`, surface that as an explicit advanced model instead of overloading `split_src_repo`
+- if the target project is empty or near-empty, do not infer architecture or naming from nearby projects; either stay within the canonical template or ask the user for the missing product context
 
 Use-skill decision rule:
 
