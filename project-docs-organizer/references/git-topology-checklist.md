@@ -18,7 +18,8 @@ Use this checklist when creating or verifying repo boundaries.
 
 - the detected git state is documented before any topology-changing work
 - if git already exists, the user explicitly decides whether to keep it before topology mutations
-- if no git exists yet, the user explicitly chooses `single_repo` or `split_src_repo` before `git init`, unless they explicitly request `multi_runtime_split`
+- if no git exists yet, `single_repo` is the default model before `git init`
+- if no git exists yet, `split_src_repo` is used only when the user explicitly wants runtime isolation or approves a concrete deploy/ownership reason for the split
 - if `split_src_repo` is chosen, the project root repo and `src/` repo are separate git histories
 - if `split_src_repo` is chosen, the project-root repo does not become the deploy source for runtime code
 - if `split_src_repo` is chosen, `src/` is ignored by the project-root repo
@@ -30,7 +31,8 @@ Use this checklist when creating or verifying repo boundaries.
 
 ## If The Project Is Greenfield
 
-- if no git exists, present `single_repo` and `split_src_repo` explicitly as the default choices
+- if no git exists, recommend `single_repo` as the default
+- present `split_src_repo` as an opt-in runtime-isolation model, not as an equal default
 - if the target project is empty or nearly empty, do not infer naming or architecture from sibling directories, adjacent repos, or similarly named projects
 - if the target project is empty and product shape is still unclear, ask the user for the missing context instead of scavenging nearby projects
 - if `split_src_repo` is chosen, create the separate repo inside `src/` and ignore `src/` from the project-root repo

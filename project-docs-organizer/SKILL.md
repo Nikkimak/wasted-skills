@@ -1,9 +1,9 @@
 ---
-name: unfuck-project-docs
-description: Organize and clean up project documentation, workspace structure, and repo boundaries for a real coding project using the bundled canonical playbook as read-only guidance. Use when Codex needs to do an initial bootstrap, one-time migration, or major structural cleanup of project docs; untangle messy canonical documentation; choose between a single project-root git repo, a split model where `src/` has its own git repo, or an advanced multi-runtime split under `src/`; verify or reshape existing git boundaries; choose minimal versus standard versus full documentation scope; or upgrade an existing project to a clearer source-of-truth model. Do not use this skill for routine day-to-day edits in a project that is already organized.
+name: project-docs-organizer
+description: Organize and clean up project documentation, workspace structure, and repo boundaries for a real coding project using the bundled canonical playbook as read-only guidance. Use when Codex needs to do an initial bootstrap, one-time migration, or major structural cleanup of project docs; untangle messy canonical documentation; default to one project-root git repo unless the user explicitly wants runtime isolation; support a split model where `src/` has its own git repo, or an advanced multi-runtime split under `src/`; verify or reshape existing git boundaries; choose minimal versus standard versus full documentation scope; or upgrade an existing project to a clearer source-of-truth model. Do not use this skill for routine day-to-day edits in a project that is already organized.
 ---
 
-# Unfuck Project Docs
+# Project Docs Organizer
 
 Use this skill to apply the bundled canonical playbook to a real project.
 
@@ -36,7 +36,8 @@ Default stance:
 - detect whether any relevant git topology already exists before proposing repo changes
 - stop after discovery and wait for explicit user approval before entering execution
 - if git already exists, ask explicitly whether to keep the current git topology before proposing a change
-- if git does not exist yet, present the supported initialization options before proposing `git init`
+- if git does not exist yet, recommend `single_repo` before proposing `git init`
+- mention `split_src_repo` only as an opt-in alternative when the user wants stronger runtime isolation or the project has a concrete deploy/ownership reason for it
 - if the user explicitly asks for multiple separately versioned runtimes under `src/`, or the existing project already uses them, surface that as a custom multi-runtime repo model instead of forcing the simpler defaults
 - if the project already has substantial documentation, ask whether to update/split existing docs only or also create missing canonical guides/docs
 - ask explicitly whether to create the recommended preflight backup before the first mutation
@@ -123,7 +124,8 @@ Git inspection is part of discovery and is allowed in read-only form:
 Git choice rules:
 
 - if git already exists, ask explicitly whether to keep the current git topology before proposing topology-changing work
-- if git does not exist yet, present `single_repo` and `split_src_repo` as the default initialization choices
+- if git does not exist yet, use `single_repo` as the default initialization model
+- use `split_src_repo` only when the user explicitly requests runtime isolation or approves a concrete deploy/ownership reason for the split
 - if the user explicitly requests multiple separately versioned runtimes under `src/`, or the existing project already has them, use `multi_runtime_split` instead of forcing the simpler defaults
 
 Git mutations require explicit approval:
@@ -168,7 +170,8 @@ Use these heuristics to reduce agent drift:
 - prefer updating and splitting mixed legacy docs over rewriting the entire documentation layer at once
 - prioritize navigability and source-of-truth clarity before pursuing completeness
 - preserve an existing git topology by default unless the user explicitly approves changing it
-- if no git exists yet, do not silently assume split repos; present the supported options and recommend one only when there is a concrete reason
+- if no git exists yet, recommend `single_repo` by default
+- do not propose `split_src_repo` as an equal default; present it as an opt-in runtime-isolation model when there is a concrete reason or explicit user request
 - if the project genuinely needs multiple separately versioned runtime repos under `src/`, surface that as an explicit advanced model instead of overloading `split_src_repo`
 - if the target project is empty or near-empty, do not infer architecture or naming from nearby projects; either stay within the canonical template or ask the user for the missing product context
 
@@ -317,7 +320,8 @@ Do not consider the playbook application complete until all relevant items below
 
 - existing git presence was checked before topology changes were proposed
 - if git already existed, the user explicitly answered whether to keep it
-- if git did not exist, the user was offered the supported initialization choices before `git init`
+- if git did not exist, `single_repo` was recommended by default before `git init`
+- if `split_src_repo` was proposed, it was framed as an opt-in runtime-isolation model and the user explicitly approved it
 - if `multi_runtime_split` was used, the runtime repo paths were made explicit before execution
 - execution was explicitly approved by the user before project files were changed
 - the repo model was explicitly confirmed before git topology-changing actions were taken

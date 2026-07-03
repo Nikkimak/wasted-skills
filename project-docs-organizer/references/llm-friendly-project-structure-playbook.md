@@ -39,21 +39,25 @@ Supported repo models:
 2. `split_src_repo`
 3. `multi_runtime_split`
 
-`split_src_repo` remains the recommended default when project memory and deployable code need stronger isolation.
+`single_repo` is the default model.
+It keeps project memory, canonical docs, and deployable code in one git history while preserving logical boundaries through documented paths.
 
-`single_repo` is acceptable when:
+`split_src_repo` is an opt-in runtime-isolation model.
+Use it only when the user explicitly wants runtime code isolated in its own git history, an existing project already uses that topology, or deploy/ownership constraints make the split materially safer.
+
+`single_repo` is preferred when:
 
 - the project is small or early-stage
 - one repo is operationally simpler
-- the user explicitly wants one repo
+- no git topology exists yet and the user has not requested runtime isolation
 - an existing one-repo topology should be preserved
 
 `split_src_repo` is preferred when:
 
+- the user explicitly wants the split `src/` repo model
 - deployable code and project memory should not share a git history
 - the runtime layer may grow into multiple deployable surfaces
 - CI, deploy, or ownership boundaries need stronger isolation
-- the user explicitly wants the split `src/` repo model
 
 `multi_runtime_split` is appropriate when:
 
@@ -91,7 +95,8 @@ Existing-git rule:
 
 Greenfield rule:
 
-- if no git exists yet, offer `single_repo` and `split_src_repo` as the default choices
+- if no git exists yet, recommend `single_repo` as the default
+- present `split_src_repo` only as an opt-in runtime-isolation model when the user asks for it or a concrete deploy/ownership reason exists
 - if `split_src_repo` is chosen, create the separate git repo inside `src/` and ignore `src/` from the project-root repo
 - if the user explicitly requests multiple separately versioned runtimes under `src/`, use `multi_runtime_split` and enumerate those runtime repo paths explicitly
 - document the chosen model in project `AGENTS.md` and `context/current/repo-map.md`
@@ -113,7 +118,9 @@ If a user says to apply this playbook to a project, the expected default meaning
 
 - inspect whether git already exists in the relevant project paths
 - if git already exists, ask whether to keep the current git topology before changing it
-- if no git exists yet, offer `single_repo` and `split_src_repo` before initializing git, and allow `multi_runtime_split` when the user explicitly asks for it
+- if no git exists yet, recommend `single_repo` before initializing git
+- allow `split_src_repo` when the user explicitly wants runtime isolation or approves a concrete deploy/ownership reason for the split
+- allow `multi_runtime_split` when the user explicitly asks for multiple separately versioned runtimes
 - create or verify the chosen repo model
 - if `split_src_repo` is chosen, ensure the two git histories are independent
 - if `split_src_repo` is chosen, ensure the parent repo ignores `src/`
@@ -127,7 +134,8 @@ In other words:
 
 Practical rule for coding agents:
 
-- if no git exists yet, do not silently assume split repos; offer the supported choices first
+- if no git exists yet, recommend `single_repo` by default
+- do not silently assume or equally promote split repos; present `split_src_repo` as an opt-in runtime-isolation model
 - if git already exists, preserve it by default unless the user explicitly approves a topology change
 - if the chosen repo model does not exist yet, creating it is part of completing the playbook setup
 - if split repos already exist, verify their boundaries instead of recreating them
@@ -135,7 +143,7 @@ Practical rule for coding agents:
 - if nested git boundaries are broken or ambiguous, surface the options and fix them only after approval
 - do not treat a neighboring project as source-of-truth context unless the user explicitly names it as an approved reference
 
-Execution boundary when this playbook is applied through the `unfuck-project-docs` skill:
+Execution boundary when this playbook is applied through the `project-docs-organizer` skill:
 
 - inspect and plan first
 - present the proposed mode, repo model, documentation strategy, planned changes, and risks
@@ -504,18 +512,18 @@ Common rules:
 - each runtime repo path must be documented explicitly in `context/current/repo-map.md`
 - each runtime repo path must map cleanly to deploy ownership
 
-### Parent Repo
+### Project-Root Repo In Split Models
 
-Recommended mode:
+When `split_src_repo` or `multi_runtime_split` is chosen:
 
 - project-memory repo
 - may be local/private or hosted, depending on project sensitivity
 - versioned independently from runtime code
 - if `src/` is nested, ignore it from the parent repo instead of tracking runtime files here
 
-### `src/` Repo
+### `src/` Repo In `split_src_repo`
 
-Recommended mode:
+When `split_src_repo` is chosen:
 
 - canonical repo for deployable runtime code
 - owns its own commit history, branches, CI, and deploy-triggering changes
@@ -1592,7 +1600,7 @@ When creating a new project, do this immediately:
 
 1. detect whether git already exists in the intended project root or runtime path
 2. if git already exists, ask whether to keep the current git topology before changing boundaries
-3. if no git exists yet, ask the user to choose `single_repo` or `split_src_repo`, and switch to `multi_runtime_split` when they explicitly want multiple separately versioned runtimes under `src/`
+3. if no git exists yet, default to `single_repo`; use `split_src_repo` only when the user explicitly wants runtime isolation or approves a concrete deploy/ownership reason, and switch to `multi_runtime_split` only when they explicitly want multiple separately versioned runtimes under `src/`
 4. if the target project is empty or nearly empty, do not borrow naming, structure, or architecture from sibling directories or similarly named repos; ask the user for missing product context instead
 5. create the chosen workspace structure with `README.md`, `WORKPLAN.md`, `context/`, `knowledge/`, `artifacts/`, and project bootstrap files
 6. if this project lives inside a larger multi-project workspace, add a project-level `AGENTS.md` even if a root routing bootstrap already exists
@@ -1672,7 +1680,7 @@ If you want the shortest rule set:
 
 - choose and document one git model: `single_repo`, `split_src_repo`, or `multi_runtime_split`
 - if git already exists, ask whether to keep it before changing topology
-- if no git exists yet, choose between a single repo, a split `src/` repo, or an explicit multi-runtime split when needed
+- if no git exists yet, use one repo by default; split `src/` only by explicit runtime-isolation request or concrete deploy/ownership need
 - the workspace control-plane layer = project memory and docs
 - `src/` = deployable runtime code
 - `knowledge/` = reusable library

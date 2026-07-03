@@ -21,7 +21,9 @@ Use this checklist when applying the playbook to a project.
 - confirm whether the target project is empty or near-empty
 - detect whether any git repo already exists
 - if git exists, record which path or paths it covers and ask whether to keep it before proposing topology changes
-- if git does not exist yet, prepare the two default initialization choices and the advanced multi-runtime option if the user explicitly wants it
+- if git does not exist yet, prepare `single_repo` as the default initialization model
+- if the user explicitly wants runtime isolation, or there is a concrete deploy/ownership reason for it, prepare `split_src_repo` as an opt-in alternative
+- prepare the advanced `multi_runtime_split` option only if the user explicitly wants multiple separately versioned runtimes or the existing project already uses that topology
 - inspect whether the project-root repo exists
 - inspect whether `src/` has its own repo
 - inspect whether `src/` contains multiple separately versioned runtime repos

@@ -21,9 +21,9 @@ The goal is simple: keep the skills here clean, versioned, and easy to sync into
 
 ## Included Skills
 
-- `unfuck-project-docs` — organizes project documentation, workspace structure, and repo boundaries using the bundled canonical playbook as guidance
+- `project-docs-organizer` — organizes project documentation, workspace structure, and repo boundaries using the bundled canonical playbook as guidance
 
-### `unfuck-project-docs`
+### `project-docs-organizer`
 
 Use this skill when a project needs one serious cleanup pass, not routine maintenance.
 
@@ -45,7 +45,7 @@ What to expect:
 In practice, this skill is useful when a project has:
 
 - mixed current-state docs, decisions, and future plans in the same files
-- unclear parent repo versus runtime repo boundaries
+- unclear git boundaries, especially when runtime isolation is requested or already exists
 - missing canonical entrypoints such as `WORKPLAN.md`, `context/README.md`, or `src/README.md`
 - large, messy documentation that needs one careful restructuring pass
 
