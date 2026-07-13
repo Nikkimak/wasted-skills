@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implementation Design"
+  short_description: "Design technical contracts from approved PRDs"
+  default_prompt: "Use $implementation-design to decide whether this approved PRD needs shared technical design and produce the smallest sufficient implementation contract."

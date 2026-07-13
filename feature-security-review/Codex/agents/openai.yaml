@@ -1,0 +1,4 @@
+interface:
+  display_name: "Feature Security Review"
+  short_description: "Gate feature plans on security readiness"
+  default_prompt: "Use $feature-security-review to review the approved feature design and task plan before anything is published to the tracker."

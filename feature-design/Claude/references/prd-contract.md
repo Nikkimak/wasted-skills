@@ -1,0 +1,55 @@
+# PRD contract
+
+## Conversation outcome
+
+The PRD should let a reader understand why the feature exists, what observable result the current version must deliver, and what remains deliberately outside it without needing the authoring chat.
+
+## Semantic structure
+
+Adapt headings to the target repository, but preserve this meaning:
+
+```markdown
+# Feature name and version
+
+## Business outcome
+## Users and scenarios
+## Current behavior
+## Desired behavior
+## Scope
+## Non-goals
+## Constraints and accepted assumptions
+## Acceptance criteria
+## Current version / MVP
+## Architecture horizon
+## Deferred candidate work
+## Open human decisions
+```
+
+## Content rules
+
+- `Business outcome` explains value, not implementation.
+- `Users and scenarios` names actors and concrete journeys.
+- `Current behavior` states verified present reality.
+- `Desired behavior` states observable changes.
+- `Scope` is the committed authority boundary for the current version.
+- `Non-goals` prevents adjacent expansion.
+- `Constraints and accepted assumptions` separates known limits from guesses.
+- `Acceptance criteria` is externally verifiable and includes meaningful failure behavior.
+- `Current version / MVP` is a delivery commitment.
+- `Architecture horizon` constrains future technical design but is not current implementation scope.
+- `Deferred candidate work` remains visible without becoming current commitment.
+- `Open human decisions` is explicit; do not let an LLM silently decide them.
+
+## Classification
+
+| Kind | Product meaning |
+| --- | --- |
+| `large_feature` | One business result is likely to require several substantial delivery increments |
+| `small_feature` | One bounded end-to-end capability can likely be delivered as one task |
+| `fix` | Restore already-accepted behavior rather than introduce a new capability |
+
+Classification is provisional until technical design and delivery planning confirm the shape. Do not decompose tasks during PRD authoring.
+
+## Review readiness
+
+The PRD is ready for cross-model review when it contains no hidden business assumption that the author could reasonably surface, clearly separates current scope from horizon, and lists every unresolved product decision. It is accepted only after the reviewer recheck and explicit human approval.
