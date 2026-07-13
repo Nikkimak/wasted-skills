@@ -31,7 +31,8 @@ Read `references/review-profiles.md` and select `prd`, `implementation`, or `tas
    ```
 
 3. Retain the returned `session_id` in the active conversation. Do not persist raw GPT output as a project artifact.
-4. Verify every finding against the draft, repository, and canonical context. Reject unsupported findings with evidence; never accept by model authority.
+4. Keep an ephemeral finding inventory in the live conversation. For every reviewer finding, retain its ID, original severity, one-line summary, and current disposition: `corrected`, `rejected`, `awaiting-human`, or `accepted-as-is`. Verify every finding against the draft, repository, and canonical context. Reject unsupported findings with evidence; never accept by model authority. Do not write the inventory to a project file.
+   - If reviewer output only gives counts, references missing text such as "the review above", or otherwise omits a finding it claims to have raised, resume the same reviewer session and request one self-contained restatement of every finding before editing or reporting results.
 5. Prepare confirmed corrections in the scratch draft. Stop and ask the human when a finding changes business scope, selects between material architecture alternatives, accepts risk, or makes an irreversible choice.
 6. Resume the same GPT session with the corrected scratch artifact:
 
@@ -71,11 +72,16 @@ Consensus is not model voting. If evidence remains ambiguous after the bounded l
 
 ## Completion
 
-Report only a concise live summary:
+Report a concise but complete live finding inventory. A count-only summary is
+not sufficient. List every finding raised across all rounds, including findings
+already corrected or rejected, with:
 
-- number of findings raised;
-- which were confirmed and corrected;
-- which were rejected with evidence;
-- every remaining material/minor human choice;
-- whether the GPT reviewer's full recheck is clean;
-- whether the final patch was applied.
+- finding ID and original severity;
+- one-line summary;
+- final disposition: `corrected`, `rejected`, `accepted-as-is`, or
+  `still-open`;
+- concise repository evidence for every rejection.
+
+Then state the total count, every remaining human choice, whether the GPT
+reviewer's full recheck is clean, and whether the final patch was applied. Do
+not reproduce the raw reviewer transcript or create a durable findings artifact.
