@@ -8,9 +8,9 @@ These skills will not make anyone smarter, more talented, more employable, or mo
 
 ## What This Repo Is
 
-This repository is the source of truth for custom Codex and Claude Code skills that should remain platform-native instead of sharing one conditional cross-platform entrypoint.
+This repository is the source of truth for custom Codex, Claude Code, and Kimi Code skills that should remain platform-native instead of sharing one conditional cross-platform entrypoint.
 
-Every logical skill owns two distributions:
+Every logical skill owns separate native distributions:
 
 ```text
 <skill-name>/
@@ -18,24 +18,26 @@ Every logical skill owns two distributions:
 │   ├── SKILL.md
 │   ├── agents/openai.yaml
 │   └── optional references, scripts, and assets
-└── Claude/
-    └── Claude-native skill files
+├── Claude/
+│   └── Claude-native skill files
+└── Kimi/
+    └── Kimi Code-native skill files
 ```
 
-`Codex/` and `Claude/` may preserve the same product workflow, but each entrypoint should use the target host's native syntax, invocation model, metadata, tools, and provider adapters. Do not turn either version into a lowest-common-denominator skill full of host conditionals.
+`Codex/`, `Claude/`, and `Kimi/` may preserve the same product workflow, but each entrypoint should use the target host's native syntax, invocation model, metadata, tools, and provider adapters. Do not turn any version into a lowest-common-denominator skill full of host conditionals.
 
 ## Included Skills
 
-| Skill | Purpose | Codex | Claude Code |
-| --- | --- | :---: | :---: |
-| `feature-design` | Guides product discovery and produces a human-approved PRD. | Yes | Yes |
-| `implementation-design` | Produces the smallest shared technical design justified by an approved PRD, or records that no separate design is needed. | Yes | Yes |
-| `feature-delivery-plan` | Converts approved product and technical decisions into vertical tasks, dependencies, validation, and tracker-ready drafts. | Yes | Yes |
-| `cross-model-review` | Runs a live review-and-recheck loop with the other model family while keeping findings ephemeral. | Yes | Yes |
-| `feature-security-review` | Performs the human-gated security readiness check before task publication. | Yes | Yes |
-| `project-docs-organizer` | Bootstraps or substantially reorganizes project documentation, source-of-truth boundaries, and repository structure. | Yes | Not yet |
+| Skill | Purpose | Codex | Claude Code | Kimi Code |
+| --- | --- | :---: | :---: | :---: |
+| `feature-design` | Guides product discovery and produces a human-approved PRD. | Yes | Yes | Yes |
+| `implementation-design` | Produces the smallest shared technical design justified by an approved PRD, or records that no separate design is needed. | Yes | Yes | Yes |
+| `feature-delivery-plan` | Converts approved product and technical decisions into vertical tasks, dependencies, validation, and tracker-ready drafts. | Yes | Yes | Yes |
+| `cross-model-review` | Runs a live review-and-recheck loop with the other model family while keeping findings ephemeral. | Yes | Yes | Yes |
+| `feature-security-review` | Performs the human-gated security readiness check before task publication. | Yes | Yes | Yes |
+| `project-docs-organizer` | Bootstraps or substantially reorganizes project documentation, source-of-truth boundaries, and repository structure. | Yes | Not yet | Not yet |
 
-The five feature-preparation skills are available as separate native packages for both platforms. `project-docs-organizer` remains Codex-only; its `Claude/` directory is a placeholder rather than an installable skill.
+The five feature-preparation skills are available as separate native packages for all three platforms. `project-docs-organizer` remains Codex-only; its `Claude/` and `Kimi/` directories are placeholders rather than installable skills.
 
 ## Feature Preparation Suite
 
@@ -63,6 +65,16 @@ The Claude distributions preserve the same staged workflow, with the cross-famil
 
 1. Invoke `feature-design` while discussing a feature. It reads canonical context, summarizes what the human already explained, asks adaptive high-value questions, classifies the work provisionally, and drafts only the PRD.
 2. Invoke `cross-model-review` when a PRD, implementation design, or task plan is ready for challenge. The current Claude session remains the author and sole editor; one read-only GPT reviewer session — driven through the local `codex exec` CLI under a read-only sandbox — reviews the draft, Claude verifies findings and prepares corrections, and the same resumable GPT session rechecks the complete corrected draft. The Claude distribution pins `gpt-5.6-sol` at `high` reasoning effort for both start and resume via `scripts/gpt_review.py`. All remaining material and minor differences return to the human before one final patch is applied. The final live summary lists every finding, including corrected and rejected findings, rather than reporting only aggregate counts.
+3. Invoke `implementation-design` only after PRD approval. It either produces the smallest shared technical contract and cross-reviews it, or explicitly records that one task can safely carry its own implementation notes.
+4. Invoke `feature-delivery-plan` after product and technical approval. It creates the minimal vertical delivery graph without changing upstream scope or architecture.
+5. Invoke `feature-security-review` after decomposition and before tracker publication. It checks the complete design and task graph, adds confirmed controls to canonical drafts, and blocks publication when critical risk or a required human risk decision remains.
+
+### How The Kimi Versions Work
+
+The Kimi distributions preserve the same staged workflow, with the cross-family review direction mirroring the Codex one: the current Kimi session is the author and editor, and Claude is the read-only reviewer.
+
+1. Invoke `feature-design` while discussing a feature. It reads canonical context, summarizes what the human already explained, asks adaptive high-value questions, classifies the work provisionally, and drafts only the PRD.
+2. Invoke `cross-model-review` when a PRD, implementation design, or task plan is ready for challenge. The current Kimi session remains the author and sole editor; one read-only Claude session reviews the draft, Kimi verifies findings and prepares corrections, and the same resumable Claude session rechecks the complete corrected draft. The Kimi distribution pins `claude-opus-4-8` at `xhigh` effort for both start and resume via `scripts/claude_review.py`. All remaining material and minor differences return to the human before one final patch is applied. The final live summary lists every finding, including corrected and rejected findings, rather than reporting only aggregate counts.
 3. Invoke `implementation-design` only after PRD approval. It either produces the smallest shared technical contract and cross-reviews it, or explicitly records that one task can safely carry its own implementation notes.
 4. Invoke `feature-delivery-plan` after product and technical approval. It creates the minimal vertical delivery graph without changing upstream scope or architecture.
 5. Invoke `feature-security-review` after decomposition and before tracker publication. It checks the complete design and task graph, adds confirmed controls to canonical drafts, and blocks publication when critical risk or a required human risk decision remains.
@@ -105,15 +117,17 @@ The repository contains no bundled credentials, account identifiers, fixed revie
 Most skills require only their native host. Cross-family review additionally requires a locally installed and authenticated reviewer CLI:
 
 - Codex `cross-model-review` invokes the `claude` CLI and defaults to `claude-opus-4-8` with `xhigh` effort. The user running it must have access to that model, or explicitly select another supported reviewer model and effort.
+- Kimi `cross-model-review` invokes the `claude` CLI with the same `claude-opus-4-8` / `xhigh` defaults as the Codex distribution. The user running it must have access to that model, or explicitly select another supported reviewer model and effort.
 - Claude `cross-model-review` invokes the `codex` CLI and defaults to `gpt-5.6-sol` with `high` reasoning effort. The user running it must have access to that model (or explicitly select another supported reviewer model and effort) and authenticate that CLI separately.
 
 Authentication remains local to each CLI and must never be committed to this repository. `CLAUDE_BIN` and `CODEX_BIN` may point to non-default executable locations without modifying a skill.
 
-1. Edit the matching platform source under `<skill-name>/Codex/` or `<skill-name>/Claude/`.
+1. Edit the matching platform source under `<skill-name>/Codex/`, `<skill-name>/Claude/`, or `<skill-name>/Kimi/`.
 2. Validate the native package before installation.
 3. Sync Codex from `<skill-name>/Codex/` into `~/.codex/skills/<skill-name>/`.
 4. Sync Claude from `<skill-name>/Claude/` into `~/.claude/skills/<skill-name>/` after Claude creates and validates that native version.
-5. Treat installed copies as runtime mirrors, never as the editable source of truth.
+5. Sync Kimi from `<skill-name>/Kimi/` into `${KIMI_CODE_HOME:-$HOME/.kimi-code}/skills/<skill-name>/`.
+6. Treat installed copies as runtime mirrors, never as the editable source of truth.
 
 Codex validation and synchronization for one skill:
 
@@ -128,6 +142,12 @@ Claude synchronization after Claude has created and validated the native package
 
 ```bash
 rsync -a --delete "<skill-name>/Claude/" "$HOME/.claude/skills/<skill-name>/"
+```
+
+Kimi synchronization after the native package is validated:
+
+```bash
+rsync -a --delete "<skill-name>/Kimi/" "${KIMI_CODE_HOME:-$HOME/.kimi-code}/skills/<skill-name>/"
 ```
 
 Portable copies may be shared as archives, but this git repository remains the primary source for future updates.

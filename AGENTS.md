@@ -12,21 +12,25 @@ Each logical skill owns one root directory and separate native distributions:
 <skill-name>/
 ├── Codex/
 │   └── SKILL.md
-└── Claude/
+├── Claude/
+│   └── SKILL.md
+└── Kimi/
     └── SKILL.md
 ```
 
-The logical root `<skill-name>/` groups the paired implementations. It is not itself an installable skill and must not contain a root `SKILL.md`.
+The logical root `<skill-name>/` groups the platform implementations. It is not itself an installable skill and must not contain a root `SKILL.md`.
 
 Canonical editable sources:
 
 - Codex: `<skill-name>/Codex/`
 - Claude Code: `<skill-name>/Claude/`
+- Kimi Code: `<skill-name>/Kimi/`
 
 Installed runtime mirrors are not sources of truth:
 
 - Codex: `~/.codex/skills/<skill-name>/`
 - Claude Code: `~/.claude/skills/<skill-name>/`
+- Kimi Code: `~/.kimi-code/skills/<skill-name>/` (moves with `$KIMI_CODE_HOME`)
 
 Never edit an installed mirror directly. Edit this repository first, validate, then synchronize.
 
@@ -59,6 +63,22 @@ Do not put Claude-specific invocation syntax or adapters into a Codex `SKILL.md`
 Claude-native implementations belong only in `<skill-name>/Claude/`. Codex may inspect them for consistency but must not author or rewrite them unless the user explicitly requests Codex to do so.
 
 When Claude creates a native version, it may inspect the paired `Codex/` implementation for agreed product semantics, but it must use Claude Code-native frontmatter, invocation syntax, tools, and reviewer adapters rather than mechanically copying the Codex entrypoint.
+
+## Kimi Skill Work
+
+Kimi Code-native implementations belong only in `<skill-name>/Kimi/`. When creating or updating a Kimi version:
+
+1. Edit only `<skill-name>/Kimi/` unless the user explicitly requests paired changes on another platform.
+2. Keep `SKILL.md` and supporting references/scripts/assets self-contained inside `Kimi/`.
+3. Use Kimi Code-native frontmatter (`name`, `description`), Skill tool / `/skill:<name>` invocation references, and `${KIMI_SKILL_DIR}` for package-relative file access. Do not put Codex `$skill` syntax or Claude `/skill-name` invocation syntax into a Kimi `SKILL.md` merely to make it cross-platform.
+4. Validate the canonical package before synchronizing: frontmatter must parse with required `name` and `description`, referenced files must exist, and bundled scripts must compile.
+5. Synchronize only after validation:
+
+   ```bash
+   rsync -a --delete "<skill-name>/Kimi/" "${KIMI_CODE_HOME:-$HOME/.kimi-code}/skills/<skill-name>/"
+   ```
+
+6. Validate the installed mirror and compare it with the canonical source.
 
 ## Shared Product Semantics
 
