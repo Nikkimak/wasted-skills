@@ -52,4 +52,4 @@ Classification is provisional until technical design and delivery planning confi
 
 ## Review readiness
 
-The PRD is ready for cross-model review when it contains no hidden business assumption that the author could reasonably surface, clearly separates current scope from horizon, and lists every unresolved product decision. It is accepted only after the reviewer recheck and explicit human approval.
+The PRD is ready for cross-model review only as one complete, self-contained `draft` or `proposed` artifact. Every required section must be substantive, placeholders and TODOs must be removed, current scope must be separated from horizon, and every known unresolved product decision must be explicitly listed. Discovery notes, question lists, outlines, and partial drafts are not review inputs. It is accepted only after the full-document reviewer recheck and explicit human approval.

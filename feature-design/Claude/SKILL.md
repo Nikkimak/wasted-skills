@@ -9,6 +9,12 @@ Create an approved PRD through a natural human-guided conversation. Preserve bus
 
 Read the target repository's instructions and canonical context before asking questions. Read `references/prd-contract.md` completely before drafting.
 
+## Session Continuity
+
+When continuing an existing named feature, check for a feature-local `WORK-HANDOFF.md` through the `feature-context-handoff` skill (invoked via the Skill tool as `/feature-context-handoff`) after reading mandatory repository instructions. Use it to locate the active draft and exact next question; do not use it as product truth.
+
+At a major phase boundary, use only the host-provided context indicator (the Claude Code `/context` view or status line) when available. If the PRD phase or its complete review loop cannot safely finish in the remaining context, invoke the `feature-context-handoff` skill, stop at the nearest coherent checkpoint, and recommend a fresh session. Do not estimate a percentage and do not install automatic monitoring.
+
 ## Conversation Workflow
 
 1. Absorb everything the human has already said. Do not ask them to repeat it.
@@ -17,10 +23,11 @@ Read the target repository's instructions and canonical context before asking qu
 4. Adapt the next question to the previous answer. Do not run a fixed questionnaire or expose a template as an interrogation checklist.
 5. Distinguish business requirements from implementation suggestions. Record useful technical ideas as constraints or open assumptions without turning them into architecture.
 6. Classify the request provisionally as `large_feature`, `small_feature`, or `fix`. Ask the human when the distinction changes workflow or scope.
-7. Draft the PRD once enough meaning is known. Show the human a concise summary of inferred decisions and remaining gaps before treating the draft as ready.
-8. Invoke the `cross-model-review` skill (via the Skill tool, `/cross-model-review`) with the `prd` profile. Keep the current session as author, let GPT challenge the draft, prepare supported corrections, and recheck them in the same GPT reviewer session.
-9. Surface every remaining material and minor disagreement to the human. Apply the final consolidated patch only after the human chooses what to fix or accept as-is.
-10. Mark the PRD accepted only after explicit human approval. End with a handoff to the `implementation-design` skill (via the Skill tool, `/implementation-design`); do not continue into implementation or task planning in this skill.
+7. Draft the complete PRD once enough meaning is known. Resolve every required section, remove placeholders, and record every known unresolved human decision in the document. Show the human a concise summary of inferred decisions and remaining gaps.
+8. Treat the PRD as review-ready only when the full artifact is self-contained and marked `draft` or `proposed`. Confirm that the human wants the complete draft reviewed; an explicit review request already made in the current conversation counts. Check that enough session context remains for the initial review, corrections, human resolution, and full recheck. Otherwise invoke the `feature-context-handoff` skill (via the Skill tool as `/feature-context-handoff`) and move the review to a fresh session.
+9. Invoke the `cross-model-review` skill (via the Skill tool, `/cross-model-review`) with the `prd` profile. Keep the current session as author, let GPT challenge the full draft, prepare supported corrections, and recheck the whole corrected document in the same GPT reviewer session.
+10. Surface every remaining material and minor disagreement to the human. Apply the final consolidated patch only after the human chooses what to fix or accept as-is.
+11. Mark the PRD accepted only after explicit human approval. Remove any obsolete `WORK-HANDOFF.md` through the `feature-context-handoff` skill when canonical documents and the work plan make the next phase clear. End with a handoff to the `implementation-design` skill (via the Skill tool, `/implementation-design`); do not continue into implementation or task planning in this skill.
 
 ## Question Priorities
 

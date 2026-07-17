@@ -62,3 +62,11 @@ Use `committed` for current-version acceptance and `deferred` for visible planne
 ## Parent acceptance
 
 Children integrate into the feature branch and wait in review. The parent tests the exact combined feature SHA, receives whole-feature human review, batches small findings into parent remediation, and owns the only merge to `main`.
+
+## Review readiness
+
+Cross-model review begins only when the delivery plan and all task contracts form one complete, self-contained `draft` or `proposed` graph. Every committed acceptance criterion must be mapped, required fields must be substantive, placeholders and TODOs must be removed, and every known unresolved human decision must be explicit. Partial task lists and in-progress decomposition are not review inputs.
+
+## Status lifecycle
+
+Human approval after delivery-plan review establishes the planning baseline but does not finalize or publish task contracts. Keep them `proposed` through the `feature-security-review` skill; after the final security posture and amended task set receive human approval, move them to the target repository's approved/accepted status. Accepted PRD and implementation artifacts remain immutable upstream context. If security work requires a product or shared-architecture change, return to the owning authoring skill, create a proposed revision, and re-obtain the corresponding approval before the security gate can return `ready`.

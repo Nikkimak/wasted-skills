@@ -25,18 +25,28 @@ PROFILE_FOCUS = {
 }
 
 
+def add_runtime_arguments(command: argparse.ArgumentParser) -> None:
+    command.add_argument("--cwd", required=True, type=Path)
+    command.add_argument("--model", default="gpt-5.6-sol", help="Reviewer model id.")
+    command.add_argument("--effort", default="high", choices=("minimal", "low", "medium", "high"))
+
+
 def parser() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser(description=__doc__)
     sub = root.add_subparsers(dest="command", required=True)
 
+    probe = sub.add_parser(
+        "probe",
+        help="Verify the codex CLI login and configured reviewer model access.",
+    )
+    add_runtime_arguments(probe)
+
     for name in ("start", "resume"):
         cmd = sub.add_parser(name)
-        cmd.add_argument("--cwd", required=True, type=Path)
+        add_runtime_arguments(cmd)
         cmd.add_argument("--profile", required=True, choices=sorted(PROFILE_FOCUS))
         cmd.add_argument("--artifact", action="append", required=True, type=Path)
         cmd.add_argument("--context", action="append", default=[], type=Path)
-        cmd.add_argument("--model", default="gpt-5.6-sol", help="Reviewer model id.")
-        cmd.add_argument("--effort", default="high", choices=("minimal", "low", "medium", "high"))
 
     sub.choices["resume"].add_argument("--session-id", required=True)
     sub.choices["resume"].add_argument("--change-summary", default="The author applied the supported findings.")
@@ -48,6 +58,9 @@ def validated_paths(args: argparse.Namespace) -> tuple[Path, list[Path], list[Pa
     if not cwd.is_dir():
         raise ValueError(f"cwd is not a directory: {cwd}")
 
+    if args.command == "probe":
+        return cwd, [], []
+
     artifacts = [path.expanduser().resolve() for path in args.artifact]
     contexts = [path.expanduser().resolve() for path in args.context]
     missing = [str(path) for path in artifacts + contexts if not path.is_file()]
@@ -57,6 +70,9 @@ def validated_paths(args: argparse.Namespace) -> tuple[Path, list[Path], list[Pa
 
 
 def prompt(args: argparse.Namespace, artifacts: list[Path], contexts: list[Path]) -> str:
+    if args.command == "probe":
+        return "Reply with exactly READY and no other text."
+
     paths = "\n".join(f"- {path}" for path in artifacts)
     context_paths = "\n".join(f"- {path}" for path in contexts) or "- none supplied"
     focus = PROFILE_FOCUS[args.profile]
@@ -101,6 +117,13 @@ blocking, material, or minor finding remains.
 def codex_command(args: argparse.Namespace, last_message: Path) -> list[str]:
     binary = os.environ.get("CODEX_BIN", "codex")
     command = [binary, "exec"]
+
+    if args.command == "probe":
+        command += ["--json", "--skip-git-repo-check", "-o", str(last_message)]
+        command += ["--sandbox", "read-only", "-C", str(args.cwd.expanduser().resolve())]
+        command += ["-m", args.model, "-c", f"model_reasoning_effort={args.effort}"]
+        command.append("-")  # prompt is read from stdin
+        return command
 
     if args.command == "resume":
         command.append("resume")
@@ -191,6 +214,21 @@ def main() -> int:
         finally:
             last_message.unlink(missing_ok=True)
 
+        if payload["is_error"]:
+            raise ValueError(f"GPT reviewer reported an error: {payload['result']}")
+        if args.command == "probe":
+            if str(payload["result"]).strip() != "READY":
+                raise ValueError(
+                    "GPT probe returned an unexpected response: "
+                    + str(payload["result"]).strip()
+                )
+            print(
+                json.dumps(
+                    {"status": "ready", "model": args.model, "effort": args.effort},
+                    ensure_ascii=False,
+                )
+            )
+            return 0
         print(json.dumps(payload, ensure_ascii=False))
         return 0
     except (OSError, ValueError) as exc:

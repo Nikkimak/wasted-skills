@@ -9,13 +9,19 @@ Review the proposed change, not the repository in the abstract. This is the fina
 
 Read the target repository's instructions and canonical security/architecture decisions. Read `references/security-readiness-checklist.md` completely before reviewing.
 
+## Session Continuity
+
+When continuing an existing feature, use the `feature-context-handoff` skill (invoked via the Skill tool as `/feature-context-handoff`) to read any feature-local `WORK-HANDOFF.md` after mandatory repository instructions, then load its named accepted inputs and active security-review state. Canonical artifacts override the handoff.
+
+Before a standard or deep cross-family challenge, rely only on the host-provided context indicator (the Claude Code `/context` view or status line) when available. If the complete challenge, corrections, human risk decisions, and full recheck cannot safely fit, checkpoint with the `feature-context-handoff` skill and recommend a fresh session. Do not estimate context numerically or install automatic monitoring.
+
 ## Preconditions
 
 Require:
 
-- an accepted PRD/feature draft;
+- an accepted PRD or feature artifact;
 - an implementation design when the feature needs shared technical contracts;
-- task drafts with vertical scope, dependencies, and validation plans;
+- proposed task contracts with vertical scope, dependencies, and validation plans;
 - the relevant current architecture and accepted decisions.
 
 If decomposition is incomplete, return to feature design rather than inventing missing tasks inside the security gate.
@@ -35,17 +41,17 @@ If decomposition is incomplete, return to feature design rather than inventing m
    - hardening suggestion that does not block delivery;
    - unsupported concern.
 5. Propose the smallest corrections that preserve the business outcome. Never silently remove required behavior to make the review pass.
-6. Update the draft PRD/implementation/task contracts with confirmed controls and security acceptance criteria. Do not create a separate report for a low-risk feature.
+6. Prepare confirmed controls and security acceptance criteria in the proposed task contracts. Keep accepted PRD and implementation artifacts as immutable context. If a mitigation requires changing accepted product scope or a shared technical contract, return to the `feature-design` or `implementation-design` skill, reopen the affected document as a proposed revision, and re-obtain its approval. Do not create a separate report for a low-risk feature. Before any cross-family challenge, ensure the complete mutable review target is self-contained, has no placeholders, and explicitly records every known open human risk decision.
 7. Stop and ask the human when:
    - a critical risk cannot be mitigated within scope;
    - a mitigation changes product behavior or architecture materially;
    - residual risk is material;
    - the safe path requires an irreversible or operational commitment.
-8. Recheck the corrected plan. Publish nothing to the tracker until the human approves the final security posture.
+8. Recheck the corrected plan. Obtain explicit human approval of the final amended task set and security posture; require separate reapproval of any reopened PRD or implementation revision. Then mark the task contracts approved/accepted according to the target repository's status convention. After completion, remove an obsolete `WORK-HANDOFF.md` through the `feature-context-handoff` skill when canonical documents and the work plan make publication readiness clear. Publish nothing to the tracker before those approvals.
 
 ## Cross-Family Challenge
 
-For `standard` or `deep` reviews, invoke the `cross-model-review` skill (via the Skill tool, `/cross-model-review`) against the security-relevant PRD, implementation, and task drafts, using the security questions in the checklist as reviewer context. Reuse its live Claude/GPT loop, but apply this skill's stricter stop rules: models cannot accept material risk for the human.
+For `standard` or `deep` reviews, first confirm that the human wants the complete review-ready target challenged; an explicit request already made in the current conversation counts. Invoke the `cross-model-review` skill (via the Skill tool, `/cross-model-review`) against the full proposed task set and any upstream document explicitly reopened as a proposed revision. Supply unchanged accepted PRD and implementation artifacts as immutable reviewer context, together with the security questions in the checklist. Never send partial control edits or an unfinished security analysis. Reuse the live Claude/GPT loop, but apply this skill's stricter stop rules: models cannot accept material risk for the human.
 
 Do not create raw findings artifacts. Record only durable security requirements in canonical design/task docs and lasting accepted risks in the repository's decision mechanism when appropriate.
 

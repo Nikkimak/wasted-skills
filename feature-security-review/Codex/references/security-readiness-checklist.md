@@ -54,6 +54,8 @@
 - Deferred work does not defer a control required to make the current version safe.
 - Child validation plus parent acceptance cover integration boundaries.
 - Deployment and migration requirements are explicit when in scope.
+- Accepted PRD and implementation artifacts remain immutable reviewer context unless the owning phase explicitly reopens them as proposed revisions.
+- Task contracts remain `proposed` until the final amended set and security posture receive human approval.
 
 ## Gate severity
 

@@ -9,6 +9,12 @@ Start only from an approved PRD. Design shared technical meaning without turning
 
 Read the target repository's instructions, accepted PRD, current architecture, runtime map, and relevant decisions. Read `${KIMI_SKILL_DIR}/references/implementation-contract.md` completely.
 
+## Session Continuity
+
+When continuing an existing feature, use the `feature-context-handoff` skill (via the Skill tool, `/skill:feature-context-handoff`) to read any feature-local `WORK-HANDOFF.md` after mandatory repository instructions, then load its named accepted inputs and active implementation draft. Canonical artifacts override the handoff.
+
+Before starting cross-model review, rely only on the host-provided context indicator (`/usage` in Kimi Code). If the full review-and-recheck loop cannot safely fit, checkpoint the coherent draft with the `feature-context-handoff` skill and recommend a fresh session. Do not estimate context numerically or install automatic monitoring.
+
 ## Decide Whether A Document Is Needed
 
 Create a separate implementation document when the feature has material shared technical decisions involving one or more of:
@@ -29,11 +35,12 @@ Skip the document when one bounded task can safely carry its implementation note
 1. Verify the PRD is accepted and identify its exact version/path or hash.
 2. Map the affected current system and identify the owner component for each state transition or durable contract.
 3. Ask the human only about material technical/product tradeoffs that cannot be resolved from canonical evidence. Return product changes to the `feature-design` skill (via the Skill tool, `/skill:feature-design`) rather than silently altering the PRD.
-4. Draft the smallest technical contract sufficient for later task planning. Avoid low-level step-by-step implementation instructions that belong to tasks.
+4. Draft the smallest complete technical contract sufficient for later task planning. Avoid low-level step-by-step implementation instructions that belong to tasks.
 5. Check that the design enables thin vertical delivery and does not require completing horizontal layers before integration can be tested.
-6. Invoke the `cross-model-review` skill (via the Skill tool, `/skill:cross-model-review`) with the `implementation` profile. Verify Claude findings against the repository, prepare supported corrections, and resume the same Claude reviewer session for a full recheck.
-7. Surface every remaining material and minor disagreement to the human. Apply one final consolidated canonical patch only after human resolution.
-8. Mark the implementation design accepted only after explicit human approval. End with a handoff to the `feature-delivery-plan` skill.
+6. Remove placeholders, make every required section substantive, and record each known unresolved human choice in `Open technical decisions`. Mark the full artifact `draft` or `proposed`, confirm that the human wants it reviewed, and verify enough session context remains for the complete review loop. An explicit review request already made in the current conversation counts.
+7. Invoke the `cross-model-review` skill (via the Skill tool, `/skill:cross-model-review`) with the `implementation` profile. Verify Claude findings against the repository, prepare supported corrections, and resume the same Claude reviewer session for a full-document recheck.
+8. Surface every remaining material and minor disagreement to the human. Apply one final consolidated canonical patch only after human resolution.
+9. Mark the implementation design accepted only after explicit human approval. Remove an obsolete `WORK-HANDOFF.md` through the `feature-context-handoff` skill (via the Skill tool, `/skill:feature-context-handoff`) when canonical documents and the work plan make the next phase clear. End with a workflow handoff to the `feature-delivery-plan` skill (via the Skill tool, `/skill:feature-delivery-plan`).
 
 ## Boundaries
 

@@ -40,3 +40,7 @@ Adapt headings to the target repository:
 ## No-document result
 
 Use `implementation_doc_not_required` when all shared technical meaning fits safely in one bounded task contract. Give a short evidence-based reason and any constraints that the `feature-delivery-plan` skill (invoked via the Skill tool as `/feature-delivery-plan`) must preserve.
+
+## Review readiness
+
+When a separate document is required, cross-model review begins only after one complete, self-contained implementation artifact exists in `draft` or `proposed` state. It must identify its accepted PRD input, contain substantive required sections, remove placeholders and TODOs, and list every known unresolved technical decision explicitly. Architecture notes, partial outlines, and question lists are not review inputs.

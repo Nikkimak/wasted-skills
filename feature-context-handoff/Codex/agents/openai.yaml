@@ -1,0 +1,4 @@
+interface:
+  display_name: "Feature Context Handoff"
+  short_description: "Resume unfinished feature work with minimal context"
+  default_prompt: "Use $feature-context-handoff to capture or resume the unfinished state of this feature without rereading its entire history."
