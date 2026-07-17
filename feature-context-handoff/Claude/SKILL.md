@@ -100,5 +100,3 @@ Status: <precise incomplete state>
 ## Completion
 
 For `resume`, report the verified phase and exact action being continued. For `pause`, report the handoff path and tell the human that the safe continuation is a fresh Claude session in the same repository followed by "continue <feature>". For `close`, report that the ephemeral handoff was removed and name the canonical source that now carries the next state.
-</content>
-</invoke>

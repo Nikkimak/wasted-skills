@@ -12,6 +12,7 @@ import argparse
 import json
 import os
 from pathlib import Path
+import stat
 import subprocess
 import sys
 import tempfile
@@ -47,26 +48,57 @@ def parser() -> argparse.ArgumentParser:
         cmd.add_argument("--profile", required=True, choices=sorted(PROFILE_FOCUS))
         cmd.add_argument("--artifact", action="append", required=True, type=Path)
         cmd.add_argument("--context", action="append", default=[], type=Path)
+        cmd.add_argument("--scratch-root", type=Path)
 
     sub.choices["resume"].add_argument("--session-id", required=True)
     sub.choices["resume"].add_argument("--change-summary", default="The author applied the supported findings.")
     return root
 
 
-def validated_paths(args: argparse.Namespace) -> tuple[Path, list[Path], list[Path]]:
+def validated_paths(
+    args: argparse.Namespace,
+) -> tuple[Path, list[Path], list[Path], Path | None]:
     cwd = args.cwd.expanduser().resolve()
     if not cwd.is_dir():
         raise ValueError(f"cwd is not a directory: {cwd}")
 
     if args.command == "probe":
-        return cwd, [], []
+        return cwd, [], [], None
 
     artifacts = [path.expanduser().resolve() for path in args.artifact]
     contexts = [path.expanduser().resolve() for path in args.context]
     missing = [str(path) for path in artifacts + contexts if not path.is_file()]
     if missing:
         raise ValueError("missing input file(s): " + ", ".join(missing))
-    return cwd, artifacts, contexts
+
+    scratch_root = (
+        args.scratch_root.expanduser().resolve() if args.scratch_root else None
+    )
+    external = [path for path in artifacts + contexts if cwd not in path.parents]
+    if external and scratch_root is None:
+        raise ValueError(
+            "--scratch-root is required when an artifact or context is outside --cwd"
+        )
+    if scratch_root is not None:
+        if not scratch_root.is_dir():
+            raise ValueError(f"scratch root is not a directory: {scratch_root}")
+        root_stat = scratch_root.stat()
+        if os.name == "posix":
+            if root_stat.st_uid != os.geteuid():
+                raise ValueError(
+                    f"scratch root is not owned by the current user: {scratch_root}"
+                )
+            if stat.S_IMODE(root_stat.st_mode) & 0o077:
+                raise ValueError(
+                    f"scratch root must not grant group/other access: {scratch_root}"
+                )
+        outside = [path for path in external if scratch_root not in path.parents]
+        if outside:
+            raise ValueError(
+                "external input is outside --scratch-root: "
+                + ", ".join(str(path) for path in outside)
+            )
+    return cwd, artifacts, contexts, scratch_root
 
 
 def prompt(args: argparse.Namespace, artifacts: list[Path], contexts: list[Path]) -> str:
@@ -114,13 +146,18 @@ blocking, material, or minor finding remains.
 """
 
 
-def codex_command(args: argparse.Namespace, last_message: Path) -> list[str]:
+def codex_command(
+    args: argparse.Namespace, last_message: Path, needs_full_read: bool
+) -> list[str]:
     binary = os.environ.get("CODEX_BIN", "codex")
     command = [binary, "exec"]
+    cwd = str(args.cwd.expanduser().resolve())
 
     if args.command == "probe":
-        command += ["--json", "--skip-git-repo-check", "-o", str(last_message)]
-        command += ["--sandbox", "read-only", "-C", str(args.cwd.expanduser().resolve())]
+        # --ephemeral keeps the probe from persisting a resumable session; the
+        # prompt never references project artifacts, so nothing is loaded.
+        command += ["--json", "--skip-git-repo-check", "--ephemeral", "-o", str(last_message)]
+        command += ["--sandbox", "read-only", "-C", cwd]
         command += ["-m", args.model, "-c", f"model_reasoning_effort={args.effort}"]
         command.append("-")  # prompt is read from stdin
         return command
@@ -131,14 +168,18 @@ def codex_command(args: argparse.Namespace, last_message: Path) -> list[str]:
     command += ["--json", "--skip-git-repo-check", "-o", str(last_message)]
 
     if args.command == "start":
-        command += ["--sandbox", "read-only", "-C", str(args.cwd.expanduser().resolve())]
+        command += ["--sandbox", "read-only", "-C", cwd]
     else:
         # `resume` has no --sandbox/-C flags; enforce read-only via config override.
         command += ["-c", "sandbox_mode=read-only"]
 
-    # Let the reviewer read the scratch draft and context wherever they live,
-    # while writes and networked commands stay blocked by the read-only sandbox.
-    command += ["-c", 'sandbox_permissions=["disk-full-read-access"]']
+    if needs_full_read:
+        # `codex exec` exposes no scoped read-root flag, so this is the only lever
+        # that lets the reviewer read the private scratch draft living outside
+        # --cwd (validated to sit under --scratch-root). It grants reads only;
+        # writes and networked commands stay blocked by the read-only sandbox.
+        # When every input is under --cwd it is omitted entirely.
+        command += ["-c", 'sandbox_permissions=["disk-full-read-access"]']
 
     if args.model:
         command += ["-m", args.model]
@@ -152,7 +193,7 @@ def codex_command(args: argparse.Namespace, last_message: Path) -> list[str]:
 
 
 def extract(stdout: str, last_message: Path, fallback_session_id: str | None) -> dict[str, object]:
-    session_id = fallback_session_id
+    observed_session_id: str | None = None
     message = ""
     is_error = False
 
@@ -168,7 +209,7 @@ def extract(stdout: str, last_message: Path, fallback_session_id: str | None) ->
             continue
         etype = event.get("type")
         if etype == "thread.started" and event.get("thread_id"):
-            session_id = str(event["thread_id"])
+            observed_session_id = str(event["thread_id"])
         elif etype == "item.completed":
             item = event.get("item") or {}
             if item.get("type") == "agent_message" and isinstance(item.get("text"), str):
@@ -185,21 +226,27 @@ def extract(stdout: str, last_message: Path, fallback_session_id: str | None) ->
         is_error = True
         message = "GPT reviewer returned no final message."
 
-    return {"session_id": session_id, "result": message, "is_error": is_error}
+    return {
+        "session_id": observed_session_id or fallback_session_id,
+        "observed_session_id": observed_session_id,
+        "result": message,
+        "is_error": is_error,
+    }
 
 
 def main() -> int:
     args = parser().parse_args()
     try:
-        cwd, artifacts, contexts = validated_paths(args)
+        cwd, artifacts, contexts, _scratch_root = validated_paths(args)
         args.cwd = cwd
         fallback_session_id = getattr(args, "session_id", None)
+        needs_full_read = any(cwd not in path.parents for path in artifacts + contexts)
 
         with tempfile.NamedTemporaryFile("r", suffix=".txt", delete=False) as handle:
             last_message = Path(handle.name)
         try:
             completed = subprocess.run(
-                codex_command(args, last_message),
+                codex_command(args, last_message, needs_full_read),
                 cwd=cwd,
                 input=prompt(args, artifacts, contexts),
                 text=True,
@@ -229,6 +276,23 @@ def main() -> int:
                 )
             )
             return 0
+
+        if args.command == "start":
+            if not payload["session_id"]:
+                raise ValueError(
+                    "GPT reviewer did not return a session id; the review session "
+                    "cannot be resumed."
+                )
+        else:  # resume
+            observed = payload["observed_session_id"]
+            if observed and observed != args.session_id:
+                raise ValueError(
+                    "GPT reviewer resumed a different session than requested; "
+                    "reviewer continuity is broken."
+                )
+            payload["session_id"] = args.session_id
+
+        payload.pop("observed_session_id", None)
         print(json.dumps(payload, ensure_ascii=False))
         return 0
     except (OSError, ValueError) as exc:

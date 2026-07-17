@@ -2,7 +2,7 @@
 
 ## Scope
 
-This repository is the canonical editable source for platform-specific Codex and Claude Code skills. These instructions apply to the whole repository.
+This repository is the canonical editable source for platform-specific Codex, Claude Code, and Kimi Code skills. These instructions apply to the whole repository.
 
 ## Repository Model
 

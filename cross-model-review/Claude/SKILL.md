@@ -9,7 +9,7 @@ Keep the current Claude conversation as the authoring session. Use one resumable
 
 This skill reviews a finished draft; it does not co-author an unfinished one. Return partial artifacts to their authoring skill.
 
-Read `references/review-profiles.md` and select `prd`, `implementation`, or `task-plan`. Use `security` only when the `feature-security-review` skill invokes this skill as its cross-family challenger. Use `scripts/gpt_review.py` to probe, start, and resume the GPT reviewer through the local `codex exec` CLI (read-only sandbox, resumable session).
+Read `${CLAUDE_SKILL_DIR}/references/review-profiles.md` and select `prd`, `implementation`, or `task-plan`. Use `security` only when the `feature-security-review` skill invokes this skill as its cross-family challenger. Use `${CLAUDE_SKILL_DIR}/scripts/gpt_review.py` to probe, start, and resume the GPT reviewer through the local `codex exec` CLI (read-only sandbox, resumable session).
 
 Use `gpt-5.6-sol` with `high` reasoning effort for the probe, the initial review, and every resumed recheck. These are explicit skill defaults; override them only when the human explicitly requests another reviewer model/effort, and pass the same override to every command.
 
@@ -29,14 +29,15 @@ Stop and return to the authoring skill when any readiness gate fails. Do not inv
 
 ## Reviewer CLI Probe
 
-Confirm the `codex` CLI is available and logged in (`codex login status`). Then run one real minimal probe immediately before the first full-artifact call:
+Confirm the `codex` CLI is available and logged in (`codex login status`). Resolve the helper from the installed skill package, then run one real minimal probe immediately before the first full-artifact call:
 
 ```bash
-python3 scripts/gpt_review.py probe \
+REVIEW_HELPER="${CLAUDE_SKILL_DIR}/scripts/gpt_review.py"
+python3 "$REVIEW_HELPER" probe \
   --cwd "$PWD"
 ```
 
-The probe verifies executable availability, login, and access to `gpt-5.6-sol` with `high` effort under a read-only sandbox without loading project artifacts. If the probe fails, report the exact error and stop. Do not fall back to another model, skip the cross-family review, or retry automatically. Retry only after an explicit human request.
+The probe verifies executable availability, login, and access to `gpt-5.6-sol` with `high` effort under a read-only, ephemeral sandbox without loading project artifacts or creating a resumable session. If the probe fails, report the exact error and stop. Do not fall back to another model, skip the cross-family review, or retry automatically. Retry only after an explicit human request.
 
 ## Live Review Loop
 
@@ -51,10 +52,11 @@ The probe verifies executable availability, login, and access to `gpt-5.6-sol` w
 2. Start one GPT reviewer session with the same defaults used by the successful probe:
 
    ```bash
-   python3 scripts/gpt_review.py start \
+   python3 "$REVIEW_HELPER" start \
      --cwd "$PWD" \
      --profile implementation \
      --artifact "$REVIEW_SCRATCH/implementation.md" \
+     --scratch-root "$REVIEW_SCRATCH" \
      --context "$PWD/CLAUDE.md"
    ```
 
@@ -66,11 +68,12 @@ The probe verifies executable availability, login, and access to `gpt-5.6-sol` w
 6. Resume the same GPT session with the corrected scratch artifact:
 
    ```bash
-   python3 scripts/gpt_review.py resume \
+   python3 "$REVIEW_HELPER" resume \
      --cwd "$PWD" \
      --session-id SESSION_UUID \
      --profile implementation \
      --artifact "$REVIEW_SCRATCH/implementation.md" \
+     --scratch-root "$REVIEW_SCRATCH" \
      --change-summary "Applied confirmed findings; recheck the whole draft."
    ```
 
@@ -97,6 +100,7 @@ Consensus is not model voting. If evidence remains ambiguous after the bounded l
 - Do not let the helper apply canonical changes automatically.
 - Do not create review ledgers, report JSON, or transcript archives.
 - Copy every mutable review target into the private `REVIEW_SCRATCH` directory (owner-only, `chmod 700`) rather than reviewing in place or staging drafts in a world-readable location.
+- Pass `--scratch-root "$REVIEW_SCRATCH"` on every `start` and `resume`. Require every input outside `--cwd` to live under that private scratch root; never grant the reviewer a shared parent directory merely to expose one file. The helper adds whole-disk read access only when an input sits outside `--cwd`, and never grants write or network access.
 - On rate limits, overload, timeouts, login/model-access errors, malformed output, or resume failure, preserve scratch state, report the exact error, and stop. Do not retry, replace the reviewer session, or change models automatically. Continue only after an explicit human request; disclose lost reviewer continuity if the human chooses a replacement review.
 - Do not silently drop provider failures or pretend consensus was reached.
 
@@ -115,4 +119,3 @@ already corrected or rejected, with:
 Then state the total count, every remaining human choice, whether the GPT
 reviewer's full recheck is clean, and whether the final patch was applied. Do
 not reproduce the raw reviewer transcript or create a durable findings artifact.
-</content>
