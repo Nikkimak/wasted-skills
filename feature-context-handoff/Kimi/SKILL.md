@@ -1,6 +1,6 @@
 ---
 name: feature-context-handoff
-description: Preserve or restore the minimal working state of one unfinished feature across fresh Kimi sessions. Use when the user asks to pause, end, hand off, or continue a named feature; when a product, implementation, delivery, or security phase cannot safely finish in the remaining context; when a blocker pauses incomplete feature work; or when Kimi must create, refresh, read, or remove a feature-local WORK-HANDOFF.md. Do not use for completed work, routine turn summaries, or durable product and technical decisions that belong in canonical documents.
+description: Preserve or restore the minimal working state of one unfinished feature across fresh Kimi sessions. Use when the user asks to pause, end, hand off, or continue a named feature; when product, implementation/security design, delivery, or execution-readiness work cannot safely finish in the remaining context; when a blocker pauses incomplete feature work; or when Kimi must create, refresh, read, or remove a feature-local WORK-HANDOFF.md. Do not use for completed work, routine turn summaries, or durable decisions that belong in canonical documents.
 ---
 
 # Feature Context Handoff
@@ -60,7 +60,7 @@ Keep the file direct and normally within roughly 1,000-2,000 tokens. Use this st
 # Work handoff: <feature>
 
 Updated: <date/time or date>
-Phase: <feature-design|implementation-design|delivery-plan|security-review|other>
+Phase: <feature-design|implementation-design|deep-security-design|delivery-plan|execution-readiness|other>
 Status: <precise incomplete state>
 
 ## Read first
@@ -89,7 +89,7 @@ Status: <precise incomplete state>
 
 ## Content Boundaries
 
-- Link to the PRD, implementation design, delivery plan, decisions, and work plan; do not duplicate their contents.
+- Link to the PRD, implementation design, delivery plan, execution-readiness manifest, decisions, and work plan when relevant; do not duplicate their contents.
 - Record accepted inputs and exact continuation state, not a narrative session summary.
 - Never store raw model transcripts, cross-model finding inventories, chain-of-thought, credentials, tokens, or generated authentication state.
 - Keep the handoff local and ephemeral. Do not stage, commit, publish, or archive it; do not edit ignore rules merely to hide it.

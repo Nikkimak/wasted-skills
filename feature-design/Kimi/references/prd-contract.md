@@ -18,6 +18,7 @@ Adapt headings to the target repository, but preserve this meaning:
 ## Scope
 ## Non-goals
 ## Constraints and accepted assumptions
+## Known human-supplied inputs and external dependencies
 ## Acceptance criteria
 ## Current version / MVP
 ## Architecture horizon
@@ -34,6 +35,7 @@ Adapt headings to the target repository, but preserve this meaning:
 - `Scope` is the committed authority boundary for the current version.
 - `Non-goals` prevents adjacent expansion.
 - `Constraints and accepted assumptions` separates known limits from guesses.
+- `Known human-supplied inputs and external dependencies` records only dependencies already known to product discovery; omit the section when none exist and defer technical format, storage, and timing to later phases.
 - `Acceptance criteria` is externally verifiable and includes meaningful failure behavior.
 - `Current version / MVP` is a delivery commitment.
 - `Architecture horizon` constrains future technical design but is not current implementation scope.

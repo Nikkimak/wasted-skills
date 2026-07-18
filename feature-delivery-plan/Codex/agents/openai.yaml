@@ -1,4 +1,4 @@
 interface:
   display_name: "Feature Delivery Plan"
-  short_description: "Turn approved designs into executable tasks"
-  default_prompt: "Use $feature-delivery-plan to turn the approved feature and implementation design into bounded tasks, dependencies, routing, and acceptance."
+  short_description: "Build executable tasks and readiness"
+  default_prompt: "Use $feature-delivery-plan to map the approved feature, implementation controls, and human prerequisites into a checked tracker-ready delivery plan."

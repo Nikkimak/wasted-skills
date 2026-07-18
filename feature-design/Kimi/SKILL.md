@@ -39,6 +39,7 @@ Prefer questions that resolve:
 - current-version/MVP scope and explicit non-goals;
 - acceptance and failure behavior;
 - constraints and assumptions that affect product meaning;
+- known assets, data, access, approvals, budgets, or human validation that the owner must supply;
 - architecture horizon that today's work must not block;
 - unresolved product decisions.
 
@@ -48,14 +49,14 @@ Skip questions already answered by the conversation or canonical docs. If the hu
 
 Produce one canonical Markdown draft in the target repository's existing feature-document location and naming scheme, not JSON and not only chat prose. Adapt headings when equivalent canonical sections already exist, while preserving the semantic contract in `${KIMI_SKILL_DIR}/references/prd-contract.md`.
 
-Mark the document draft/proposed until cross-model review and human approval complete. Do not put model findings, review transcripts, technical task breakdowns, or speculative implementation plans in the PRD.
+Mark the document draft/proposed until cross-model review and human approval complete. Record known human-supplied dependencies as product constraints without inventing technical formats or provisioning steps. Do not put model findings, review transcripts, technical task breakdowns, or speculative implementation plans in the PRD.
 
 ## Boundaries
 
 - Do not create an implementation document.
 - Do not decompose into tasks or dependencies.
 - Do not choose executors, models, validation profiles, branches, or merge strategy.
-- Do not run security approval; security review follows technical design and task planning.
+- Do not design or approve security controls; the `implementation-design` skill owns the technical and security contract.
 - Do not publish or update tracker issues.
 - Do not implement code.
 

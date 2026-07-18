@@ -2,75 +2,35 @@
 
 ## PRD
 
-Challenge:
-
-- business outcome and user value;
-- current versus desired behavior;
-- scope, non-goals, and MVP boundary;
-- contradictory scenarios or acceptance criteria;
-- missing product decisions;
-- unsupported assumptions about current reality;
-- architecture-horizon requirements accidentally treated as current scope;
-- observable acceptance and failure behavior.
-
-Do not invent implementation detail unless needed to expose a product gap.
+Challenge business outcome, users, current/desired behavior, scope, non-goals, MVP boundary, contradictions, unsupported assumptions, open product decisions, observable acceptance/failure behavior, and known human-supplied dependencies. Do not invent implementation detail merely to add completeness.
 
 ## Implementation
 
-Challenge:
+Challenge the complete technical and security contract:
 
 - fidelity to the accepted PRD/version;
-- component ownership and contracts;
-- data model, migration, compatibility, and rollback;
-- failure, retry, concurrency, and consistency behavior;
-- observability and operational recovery;
-- security boundaries and secret/data handling;
-- testability and verification environments;
-- feature-branch integration and safe incremental delivery;
-- unnecessary complexity or missing shared decisions.
+- component ownership, contracts, data, migration, integration, concurrency, compatibility, rollout, rollback, and recovery;
+- authentication/authorization ownership, assets, actors, trust boundaries, privileges, isolation, secrets, sensitive-data lifecycle, and log/redaction behavior;
+- external inputs, abuse cases, replay/idempotency, resource bounds, dependency failure, and fail-open/fail-closed decisions;
+- observability, operations, testability, and executable security verification;
+- stable `SEC-*` and `VER-*` obligations sufficient for downstream task mapping;
+- human-supplied assets, datasets, access, credentials, environments, approvals, budgets, and validation, including safe handling and known blocking stage;
+- unnecessary complexity and unresolved product, architecture, security, or residual-risk decisions.
 
-Separate product questions from technical corrections.
+For deep-risk features, use the proposed implementation already enriched by the `feature-security-review` skill (via the Skill tool, `/skill:feature-security-review`); do not create a second security review stage.
 
 ## Task plan
 
-Challenge the complete graph:
-
-- every committed acceptance criterion maps to executable scope;
-- no task implements requirements absent from the accepted design;
-- slices are vertical and independently verifiable;
-- task scope is bounded without micro-task fragmentation;
-- dependencies are complete, directional, and acyclic;
-- deferred work is visible but does not block current acceptance;
-- execution and validation profiles fit the work;
-- merge targets and parent/child ownership are explicit;
-- final parent acceptance covers combined behavior;
-- security and integration verification are assigned to concrete tasks.
-
-## Security
-
-Use this profile only inside a human-gated feature security review. Challenge:
-
-- assets, actors, trust boundaries, and privileges;
-- authentication/authorization ownership and isolation;
-- secrets, sensitive-data lifecycle, and log/redaction behavior;
-- external inputs, abuse cases, replay/idempotency, and resource bounds;
-- third-party failure and compromised-dependency behavior;
-- fail-open/fail-closed, rollback, and recovery decisions;
-- whether mitigations and verification belong to concrete vertical tasks;
-- any residual risk that requires an explicit human decision.
-
-Models may propose mitigations but cannot accept material risk for the human.
+Use only on explicit human request. Challenge requirement/control coverage, vertical slices, bounded scope, dependencies, deferred work, routing, validation, merge targets, parent acceptance, and execution-readiness mapping. Do not make this a default gate.
 
 ## Finding format
 
-Return concise live findings, not an artifact:
-
 ```text
 [ID] [blocking|material|minor] Summary
-Evidence: exact section/path and contradiction or missing contract
-Impact: why this matters
-Recommendation: smallest correction preserving intended outcome
+Evidence: exact path/section and contradiction or missing contract
+Impact: why it matters
+Recommendation: smallest correction preserving the intended outcome
 Human decision: yes/no; exact question when yes
 ```
 
-On recheck, re-read the whole corrected draft. State which prior findings are resolved, list any remaining or new finding including minor ones, and say `CLEAN` only when none remain.
+On recheck, re-read the whole corrected draft, resolve prior findings, and list every remaining or new issue. Say `CLEAN` only when none remains.

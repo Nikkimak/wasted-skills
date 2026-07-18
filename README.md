@@ -31,24 +31,23 @@ Every logical skill owns separate native distributions:
 | Skill | Purpose | Codex | Claude Code | Kimi Code |
 | --- | --- | :---: | :---: | :---: |
 | `feature-design` | Guides product discovery and produces a human-approved PRD. | Yes | Yes | Yes |
-| `implementation-design` | Produces the smallest shared technical design justified by an approved PRD, or records that no separate design is needed. | Yes | Yes | Yes |
-| `feature-delivery-plan` | Converts approved product and technical decisions into vertical tasks, dependencies, validation, and tracker-ready drafts. | Yes | Yes | Yes |
+| `implementation-design` | Produces the smallest shared technical and security design justified by an approved PRD, or records that no separate design is needed. | Yes | Yes | Yes |
+| `feature-delivery-plan` | Converts approved decisions into vertical tasks, execution readiness, dependencies, validation, and tracker-ready drafts. | Yes | Yes | Yes |
 | `cross-model-review` | Runs a live review-and-recheck loop with the other model family while keeping findings ephemeral. | Yes | Yes | Yes |
-| `feature-security-review` | Performs the human-gated security readiness check before task publication. | Yes | Yes | Yes |
+| `feature-security-review` | Deepens exceptional high-risk implementation designs before their one combined technical/security review. | Yes | Yes | Yes |
 | `feature-context-handoff` | Preserves the minimal state of unfinished feature work across fresh sessions. | Yes | Yes | Yes |
 | `project-docs-organizer` | Bootstraps or substantially reorganizes project documentation, source-of-truth boundaries, and repository structure. | Yes | Not yet | Yes |
 
-The five feature-preparation skills are available as separate native packages for all three platforms, and all three revisions now share the same complete-draft readiness and context-handoff behavior. Kimi remains an asymmetric integration: its authoring session may use Claude as reviewer, but Codex and Claude do not use Kimi as a reviewer, and Kimi does not need to mirror their host mechanics or reviewer-failure policy exactly. `feature-context-handoff` ships for all three platforms, while `project-docs-organizer` ships for Codex and Kimi; the remaining `Claude/` directories are placeholders rather than installable skills.
+The feature-preparation skills are available as separate native packages. All three distributions use the same streamlined two-review product workflow: security is embedded in implementation design, exceptional deep security analysis enriches that same draft, and delivery planning owns conditional execution readiness without a routine external review. Their host mechanics remain native: Codex and Kimi use Claude as reviewer, Claude uses GPT/Codex, and Kimi is not a reviewer provider for the other flows. `feature-context-handoff` ships for all three platforms, while `project-docs-organizer` ships for Codex and Kimi.
 
 ## Feature Preparation Suite
 
-Use the suite as one staged sequence:
+The shared sequence is:
 
-1. `feature-design` runs the guided product conversation and stops at an approved PRD.
-2. `cross-model-review` challenges the complete review-ready PRD with one resumable, read-only cross-family reviewer session before human approval.
-3. `implementation-design` decides whether a separate technical design is justified and, when needed, produces and cross-reviews it.
-4. `feature-delivery-plan` creates the vertical task graph, dependencies, routing, validation profiles, branch targets, and parent acceptance from approved inputs, then cross-reviews the plan.
-5. `feature-security-review` performs the final human-gated security check before the approved task set is filed in Linear or another tracker.
+1. `feature-design` produces a complete PRD; `cross-model-review` challenges it before human approval.
+2. `implementation-design` produces the smallest security-aware technical contract. Exceptional payment, identity, privileged-secret, sensitive-user-data, isolation, destructive, or irreversible risk may invoke `feature-security-review` to deepen the same draft before one combined implementation/security `cross-model-review` and human approval.
+3. `feature-delivery-plan` derives the vertical task graph, maps product criteria plus `SEC-*`/`VER-*` obligations, and creates a feature-local `EXECUTION-READINESS.md` only when human or external inputs exist. It uses local deterministic checks and human approval, not a routine cross-family or separate post-plan security gate.
+4. Tracker publication remains a later explicit action.
 
 Use `feature-context-handoff` only when one of these phases stops incomplete or intentionally moves to a fresh session. It writes a short-lived `WORK-HANDOFF.md` inside the feature folder, points to canonical documents and the exact next action, and removes the file once canonical state makes continuation obvious. It does not duplicate PRDs, retain model transcripts, monitor context automatically, or install hooks/plugins.
 
@@ -57,30 +56,30 @@ The suite keeps only accepted documents as durable project truth. Raw model find
 ### How The Codex Versions Work
 
 1. Invoke `feature-design` while discussing a feature. It reads canonical context, summarizes what the human already explained, asks adaptive high-value questions, classifies the work provisionally, and drafts only the PRD.
-2. Invoke `cross-model-review` only when a complete, self-contained PRD, implementation design, or task plan is in review-ready `draft`/`proposed` state. The current GPT/Codex session remains the author; a real minimal CLI probe verifies Claude/model access, one read-only Claude session reviews the full draft, GPT checks and prepares corrections, and the same Claude session rechecks the complete corrected draft. The Codex distribution explicitly uses `claude-opus-4-8` with `xhigh` effort for probe, start, and resume instead of inheriting the interactive Claude CLI default. Provider calls are polled at roughly 60-second intervals and are never retried automatically. All remaining material and minor differences return to the human before one final patch is applied. The final live summary lists every finding, including corrected and rejected findings, rather than reporting only aggregate counts.
-3. Invoke `implementation-design` only after PRD approval. It either produces the smallest shared technical contract and cross-reviews it, or explicitly records that one task can safely carry its own implementation notes.
-4. Invoke `feature-delivery-plan` after product and technical approval. It creates the minimal vertical delivery graph without changing upstream scope or architecture.
-5. Invoke `feature-security-review` after decomposition and before tracker publication. It treats accepted PRD/design artifacts as immutable context, adds confirmed controls to proposed task contracts, reopens upstream documents only through their owning phase, and blocks publication when critical risk or a required human risk decision remains.
+2. Invoke `cross-model-review` only when a complete, self-contained PRD or security-aware implementation design is review-ready; task-plan review is available only on explicit request. The current GPT/Codex session remains author, one read-only Claude session reviews the full draft, and the same session performs one corrected-document recheck. Provider calls are polled at roughly 60-second intervals and never retried automatically. A further round is reserved for a new blocking/material issue; human-resolved minor findings do not force an unlimited review loop.
+3. Invoke `implementation-design` only after PRD approval. It either records that one bounded task needs no shared design or produces a security-aware technical contract with stable controls, verification obligations, and known execution prerequisites. Exceptional high-risk work invokes `feature-security-review` as local deep-design enrichment, then the one `implementation` cross-model profile reviews architecture and security together.
+4. Invoke `feature-delivery-plan` after product and technical/security approval. It creates the minimal vertical delivery graph, maps accepted requirements and controls, conditionally creates `EXECUTION-READINESS.md`, runs local coverage/dependency/readiness checks, and obtains human approval without routine Claude review.
+5. Publish approved tracker drafts only through the project's bounded intake path on a later explicit action.
 
 ### How The Claude Versions Work
 
-The Claude distributions preserve the same staged workflow, with the cross-family review direction mirrored: Claude is the author and editor, and GPT is the read-only reviewer. They now match the Codex complete-draft readiness and context-handoff revision.
+The Claude distribution preserves the shared streamlined workflow with the review direction mirrored: Claude is author/editor and GPT/Codex is the read-only reviewer.
 
 1. Invoke `feature-design` while discussing a feature. It reads canonical context, summarizes what the human already explained, asks adaptive high-value questions, classifies the work provisionally, and drafts only the PRD.
-2. Invoke `cross-model-review` only when a complete, self-contained PRD, implementation design, or task plan is in review-ready `draft`/`proposed` state. The current Claude session remains the author and sole editor; an ephemeral minimal CLI probe verifies `codex` login and model access, one read-only GPT reviewer session — driven through the local `codex exec` CLI under a read-only sandbox — reviews the full draft, Claude verifies findings and prepares corrections, and the same resumable GPT session rechecks the complete corrected draft. The Claude distribution resolves its bundled helper through `${CLAUDE_SKILL_DIR}/scripts/gpt_review.py`, pins `gpt-5.6-sol` at `high` reasoning effort, requires external inputs to live under an owner-only `--scratch-root`, and rejects a missing or changed reviewer session ID. Whole-disk read access is added only when the validated private scratch draft lives outside the project working directory; writes and networked commands remain blocked. Provider calls are polled at roughly 60-second intervals and are never retried automatically. All remaining material and minor differences return to the human before one final patch is applied. The final live summary lists every finding, including corrected and rejected findings, rather than reporting only aggregate counts.
-3. Invoke `implementation-design` only after PRD approval. It either produces the smallest shared technical contract and cross-reviews it, or explicitly records that one task can safely carry its own implementation notes.
-4. Invoke `feature-delivery-plan` after product and technical approval. It creates the minimal vertical delivery graph without changing upstream scope or architecture.
-5. Invoke `feature-security-review` after decomposition and before tracker publication. It treats accepted PRD/design artifacts as immutable context, adds confirmed controls to proposed task contracts, reopens upstream documents only through their owning phase, and blocks publication when critical risk or a required human risk decision remains.
+2. Invoke `cross-model-review` only when a complete PRD or security-aware implementation design is review-ready; task-plan review is explicit-only. The current Claude session remains sole editor; `${CLAUDE_SKILL_DIR}/scripts/gpt_review.py` drives one resumable GPT/Codex reviewer under a read-only sandbox for initial review and one corrected-document recheck. A further round is reserved for a new blocking/material issue.
+3. Invoke `implementation-design` after PRD approval. It either records that one bounded task needs no shared design or produces a security-aware contract with stable controls, verification, and execution prerequisites. Exceptional high-risk work invokes `feature-security-review` as local deep-design enrichment before the one combined implementation review.
+4. Invoke `feature-delivery-plan` after technical/security approval. It maps accepted requirements and controls, conditionally creates `EXECUTION-READINESS.md`, runs local checks, and obtains human approval without routine GPT review.
+5. Publish approved tracker drafts only through the project's bounded intake path on a later explicit action.
 
 ### How The Kimi Versions Work
 
 The Kimi distributions use their own asymmetric staged workflow: the current Kimi session is the author and editor, and Claude is its read-only reviewer. Kimi is not a reviewer provider for the Codex or Claude flows and is not required to mirror their reviewer mechanics exactly.
 
 1. Invoke `feature-design` while discussing a feature. It reads canonical context, summarizes what the human already explained, asks adaptive high-value questions, classifies the work provisionally, and drafts only the PRD.
-2. Invoke `cross-model-review` only when a complete, self-contained PRD, implementation design, or task plan is in review-ready `draft`/`proposed` state. The current Kimi session remains the author and sole editor; a real minimal CLI probe verifies Claude/model access, one read-only Claude session reviews the full draft, Kimi verifies findings and prepares corrections, and the same resumable Claude session rechecks the complete corrected draft. The Kimi distribution pins `claude-opus-4-8` at `xhigh` effort for probe, start, and resume via `scripts/claude_review.py`. Provider calls are polled at roughly 60-second intervals and are never retried automatically. All remaining material and minor differences return to the human before one final patch is applied. The final live summary lists every finding, including corrected and rejected findings, rather than reporting only aggregate counts.
-3. Invoke `implementation-design` only after PRD approval. It either produces the smallest shared technical contract and cross-reviews it, or explicitly records that one task can safely carry its own implementation notes.
-4. Invoke `feature-delivery-plan` after product and technical approval. It creates the minimal vertical delivery graph without changing upstream scope or architecture.
-5. Invoke `feature-security-review` after decomposition and before tracker publication. It treats accepted PRD/design artifacts as immutable context, adds confirmed controls to proposed task contracts, reopens upstream documents only through their owning phase, and blocks publication when critical risk or a required human risk decision remains.
+2. Invoke `cross-model-review` only when a complete, self-contained PRD or security-aware implementation design is review-ready; task-plan review is available only on explicit request. The current Kimi session remains the author and sole editor; a real minimal CLI probe verifies Claude/model access, one read-only Claude session reviews the full draft, Kimi verifies findings and prepares corrections, and the same resumable Claude session performs one corrected-document recheck. The Kimi distribution pins `claude-opus-4-8` at `xhigh` effort for probe, start, and resume via `scripts/claude_review.py`. Provider calls are polled at roughly 60-second intervals and are never retried automatically. A further round is reserved for a new blocking/material issue; human-resolved minor findings do not force an unlimited review loop. The final live summary lists every finding, including corrected and rejected findings, rather than reporting only aggregate counts.
+3. Invoke `implementation-design` only after PRD approval. It either records that one bounded task needs no shared design or produces a security-aware technical contract with stable controls, verification obligations, and known execution prerequisites. Exceptional high-risk work invokes `feature-security-review` as local deep-design enrichment, then the one `implementation` cross-model profile reviews architecture and security together.
+4. Invoke `feature-delivery-plan` after product and technical/security approval. It creates the minimal vertical delivery graph, maps accepted requirements and controls, conditionally creates `EXECUTION-READINESS.md`, runs local coverage/dependency/readiness checks, and obtains human approval without routine Claude review.
+5. Publish approved tracker drafts only through the project's bounded intake path on a later explicit action.
 
 ### PRD Output Format
 
@@ -96,6 +95,7 @@ The Kimi distributions use their own asymmetric staged workflow: the current Kim
 ## Scope
 ## Non-goals
 ## Constraints and accepted assumptions
+## Known human-supplied inputs and external dependencies
 ## Acceptance criteria
 ## Current version / MVP
 ## Architecture horizon
@@ -103,7 +103,7 @@ The Kimi distributions use their own asymmetric staged workflow: the current Kim
 ## Open human decisions
 ```
 
-For a large feature, later stages may additionally produce a justified shared `implementation.md` and a vertical parent/child task plan. For a small feature, implementation notes stay in its single task contract. Cross-model findings remain live and ephemeral; only human-approved final documentation is durable.
+For a large feature, later stages may additionally produce a justified shared `implementation.md`, a vertical parent/child task plan, and—only when external prerequisites exist—`EXECUTION-READINESS.md`. For a small feature, implementation notes stay in its single task contract. Cross-model findings remain live and ephemeral; only human-approved final documentation is durable.
 
 ## Project Docs Organizer
 

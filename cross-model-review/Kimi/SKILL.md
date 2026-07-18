@@ -1,120 +1,85 @@
 ---
 name: cross-model-review
-description: Run a bounded live cross-family review of a complete, self-contained PRD, implementation design, delivery/task plan, or security-relevant artifact set already in review-ready draft/proposed state, keeping the current Kimi session as author and editor and one resumable Claude session as a read-only reviewer. Use when the human asks Claude to challenge the full draft, wants Kimi and Claude to reach evidence-based consensus, wants supported corrections rechecked in the same reviewer session, or wants every remaining disagreement surfaced before approval. Do not use during discovery, question gathering, outlining, or partial drafting, and do not create review ledgers or durable findings artifacts.
+description: Run a bounded live cross-family review of a complete review-ready PRD, security-aware implementation design, or explicitly requested task plan, keeping the current Kimi session as author and editor and one resumable Claude session as a read-only reviewer. Use when the human wants Claude to challenge the full draft, reconcile evidence-backed findings, and recheck the corrected artifact. Implementation review includes security and execution-prerequisite coverage. Do not use during discovery or partial drafting, and do not create review ledgers or durable findings artifacts.
 ---
 
 # Cross-Model Review
 
-Keep the current Kimi conversation as the authoring session. Use one resumable Claude session as the independent reviewer. Relay findings and corrections in the live turn; preserve only the final approved document.
+Keep the current Kimi session as author and sole editor. Use one resumable Claude session as the read-only reviewer; preserve only the final approved artifact.
 
-This skill reviews a finished draft; it does not co-author an unfinished one. Return partial artifacts to their authoring skill.
+Read `${KIMI_SKILL_DIR}/references/review-profiles.md` and select `prd`, `implementation`, or `task-plan`. `implementation` includes security. `task-plan` is available only on explicit human request and is not part of the default feature workflow. Use `${KIMI_SKILL_DIR}/scripts/claude_review.py` to probe, start, and resume Claude.
 
-Read `${KIMI_SKILL_DIR}/references/review-profiles.md` and select `prd`, `implementation`, or `task-plan`. Use `security` only when the `feature-security-review` skill (via the Skill tool, `/skill:feature-security-review`) invokes this skill as its cross-family challenger. Use `${KIMI_SKILL_DIR}/scripts/claude_review.py` to probe, start, and resume Claude.
+Use `claude-opus-4-8` with `xhigh` effort for probe, initial review, and recheck unless the human explicitly requests another model/effort. Keep one reviewer model and effort throughout the session.
 
-Use `claude-opus-4-8` with `xhigh` effort for the probe, initial review, and every resumed recheck. These are explicit skill defaults and must not inherit the user's interactive Claude CLI model selection. Override them only when the human explicitly requests another reviewer model/effort, and pass the same override to every command.
+## Readiness Gate
 
-## Review Readiness Gate
+Before invoking Claude:
 
-Pass every gate before invoking Claude:
+- Read target repository instructions.
+- Resolve exact artifact paths, version/hash, profile, and minimal canonical context.
+- Require each mutable target to be complete, self-contained, substantive, and `draft` or `proposed`, with no placeholders or decisions hidden only in chat.
+- Require every unresolved human decision to be resolved or named explicitly.
+- Require human confirmation of full review; an earlier clear request in the conversation counts.
+- Ensure the Kimi session can safely hold initial review, corrections, human decisions, and one full recheck (check capacity with `/usage`). Otherwise invoke the `feature-context-handoff` skill (via the Skill tool, `/skill:feature-context-handoff`) and move the atomic loop to a fresh session.
+- Keep canonical documents unchanged until review resolution completes.
 
-- Read the target repository's instructions first.
-- Identify the exact artifact path or paths, version/commit/hash when relevant, review profile, and minimal canonical context.
-- Require every artifact being revised in the current review stage to be complete, self-contained, and marked `draft` or `proposed`. Accepted upstream inputs may be supplied as immutable context without changing status. Every required section in the review target must be substantive; no placeholders, TODOs, unfinished task contracts, or known decisions hidden only in chat may remain.
-- Require every known unresolved human decision to be resolved or explicitly named in the draft. Review may challenge an explicit open decision but may not silently decide it.
-- Require the human to have requested or confirmed review of the full draft. A clear request earlier in the current conversation counts; do not ask twice.
-- Verify that the current Kimi session has comfortable context capacity for the initial review, author evaluation and corrections, human decisions, and a full-document recheck. Use only the host-provided context indicator (`/usage` in Kimi Code); never invent a percentage. If capacity is doubtful, invoke the `feature-context-handoff` skill (via the Skill tool, `/skill:feature-context-handoff`) and move the atomic review loop to a fresh session.
-- Keep Claude read-only and leave canonical documents unchanged until review, recheck, and human decisions are complete.
+Return incomplete artifacts to their authoring skill.
 
-Stop and return to the authoring skill when any readiness gate fails. Do not invoke Claude on discovery notes, question collections, outlines, isolated sections, or knowingly incomplete drafts.
+## Reviewer Probe
 
-## Reviewer CLI Probe
-
-Resolve the helper from the installed skill package, then run one real minimal probe immediately before the first full-artifact call:
+Run one real minimal probe immediately before the first full call:
 
 ```bash
 REVIEW_HELPER="${KIMI_SKILL_DIR}/scripts/claude_review.py"
-python3 "$REVIEW_HELPER" probe \
-  --cwd "$PWD"
+python3 "$REVIEW_HELPER" probe --cwd "$PWD"
 ```
 
-The probe must verify executable availability, authentication, and access to `claude-opus-4-8` with `xhigh` effort without loading project artifacts or creating a resumable session. If the probe fails, report the exact error and stop. Do not fall back to another model, skip the cross-family review, or retry automatically. Retry only after an explicit human request.
+On failure, report the exact error and stop. Do not retry, change models, or bypass the review without explicit human direction.
 
-## Live Review Loop
+## Review Loop
 
-1. Create one private ephemeral scratch directory outside canonical project truth and copy every mutable review target into it. Keep source-to-scratch paths clear. Do not use a shared directory such as `/tmp` itself, and do not create a committed review directory or findings file.
-
-   ```bash
-   REVIEW_SCRATCH="$(mktemp -d "${TMPDIR:-/tmp}/cross-model-review.XXXXXX")"
-   chmod 700 "$REVIEW_SCRATCH"
-   cp "$PWD/path/to/implementation.md" "$REVIEW_SCRATCH/implementation.md"
-   ```
-
-2. Start one Claude session with the same helper and defaults used by the successful probe:
+1. Create an owner-only scratch directory outside canonical project truth and copy mutable targets into it. Pass it as `--scratch-root`.
+2. Start one reviewer session with the selected profile, scratch artifact, and minimal canonical context; retain the returned `session_id` only in the live conversation.
 
    ```bash
-   python3 "$REVIEW_HELPER" start \
-     --cwd "$PWD" \
-     --profile implementation \
+   python3 "$REVIEW_HELPER" start --cwd "$PWD" --profile implementation \
      --artifact "$REVIEW_SCRATCH/implementation.md" \
-     --scratch-root "$REVIEW_SCRATCH" \
-     --context "$PWD/AGENTS.md"
+     --scratch-root "$REVIEW_SCRATCH" --context "$PWD/AGENTS.md"
    ```
-
-3. Retain the returned `session_id` in the active conversation. Do not persist raw Claude output as a project artifact.
-   - Treat the provider call as one long-running operation. Use the longest supported wait and poll at roughly 60-second intervals. Do not create repeated model/status turns merely to poll an unchanged process.
-4. Keep an ephemeral finding inventory in the live conversation. For every reviewer finding, retain its ID, original severity, one-line summary, and current disposition: `corrected`, `rejected`, `awaiting-human`, or `accepted-as-is`. Verify every finding against the draft, repository, and canonical context. Reject unsupported findings with evidence; never accept by model authority. Do not write the inventory to a project file.
-   - If reviewer output only gives counts, references missing text such as "the review above", or otherwise omits a finding it claims to have raised, resume the same reviewer session and request one self-contained restatement of every finding before editing or reporting results.
-5. Prepare confirmed corrections in the scratch draft. Stop and ask the human when a finding changes business scope, selects between material architecture alternatives, accepts risk, or makes an irreversible choice.
-6. Resume the same Claude session with the corrected scratch artifact:
+3. Treat the provider call as one long operation. Poll at roughly 60-second intervals without creating status-only model turns.
+4. Maintain an ephemeral inventory containing each finding ID, original severity, summary, and disposition: `corrected`, `rejected`, `awaiting-human`, or `accepted-as-is`. Verify findings against repository evidence.
+5. If output omits findings it claims to have raised, resume once for a self-contained restatement before editing.
+6. Prepare confirmed corrections in scratch. Stop for human resolution when scope, material architecture, risk acceptance, or irreversible commitments change.
+7. Resume the same Claude session once for a full-document recheck of the corrected artifact.
 
    ```bash
-   python3 "$REVIEW_HELPER" resume \
-     --cwd "$PWD" \
-     --session-id SESSION_UUID \
-     --profile implementation \
-     --artifact "$REVIEW_SCRATCH/implementation.md" \
+   python3 "$REVIEW_HELPER" resume --cwd "$PWD" --session-id SESSION_UUID \
+     --profile implementation --artifact "$REVIEW_SCRATCH/implementation.md" \
      --scratch-root "$REVIEW_SCRATCH" \
      --change-summary "Applied confirmed findings; recheck the whole draft."
    ```
+8. Permit an additional focused round only for a new blocking or material finding. New minor findings return to the human without another required reviewer call.
+9. After human resolution, apply one consolidated canonical patch and remove scratch state. A human-approved minor edit made after recheck may remain explicitly disclosed as unrechecked rather than forcing another full pass.
 
-7. Require a full-document recheck, not only confirmation of the author's summary. Permit one additional focused round only for a new material finding.
-8. Surface every remaining disagreement, including minor or optional edits, to the human. The human chooses to apply it or accept the draft as-is.
-9. After human resolution and a clean recheck, apply one consolidated patch from scratch to canonical documentation. Delete scratch state.
+## Completion Standard
 
-## Consensus Contract
+Review is complete when:
 
-Consensus requires all of the following:
-
-- no confirmed blocking finding remains;
-- the author evaluated every reviewer finding;
-- Claude re-read the corrected whole draft in the same reviewer session;
-- no product, architecture, security, or irreversible decision is hidden;
+- no confirmed blocking or material finding remains;
+- Kimi evaluated every finding;
+- Claude completed one full corrected-document recheck in the same session;
+- no material product, architecture, security, or irreversible decision is hidden;
 - the human decided every remaining minor or optional disagreement.
 
-Consensus is not model voting. If evidence remains ambiguous after the bounded loop, stop and ask the human.
+Use `CLEAN` only when the recheck found no remaining issue. Otherwise report `review_complete_with_human_resolved_minors` and identify any post-recheck minor edit.
 
-## Mutation And Safety
+## Safety
 
-- Claude may use only read/search tools and must not edit files, run arbitrary shell commands, mutate git, or access Linear.
-- The current Kimi session is the sole editor.
-- Do not let the helper apply canonical changes automatically.
-- Do not create review ledgers, report JSON, or transcript archives.
-- Require every input outside `--cwd` to live under the private `--scratch-root`; never grant the reviewer a shared parent directory merely to expose one file.
-- On rate limits, overload, timeouts, authentication/model-access errors, malformed output, or resume failure, preserve scratch state, report the exact error, and stop. Do not retry, replace the reviewer session, or change models automatically. Continue only after an explicit human request; disclose lost reviewer continuity if the human chooses a replacement review.
-- Do not silently drop provider failures or pretend consensus was reached.
+- Claude may read/search only; it must not edit, mutate git, run arbitrary shell commands, or access trackers.
+- Do not persist raw output, finding ledgers, transcripts, or reviewer session IDs.
+- Keep every input outside `--cwd` under the private `--scratch-root`.
+- On rate limit, timeout, authentication/model error, malformed output, or resume failure, preserve scratch state, report the exact error, and stop until explicit human direction.
 
-## Completion
+## Completion Report
 
-Report a concise but complete live finding inventory. A count-only summary is
-not sufficient. List every finding raised across all rounds, including findings
-already corrected or rejected, with:
-
-- finding ID and original severity;
-- one-line summary;
-- final disposition: `corrected`, `rejected`, `accepted-as-is`, or
-  `still-open`;
-- concise repository evidence for every rejection.
-
-Then state the total count, every remaining human choice, whether Claude's full
-recheck is clean, and whether the final patch was applied. Do not reproduce the
-raw reviewer transcript or create a durable findings artifact.
+List every finding across all rounds with original severity, one-line meaning, final disposition, and repository evidence for rejection. State totals, remaining human choices, recheck result, any disclosed post-recheck minor edit, and whether the final patch was applied.

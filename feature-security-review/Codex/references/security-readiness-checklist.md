@@ -1,65 +1,44 @@
-# Security readiness checklist
+# Deep feature security checklist
 
-## Scope and assets
+## Outcome and scope
 
-- What user/business outcome is being protected?
-- Which sensitive data, credentials, money, identity, permissions, or critical operations are introduced or changed?
-- What is explicitly outside the current version?
+- Protected business outcome and assets.
+- Explicit current-version boundary and excluded behavior.
+- Human roles, service identities, admins, anonymous actors, and plausible attackers.
 
-## Actors and trust boundaries
+## Trust and privilege
 
-- Human roles, service identities, agents, admins, anonymous users, attackers.
-- Browser/client, API, worker, database, third party, build/deploy, and local machine boundaries.
-- Authentication source and authorization decision owner.
-- Tenant, project, repository, or account isolation.
+- Browser/client, API, worker, database, third party, build/deploy, and local-machine boundaries.
+- Authentication source, authorization owner, least privilege, and tenant/account isolation.
+- Human override, privileged execution, and audit evidence.
 
-## Entry points and abuse cases
+## Inputs and abuse
 
-- UI/API/webhook/file/prompt/CLI inputs and validation.
-- Injection, traversal, SSRF, unsafe deserialization, request replay, confused deputy, mass assignment, and unbounded resource use where relevant.
-- Abuse by an authenticated but unauthorized actor.
-- Rate, size, concurrency, and retry bounds.
+- UI, API, webhook, file, prompt, CLI, and provider inputs.
+- Injection, traversal, SSRF, unsafe deserialization, replay, confused deputy, mass assignment, and unbounded resource use where relevant.
+- Authenticated-but-unauthorized abuse, concurrency, size, rate, and retry bounds.
 
-## Data lifecycle
+## Data and secrets
 
-- Collection minimization and purpose.
-- Storage, encryption, access, logging/redaction, retention, deletion, export, backup, and migration.
+- Collection minimization, purpose, storage, encryption, access, logging/redaction, retention, deletion, export, backup, and migration.
 - Cache, analytics, model/provider, and third-party propagation.
-
-## Secrets and privileged execution
-
-- Secret source, least-privilege scope, inheritance, rotation, revocation, and redaction.
-- Worker/tool/shell/network/filesystem permissions.
-- Whether untrusted or agent-written code can reach runtime credentials or production data.
+- Secret source, scope, rotation, revocation, inheritance, and redaction.
+- Safe delivery and verification of human-supplied credentials or sensitive datasets without recording values in project documents.
 
 ## Integrations and dependencies
 
-- Third-party auth and permission model.
-- Webhook authenticity, replay protection, routing, and idempotency.
-- Dependency provenance and high-impact version/config changes.
-- Failure when the dependency is missing, slow, duplicated, or malicious.
+- Third-party identity and permission model.
+- Webhook authenticity, routing, replay protection, and idempotency.
+- Dependency provenance and compromised, missing, slow, duplicated, or malicious behavior.
 
-## State, failure, and recovery
+## State and recovery
 
 - One owner for security-sensitive state transitions.
-- Atomicity/idempotency and race behavior.
-- Fail-open versus fail-closed decisions.
-- Rollback/revert and recovery evidence.
-- Human override and auditability.
+- Atomicity, races, partial failure, and fail-open/fail-closed behavior.
+- Rollback, recovery, evidence preservation, and irreversible operations.
 
-## Delivery graph
+## Durable result
 
-- Security controls belong to concrete vertical tasks.
-- Verification is executable, not a prose promise.
-- Deferred work does not defer a control required to make the current version safe.
-- Child validation plus parent acceptance cover integration boundaries.
-- Deployment and migration requirements are explicit when in scope.
-- Accepted PRD and implementation artifacts remain immutable reviewer context unless the owning phase explicitly reopens them as proposed revisions.
-- Task contracts remain `proposed` until the final amended set and security posture receive human approval.
-
-## Gate severity
-
-- `critical/blocking`: plausible compromise, privilege bypass, destructive loss, secret exposure, or unsafe irreversible behavior without adequate mitigation. Do not publish tasks.
-- `material`: meaningful exploit/failure path requiring mitigation or explicit human risk decision.
-- `minor`: worthwhile hardening with limited impact; surface to the human and decide whether to include now.
-- `unsupported`: not evidenced by the proposed design/current system; reject with evidence rather than adding ceremony.
+- Put required controls and verification in the implementation design with stable `SEC-*` and `VER-*` IDs.
+- Record material residual risk only through an explicit human decision.
+- Leave downstream task mapping to `$feature-delivery-plan`.

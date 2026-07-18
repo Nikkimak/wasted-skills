@@ -1,4 +1,4 @@
 interface:
   display_name: "Cross-Model Review"
-  short_description: "Review complete drafts live with GPT and Claude"
-  default_prompt: "Use $cross-model-review to have Claude challenge this complete review-ready draft, reconcile every finding here, and recheck the corrected full document."
+  short_description: "Review complete drafts live with Claude"
+  default_prompt: "Use $cross-model-review to have Claude challenge this complete PRD or security-aware implementation draft and recheck the corrected artifact."

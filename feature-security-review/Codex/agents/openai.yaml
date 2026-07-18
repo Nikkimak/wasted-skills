@@ -1,4 +1,4 @@
 interface:
-  display_name: "Feature Security Review"
-  short_description: "Gate feature plans on security readiness"
-  default_prompt: "Use $feature-security-review to review the approved feature design and task plan before anything is published to the tracker."
+  display_name: "Deep Feature Security"
+  short_description: "Deepen exceptional feature security design"
+  default_prompt: "Use $feature-security-review to deepen this high-risk proposed implementation before its single combined cross-model review."

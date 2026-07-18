@@ -20,9 +20,8 @@ import tempfile
 
 PROFILE_FOCUS = {
     "prd": "business outcome, scenarios, scope, non-goals, assumptions, acceptance criteria, and unresolved product decisions",
-    "implementation": "PRD fidelity, architecture and ownership, contracts, data/migrations, failure and recovery, security, and verification",
+    "implementation": "PRD fidelity, architecture and ownership, contracts, data/migrations, failure and recovery, security and trust boundaries, execution prerequisites, and verification",
     "task-plan": "requirement coverage, vertical slices, bounded task scope, dependencies, routing, validation, merge targets, and parent acceptance",
-    "security": "assets, actors, trust boundaries, authorization, secrets, external inputs, abuse cases, data lifecycle, recovery, and task-level mitigations",
 }
 
 
