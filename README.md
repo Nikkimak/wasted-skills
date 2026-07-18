@@ -33,6 +33,7 @@ Every logical skill owns separate native distributions:
 | `feature-design` | Guides product discovery and produces a human-approved PRD. | Yes | Yes | Yes |
 | `implementation-design` | Produces the smallest shared technical and security design justified by an approved PRD, or records that no separate design is needed. | Yes | Yes | Yes |
 | `feature-delivery-plan` | Converts approved decisions into vertical tasks, execution readiness, dependencies, validation, and tracker-ready drafts. | Yes | Yes | Yes |
+| `feature-revision` | Revises an approved feature-document set atomically and runs one consolidated cross-model review. | Yes | Yes | Not yet |
 | `cross-model-review` | Runs a live review-and-recheck loop with the other model family while keeping findings ephemeral. | Yes | Yes | Yes |
 | `feature-security-review` | Deepens exceptional high-risk implementation designs before their one combined technical/security review. | Yes | Yes | Yes |
 | `feature-context-handoff` | Preserves the minimal state of unfinished feature work across fresh sessions. | Yes | Yes | Yes |
@@ -49,6 +50,8 @@ The shared sequence is:
 3. `feature-delivery-plan` derives the vertical task graph, maps product criteria plus `SEC-*`/`VER-*` obligations, and creates a feature-local `EXECUTION-READINESS.md` only when human or external inputs exist. It uses local deterministic checks and human approval, not a routine cross-family or separate post-plan security gate.
 4. Tracker publication remains a later explicit action.
 
+After this sequence, the `feature-revision` skill (Codex and Claude) handles semantic changes to an already approved feature. It stages every affected document as one proposed change set, checks traceability locally, and runs one `revision` cross-model review plus full-bundle recheck instead of repeating the PRD, implementation, and task-plan review stages.
+
 Use `feature-context-handoff` only when one of these phases stops incomplete or intentionally moves to a fresh session. It writes a short-lived `WORK-HANDOFF.md` inside the feature folder, points to canonical documents and the exact next action, and removes the file once canonical state makes continuation obvious. It does not duplicate PRDs, retain model transcripts, monitor context automatically, or install hooks/plugins.
 
 The suite keeps only accepted documents as durable project truth. Raw model findings and review transcripts remain ephemeral. The live completion summary still lists every finding individually with its original severity, concise meaning, and final disposition; a count-only summary is not sufficient.
@@ -59,7 +62,8 @@ The suite keeps only accepted documents as durable project truth. Raw model find
 2. Invoke `cross-model-review` only when a complete, self-contained PRD or security-aware implementation design is review-ready; task-plan review is available only on explicit request. The current GPT/Codex session remains author, one read-only Claude session reviews the full draft, and the same session performs one corrected-document recheck. Provider calls are polled at roughly 60-second intervals and never retried automatically. A further round is reserved for a new blocking/material issue; human-resolved minor findings do not force an unlimited review loop.
 3. Invoke `implementation-design` only after PRD approval. It either records that one bounded task needs no shared design or produces a security-aware technical contract with stable controls, verification obligations, and known execution prerequisites. Exceptional high-risk work invokes `feature-security-review` as local deep-design enrichment, then the one `implementation` cross-model profile reviews architecture and security together.
 4. Invoke `feature-delivery-plan` after product and technical/security approval. It creates the minimal vertical delivery graph, maps accepted requirements and controls, conditionally creates `EXECUTION-READINESS.md`, runs local coverage/dependency/readiness checks, and obtains human approval without routine Claude review.
-5. Publish approved tracker drafts only through the project's bounded intake path on a later explicit action.
+5. Invoke `feature-revision` when an already approved feature changes after downstream documents exist. It updates the affected feature contract as one staged bundle and uses one consolidated `revision` review loop.
+6. Publish approved tracker drafts only through the project's bounded intake path on a later explicit action.
 
 ### How The Claude Versions Work
 
@@ -69,7 +73,8 @@ The Claude distribution preserves the shared streamlined workflow with the revie
 2. Invoke `cross-model-review` only when a complete PRD or security-aware implementation design is review-ready; task-plan review is explicit-only. The current Claude session remains sole editor; `${CLAUDE_SKILL_DIR}/scripts/gpt_review.py` drives one resumable GPT/Codex reviewer under a read-only sandbox for initial review and one corrected-document recheck. A further round is reserved for a new blocking/material issue.
 3. Invoke `implementation-design` after PRD approval. It either records that one bounded task needs no shared design or produces a security-aware contract with stable controls, verification, and execution prerequisites. Exceptional high-risk work invokes `feature-security-review` as local deep-design enrichment before the one combined implementation review.
 4. Invoke `feature-delivery-plan` after technical/security approval. It maps accepted requirements and controls, conditionally creates `EXECUTION-READINESS.md`, runs local checks, and obtains human approval without routine GPT review.
-5. Publish approved tracker drafts only through the project's bounded intake path on a later explicit action.
+5. Invoke `feature-revision` when an already approved feature changes after downstream documents exist. It updates the affected feature contract as one staged bundle and uses one consolidated `revision` review loop.
+6. Publish approved tracker drafts only through the project's bounded intake path on a later explicit action.
 
 ### How The Kimi Versions Work
 

@@ -11,34 +11,22 @@ Read the target repository's instructions, accepted PRD, accepted implementation
 
 ## Session Continuity
 
-When continuing a named feature, use the `feature-context-handoff` skill (invoked via the Skill tool as `/feature-context-handoff`) to read any feature-local `WORK-HANDOFF.md` after mandatory repository instructions. Canonical artifacts override the handoff.
+For unfinished named work, use the `feature-context-handoff` skill (via the Skill tool, `/feature-context-handoff`) to read any feature-local `WORK-HANDOFF.md` after mandatory repository instructions; canonical artifacts override it.
 
 ## Workflow
 
-1. Verify exact accepted PRD and implementation inputs. Return product gaps to the `feature-design` skill (invoked via the Skill tool, `/feature-design`) and shared technical or security gaps to the `implementation-design` skill (invoked via the Skill tool, `/implementation-design`).
-2. Choose one bounded feature/task, one parent with substantial child slices, or one standalone fix.
-3. Decompose only into observable vertical increments with runnable verification paths. Group tightly coupled small work; do not create one task per technical step or minor finding.
-4. Define parent relations, acyclic dependencies, committed/deferred scope, execution and validation profiles, merge targets, and parent acceptance.
-5. Map every committed PRD acceptance criterion, implementation invariant, `SEC-*` control, and `VER-*` obligation to executable task scope and final acceptance.
-6. Identify every human-supplied asset, dataset, access, credential, environment, budget authorization, external approval, or human validation dependency. When any exists, create one feature-local `EXECUTION-READINESS.md`; give each item a stable `HIN-*` ID and reference it from consuming tasks. Never store secret values or sensitive payloads.
-7. Run deterministic local checks for coverage, unauthorized scope, duplicate work, missing or cyclic dependencies, unbounded tasks, control-to-task mapping, verification, merge targets, and readiness blockers.
-8. Present the complete plan and one consolidated "what we need from you" summary grouped into `needed now` and `needed later`. Obtain explicit human approval of the task graph and readiness posture.
-9. Remove an obsolete `WORK-HANDOFF.md` through the `feature-context-handoff` skill when canonical state is clear. End with an approved tracker-ready plan; actual publication remains a later explicit action through the target project's bounded intake path.
-
-## Large Feature Rules
-
-- Use one parent feature and integration branch without a persistent parent worktree.
-- Give each child a temporary branch/worktree and integrate children serially.
-- Use proportional child validation and full parent acceptance before the one merge to `main`.
-- Keep approved deferred tasks visible after publication.
-- Split only for real repository, size, dependency, provider, or security boundaries.
+1. Verify the exact accepted inputs. Return product gaps to the `feature-design` skill (via the Skill tool, `/feature-design`) and shared technical/security gaps to the `implementation-design` skill (via the Skill tool, `/implementation-design`).
+2. Choose the smallest supported delivery shape (one bounded feature/task, one parent with substantial child slices, or one standalone fix) and decompose only into observable vertical increments with runnable verification. Group tightly coupled work; do not create one task per technical step. Split only at real size, repository, dependency, provider, or security boundaries.
+3. Define parent relations, acyclic dependencies, committed/deferred scope, execution and validation profiles, merge targets, and parent acceptance using `references/delivery-plan-contract.md`. For a large parent, use one integration branch, give each child a temporary branch/worktree, integrate children serially, and require full parent acceptance before the one merge to `main`.
+4. Map every committed acceptance criterion, implementation invariant, `SEC-*`, and `VER-*` obligation to executable task scope and final evidence.
+5. When human or external dependencies exist, create one feature-local `EXECUTION-READINESS.md` under its contract, assign each item a stable `HIN-*` ID, and reference it from consuming tasks. Never record secret values or sensitive payloads.
+6. Run local checks for coverage, unauthorized or duplicate work, bounded scope, missing or cyclic dependencies, verification, merge targets, control mapping, and readiness blockers.
+7. Present the complete plan and one consolidated `needed now` / `needed later` human-input summary. Obtain explicit human approval of the task graph and readiness posture, close any obsolete handoff, and finish with a tracker-ready plan; publication remains a later explicit action through the target project's bounded intake path.
 
 ## Boundaries
 
-- Do not change accepted business, architecture, or security decisions.
-- Do not run the `cross-model-review` skill by default; use it only on an explicit human request.
-- Do not invoke the `feature-security-review` skill; exceptional security work belongs before implementation approval.
-- Do not publish tasks, create runtime worktrees, provision credentials, or implement code.
+- Do not redesign accepted product, architecture, or security. Return gaps upstream.
+- Do not run routine cross-model or separate security review, publish tasks, create runtime worktrees, provision credentials, or implement code. Use the `cross-model-review` skill only on explicit human request; exceptional security work belongs before implementation approval.
 
 ## Completion
 

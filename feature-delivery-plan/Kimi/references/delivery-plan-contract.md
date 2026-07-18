@@ -8,6 +8,8 @@
 | `large_feature` | Several substantial increments share one business acceptance | Children integrate into one feature branch; parent owns final merge |
 | `fix` | Restore accepted behavior | Active remediation or one small standalone task |
 
+For `large_feature`, use one parent and integration branch without a persistent parent worktree. Give each child a temporary branch/worktree, integrate children serially, use proportional child validation, and run full parent acceptance before the one merge to `main`. Keep approved deferred tasks visible after publication.
+
 ## Vertical slice
 
 ```markdown

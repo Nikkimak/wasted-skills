@@ -1,64 +1,48 @@
 ---
 name: cross-model-review
-description: Run a bounded live cross-family review of a complete review-ready PRD, security-aware implementation design, or explicitly requested task plan. Use when the human wants GPT to challenge the full draft, reconcile evidence-backed findings, and recheck the corrected artifact. Implementation review includes security and execution-prerequisite coverage. Do not use during discovery or partial drafting, and do not create review ledgers or durable findings artifacts.
+description: Run a bounded live cross-family review of a complete review-ready PRD, security-aware implementation design, explicitly requested task plan, or approved-feature revision bundle. Use when the human wants GPT to challenge complete artifacts, reconcile evidence-backed findings, and recheck the corrected artifact set. Implementation and revision reviews include security and execution-prerequisite coverage. Do not use during discovery or partial drafting, and do not create review ledgers or durable findings artifacts.
 ---
 
 # Cross-Model Review
 
-Keep the current Claude conversation as author and sole editor. Use one resumable GPT/Codex session as the read-only reviewer; preserve only the final approved artifact.
+Keep the current Claude conversation as sole author and editor. Use one resumable, read-only GPT/Codex session and preserve only the approved artifact set.
 
-Read `${CLAUDE_SKILL_DIR}/references/review-profiles.md` and select `prd`, `implementation`, or `task-plan`. `implementation` includes security. `task-plan` is available only on explicit human request and is not part of the default feature workflow. Use `${CLAUDE_SKILL_DIR}/scripts/gpt_review.py` to probe, start, and resume the GPT reviewer through the local `codex exec` CLI (read-only sandbox, resumable session).
-
-Use `gpt-5.6-sol` with `high` reasoning effort for the probe, initial review, and recheck unless the human explicitly requests another reviewer model/effort. Keep one reviewer model and effort throughout the session.
+Read `${CLAUDE_SKILL_DIR}/references/review-profiles.md`, select `prd`, `implementation`, `task-plan`, or `revision`, and use `${CLAUDE_SKILL_DIR}/scripts/gpt_review.py` to probe, start, and resume the GPT reviewer through the local `codex exec` CLI (read-only sandbox, resumable session). `implementation` and `revision` include security; `task-plan` is explicit-request only. Unless the human chooses otherwise, use `gpt-5.6-sol` with `high` reasoning effort for probe, review, and recheck; never change reviewer model or effort mid-session.
 
 ## Readiness Gate
 
-Before invoking the GPT reviewer:
+- Read repository instructions and resolve exact artifact paths, versions/hashes, profile, and minimal canonical context.
+- Require complete, self-contained `draft` or `proposed` targets with no placeholders or decisions hidden only in chat. For `revision`, also require accepted baselines, change intent, and baseline-to-proposal diff.
+- Require human confirmation of full review; an earlier clear request counts. Name every unresolved human decision explicitly.
+- Keep canonical documents unchanged. If the initial review, corrections, human decisions, and full recheck cannot fit safely, use the `feature-context-handoff` skill (via the Skill tool, `/feature-context-handoff`) before review.
 
-- Read target repository instructions.
-- Resolve exact artifact paths, version/hash, profile, and minimal canonical context.
-- Require each mutable target to be complete, self-contained, substantive, and `draft` or `proposed`, with no placeholders or decisions hidden only in chat.
-- Require every unresolved human decision to be resolved or named explicitly.
-- Require human confirmation of full review; an earlier clear request in the conversation counts.
-- Ensure the Claude session can safely hold the initial review, corrections, human decisions, and one full recheck. Otherwise use the `feature-context-handoff` skill (invoked via the Skill tool as `/feature-context-handoff`) and move the atomic loop to a fresh session.
-- Keep canonical documents unchanged until review resolution completes.
-
-Return incomplete artifacts to their authoring skill.
+Return incomplete inputs to their authoring skill.
 
 ## Reviewer Probe
 
-Confirm the `codex` CLI is available and logged in (`codex login status`). Run one real minimal probe immediately before the first full call:
+Confirm the `codex` CLI is available and logged in (`codex login status`), then run one real minimal probe immediately before the first full call:
 
 ```bash
 REVIEW_HELPER="${CLAUDE_SKILL_DIR}/scripts/gpt_review.py"
 python3 "$REVIEW_HELPER" probe --cwd "$PWD"
 ```
 
-The probe verifies executable availability, login, and access to `gpt-5.6-sol` with `high` effort under a read-only, ephemeral sandbox without loading project artifacts or creating a resumable session. On failure, report the exact error and stop. Do not retry, change models, or bypass the review without explicit human direction.
+The probe verifies executable, login, and access to `gpt-5.6-sol` at `high` effort under a read-only ephemeral sandbox without loading artifacts or creating a session. On failure, report the exact error and stop. Do not retry, change models, or bypass review without explicit human direction.
 
 ## Review Loop
 
-1. Create an owner-only scratch directory outside canonical project truth and copy mutable targets into it. Pass it as `--scratch-root`.
-
-   ```bash
-   REVIEW_SCRATCH="$(mktemp -d "${TMPDIR:-/tmp}/cross-model-review.XXXXXX")"
-   chmod 700 "$REVIEW_SCRATCH"
-   cp "$PWD/path/to/implementation.md" "$REVIEW_SCRATCH/implementation.md"
-   ```
-
-2. Start one GPT reviewer session with the selected profile, scratch artifact, and minimal canonical context; retain the returned `session_id` only in the live conversation.
+1. Create an owner-only scratch directory outside canonical truth (`mktemp -d`, `chmod 700`), copy mutable targets into it, and pass it as `--scratch-root`.
+2. Start one reviewer session with the selected profile, scratch artifacts, and minimal context. Keep its `session_id` only in the live conversation. For `revision`, repeat `--artifact` for proposed documents and `--context` for baselines, intent, diff, and unchanged related documents.
 
    ```bash
    python3 "$REVIEW_HELPER" start --cwd "$PWD" --profile implementation \
      --artifact "$REVIEW_SCRATCH/implementation.md" \
      --scratch-root "$REVIEW_SCRATCH" --context "$PWD/CLAUDE.md"
    ```
-
-3. Treat the provider call as one long operation. Poll at roughly 60-second intervals without creating status-only turns.
-4. Maintain an ephemeral inventory containing each finding ID, original severity, summary, and disposition: `corrected`, `rejected`, `awaiting-human`, or `accepted-as-is`. Verify findings against repository evidence; never accept by model authority.
-5. If output omits findings it claims to have raised, resume once for a self-contained restatement before editing.
-6. Prepare confirmed corrections in scratch. Stop for human resolution when scope, material architecture, risk acceptance, or irreversible commitments change.
-7. Resume the same GPT session once for a full-document recheck of the corrected artifact.
+3. Poll the long provider call at roughly 60-second intervals without status-only model turns.
+4. Keep an ephemeral inventory of every finding's ID, original severity, summary, and disposition: `corrected`, `rejected`, `awaiting-human`, or `accepted-as-is`. Verify each finding against repository evidence; never accept by model authority. If output omits findings it claims to have raised, resume once for a self-contained restatement before editing.
+5. Prepare confirmed corrections in scratch. Stop for human resolution when scope, material architecture, risk acceptance, or irreversible commitments change.
+6. Resume the same session once for a full recheck of every corrected artifact.
 
    ```bash
    python3 "$REVIEW_HELPER" resume --cwd "$PWD" --session-id SESSION_UUID \
@@ -66,27 +50,16 @@ The probe verifies executable availability, login, and access to `gpt-5.6-sol` w
      --scratch-root "$REVIEW_SCRATCH" \
      --change-summary "Applied confirmed findings; recheck the whole draft."
    ```
+7. Permit another focused round only for a new blocking or material finding. Return new minor findings to the human without another required call.
+8. After human resolution, apply one canonical patch and remove scratch state. Disclose a human-approved post-recheck minor edit as unrechecked instead of forcing another full pass.
 
-8. Permit an additional focused round only for a new blocking or material finding. New minor findings return to the human without another required reviewer call.
-9. After human resolution, apply one consolidated patch from scratch to canonical documentation and remove scratch state. A human-approved minor edit made after recheck may remain explicitly disclosed as unrechecked rather than forcing another full pass.
+## Completion And Safety
 
-## Completion Standard
+Complete only when Claude evaluated every finding, no confirmed blocking/material issue remains, the GPT reviewer completed the full corrected-set recheck in the same session, and the human resolved every remaining minor or optional disagreement. Use `CLEAN` only when the recheck found no remaining issue; otherwise report `review_complete_with_human_resolved_minors` and identify any post-recheck minor edit.
 
-Review is complete when:
-
-- no confirmed blocking or material finding remains;
-- the Claude author evaluated every finding;
-- the GPT reviewer completed one full corrected-document recheck in the same session;
-- no material product, architecture, security, or irreversible decision is hidden;
-- the human decided every remaining minor or optional disagreement.
-
-Use `CLEAN` only when the recheck found no remaining issue. Otherwise report `review_complete_with_human_resolved_minors` and identify any post-recheck minor edit.
-
-## Safety
-
-- The GPT reviewer runs under a read-only sandbox: it may only read/search and must not edit files, mutate git, run mutating or networked commands, or access external services.
+- The GPT reviewer may read/search only; it must not edit files, mutate git, run mutating or networked commands, or access external services.
 - Do not persist raw output, finding ledgers, transcripts, or reviewer session IDs.
-- Keep every input outside `--cwd` under the private `--scratch-root`; the helper adds whole-disk read access only when an input sits outside `--cwd`, and never grants write or network access.
+- Keep every input outside `--cwd` under the private `--scratch-root`; the helper grants whole-disk read only when an input sits outside `--cwd`, and never write or network access.
 - On rate limit, timeout, login/model-access error, malformed output, or resume failure, preserve scratch state, report the exact error, and stop until explicit human direction.
 
 ## Completion Report

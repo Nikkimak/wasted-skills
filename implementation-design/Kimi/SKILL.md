@@ -5,40 +5,28 @@ description: Convert an approved PRD into the smallest sufficient security-aware
 
 # Implementation Design
 
-Start only from an approved PRD. Capture shared technical and security meaning without turning the document into a task list.
-
 Read the target repository's instructions, accepted PRD, current architecture, runtime map, and relevant decisions. Read `${KIMI_SKILL_DIR}/references/implementation-contract.md` completely.
 
-## Session Continuity
-
-When continuing a named feature, use the `feature-context-handoff` skill (via the Skill tool, `/skill:feature-context-handoff`) to read any feature-local `WORK-HANDOFF.md` after mandatory repository instructions. Canonical artifacts override the handoff.
-
-Before cross-model review, rely only on the host-provided context indicator (`/usage` in Kimi Code). If the complete review loop cannot safely fit, checkpoint with the `feature-context-handoff` skill and recommend a fresh session.
+For unfinished named work, use the `feature-context-handoff` skill (via the Skill tool, `/skill:feature-context-handoff`); canonical artifacts override it.
 
 ## Decide Whether A Document Is Needed
 
-Create a separate design for shared contracts, multiple substantial slices or repositories, data/migrations, integrations, concurrency/recovery, compatibility/rollout, meaningful trust boundaries, or whole-feature verification constraints.
-
-Use `implementation_doc_not_required` only when one bounded task can safely own all implementation notes and the feature introduces no material shared security decision. Record why and pass any constraints to the `feature-delivery-plan` skill (via the Skill tool, `/skill:feature-delivery-plan`).
+Create a separate design when shared contracts, multiple substantial slices or repositories, data/migrations, integrations, recovery, rollout, trust boundaries, or whole-feature verification require shared meaning. Otherwise record `implementation_doc_not_required` with reason and planning constraints for the `feature-delivery-plan` skill (`/skill:feature-delivery-plan`), per the exact rule in the contract.
 
 ## Workflow
 
-1. Bind the design to the exact accepted PRD version or hash.
-2. Map affected components and assign one owner to each durable contract and state transition.
-3. Classify security depth as `quick`, `standard`, or `deep`. Use `deep` for payments, identity, privileged secrets, sensitive user data, multi-tenant isolation, destructive or irreversible operations, or comparable high impact.
-4. Draft the smallest complete implementation contract. Include security controls and verification obligations, plus every known human-supplied asset, dataset, access, credential, environment, budget authorization, external approval, or human validation dependency. Do not store secret values or sensitive data in the document.
-5. Ask the human only about material choices unsupported by canonical evidence. Return product changes to the `feature-design` skill (via the Skill tool, `/skill:feature-design`).
-6. For `deep` risk or an explicit human request, invoke the `feature-security-review` skill (via the Skill tool, `/skill:feature-security-review`) against the proposed implementation draft. Incorporate its confirmed requirements before cross-model review; it is not a later delivery gate.
-7. Make the full draft self-contained, substantive, and `draft` or `proposed`. List every open human decision explicitly.
-8. Invoke the `cross-model-review` skill (via the Skill tool, `/skill:cross-model-review`) with the `implementation` profile. That profile challenges architecture and security together. Verify Claude findings, prepare supported corrections, and complete the bounded full-document recheck in the same Claude reviewer session.
-9. Obtain explicit human approval of the implementation and security posture. Remove an obsolete `WORK-HANDOFF.md` through the `feature-context-handoff` skill (via the Skill tool, `/skill:feature-context-handoff`) when canonical state is clear, then hand off to the `feature-delivery-plan` skill (via the Skill tool, `/skill:feature-delivery-plan`).
+1. Bind the design to the exact accepted PRD version or hash. Map affected components and one owner for each durable contract and state transition.
+2. Classify security depth as `quick`, `standard`, or `deep`; use `deep` for payments, identity, privileged secrets, sensitive user data, multi-tenant isolation, destructive or irreversible operations, or comparable high impact. Draft the smallest complete contract with security controls, verification obligations, and known external execution prerequisites. Never record secret values or sensitive payloads.
+3. Ask only about material choices unsupported by canonical evidence. Return product changes to the `feature-design` skill (`/skill:feature-design`).
+4. For `deep` risk or explicit human request, invoke the `feature-security-review` skill (`/skill:feature-security-review`) on the proposed draft and incorporate confirmed requirements before the combined review.
+5. Make the artifact self-contained and `draft` or `proposed`, with every open decision explicit. Before review, rely only on `/usage` for capacity; if the complete review loop cannot fit safely, checkpoint with the `feature-context-handoff` skill (`/skill:feature-context-handoff`) and recommend a fresh session.
+6. Invoke the `cross-model-review` skill (`/skill:cross-model-review`) with the `implementation` profile. Evaluate findings, prepare supported corrections, and complete the full-document recheck.
+7. Obtain explicit human approval of the technical and security posture, close any obsolete handoff, and hand off to the `feature-delivery-plan` skill (`/skill:feature-delivery-plan`).
 
 ## Boundaries
 
-- Do not change accepted business scope.
-- Do not create task graphs, choose task executors, or publish tracker issues.
-- Do not create a separate security report when controls belong in the implementation design.
-- Do not implement code.
+- Do not change accepted business scope, create task graphs, choose executors, publish issues, or implement code.
+- Keep durable security controls in the implementation design, not a separate report.
 
 ## Completion
 

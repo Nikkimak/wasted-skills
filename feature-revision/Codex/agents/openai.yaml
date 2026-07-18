@@ -1,0 +1,4 @@
+interface:
+  display_name: "Feature Revision"
+  short_description: "Revise approved feature documents together"
+  default_prompt: "Use $feature-revision to update an approved feature document set and run one consolidated cross-model review."
