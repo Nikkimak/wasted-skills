@@ -45,7 +45,7 @@ Classify depth:
 
 For relevant risks, define actors, assets, trust boundaries, authorization ownership, data and secret lifecycle, external-input abuse cases, dependency failure, fail-open/fail-closed behavior, recovery, and residual risk. Give required controls and verification stable IDs such as `SEC-01` and `VER-01` so delivery planning can map them without redesigning them.
 
-Invoke the `feature-security-review` skill (via the Skill tool as `/feature-security-review`) only for `deep` risk or explicit human request. Keep its durable result in this implementation document, then use one `cross-model-review` `implementation` pass for the combined technical and security contract.
+Invoke the `feature-security-review` skill (via the Skill tool as `/feature-security-review`) only for `deep` risk or explicit human request and keep its durable result in this implementation document. After the document is complete, ask the human whether to run one `cross-model-review` `implementation` pass; never infer approval from security depth or from having run the security enrichment.
 
 ## External prerequisites
 
@@ -57,4 +57,4 @@ Use `implementation_doc_not_required` only when one bounded task can safely own 
 
 ## Review readiness
 
-Cross-model review requires one complete, self-contained `draft` or `proposed` implementation artifact with substantive sections, no placeholders, an exact PRD reference, explicit open decisions, security depth, and known external prerequisites.
+When the human approves cross-model review, it requires one complete, self-contained `draft` or `proposed` implementation artifact with substantive sections, no placeholders, an exact PRD reference, explicit open decisions, security depth, and known external prerequisites. A no-document result is approved directly by the human and is not a review artifact.

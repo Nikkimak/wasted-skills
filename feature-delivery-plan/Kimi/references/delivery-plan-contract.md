@@ -4,7 +4,7 @@
 
 | Shape | Use when | Merge behavior |
 | --- | --- | --- |
-| `small_feature` | One bounded end-to-end capability fits one task | Task review, then direct merge to `main` |
+| `small_feature` | One bounded end-to-end capability fits one task | Human approval, then direct merge to `main` |
 | `large_feature` | Several substantial increments share one business acceptance | Children integrate into one feature branch; parent owns final merge |
 | `fix` | Restore accepted behavior | Active remediation or one small standalone task |
 
@@ -64,4 +64,4 @@ Use `committed` for current-version acceptance and `deferred` for visible later 
 
 ## Approval and status
 
-The plan and tasks remain `proposed` until local checks, execution readiness, and explicit human approval complete. No routine cross-model or separate post-plan security review is required. A newly discovered product gap returns to the `feature-design` skill (via the Skill tool, `/skill:feature-design`); a shared technical or security gap returns to the `implementation-design` skill (via the Skill tool, `/skill:implementation-design`) and reopens only the affected accepted contract.
+The plan and tasks remain `proposed` until local checks, execution readiness, and explicit human approval complete. Do not offer routine cross-model or separate post-plan security review; run task-plan cross-model review only when the human explicitly requests it. A newly discovered product gap returns to the `feature-design` skill (via the Skill tool, `/skill:feature-design`); a shared technical or security gap returns to the `implementation-design` skill (via the Skill tool, `/skill:implementation-design`) and reopens only the affected accepted contract.

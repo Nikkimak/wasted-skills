@@ -2,7 +2,7 @@
 
 ## PRD
 
-Challenge business outcome, users, current/desired behavior, scope, non-goals, MVP boundary, contradictions, unsupported assumptions, open product decisions, observable acceptance/failure behavior, and known human-supplied dependencies. Do not invent implementation detail merely to add completeness.
+Challenge business outcome, users, current/desired behavior, scope, non-goals, MVP boundary, contradictions, unsupported assumptions, open product decisions, observable acceptance/failure behavior, and known human-supplied dependencies. For a proposed update to an accepted PRD, use its baseline and intended delta when provided, check for hidden scope and downstream impact, and still read the full proposed PRD. Do not invent implementation detail merely to add completeness.
 
 ## Implementation
 
@@ -16,6 +16,8 @@ Challenge the complete technical and security contract:
 - stable `SEC-*` and `VER-*` obligations sufficient for downstream task mapping;
 - human-supplied assets, datasets, access, credentials, environments, approvals, budgets, and validation, including safe handling and known blocking stage;
 - unnecessary complexity and unresolved product, architecture, security, or residual-risk decisions.
+
+For a proposed update to an accepted implementation design, use its baseline and intended delta when provided, check affected downstream contracts, and still read the full proposed design.
 
 For deep-risk features, use the proposed implementation already enriched by the `feature-security-review` skill (via the Skill tool, `/skill:feature-security-review`); do not create a second security review stage.
 

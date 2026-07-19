@@ -1,6 +1,6 @@
 ---
 name: feature-context-handoff
-description: Preserve or restore the minimal working state of one unfinished feature across fresh Codex sessions. Use when the user asks to pause, end, hand off, or continue a named feature; when product, implementation/security design, delivery, revision, or execution-readiness work cannot safely finish in the remaining context; when a blocker pauses incomplete feature work; or when Codex must create, refresh, read, or remove a feature-local WORK-HANDOFF.md. Do not use for completed work, routine turn summaries, or durable decisions that belong in canonical documents.
+description: Preserve or restore the minimal working state of one unfinished feature across fresh Codex sessions. Use when the user asks to pause, end, hand off, or continue a named feature; when product, implementation/security design, delivery, or execution-readiness work cannot safely finish in the remaining context; when a blocker pauses incomplete feature work; or when Codex must create, refresh, read, or remove a feature-local WORK-HANDOFF.md. Do not use for completed work, routine turn summaries, or durable decisions that belong in canonical documents.
 ---
 
 # Feature Context Handoff
@@ -41,7 +41,7 @@ Keep the file direct and normally within roughly 1,000-2,000 tokens. Use this st
 # Work handoff: <feature>
 
 Updated: <date/time or date>
-Phase: <feature-design|implementation-design|deep-security-design|delivery-plan|feature-revision|execution-readiness|other>
+Phase: <feature-design|implementation-design|deep-security-design|delivery-plan|execution-readiness|other>
 Status: <precise incomplete state>
 
 ## Read first

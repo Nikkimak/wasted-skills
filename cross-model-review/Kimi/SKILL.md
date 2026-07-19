@@ -1,19 +1,19 @@
 ---
 name: cross-model-review
-description: Run a bounded live cross-family review of a complete review-ready PRD, security-aware implementation design, or explicitly requested task plan, keeping the current Kimi session as author and editor and one resumable Claude session as a read-only reviewer. Use when the human wants Claude to challenge the full draft, reconcile evidence-backed findings, and recheck the corrected artifact. Implementation review includes security and execution-prerequisite coverage. Do not use during discovery or partial drafting, and do not create review ledgers or durable findings artifacts.
+description: Run a bounded live cross-family review of a complete review-ready PRD, security-aware implementation design, or explicitly requested task plan, keeping the current Kimi session as author and one resumable Claude session as a read-only reviewer. Use only after the human explicitly asks for or approves review of the specific complete artifact. Reconcile evidence-backed findings and recheck the corrected artifact. Implementation review includes security and execution-prerequisite coverage. Do not infer consent from complexity or risk, use during partial drafting, or create durable review artifacts.
 ---
 
 # Cross-Model Review
 
 Keep the current Kimi session as author and sole editor. Use one resumable Claude session as the read-only reviewer; preserve only the final approved artifact.
 
-Read `${KIMI_SKILL_DIR}/references/review-profiles.md` and select `prd`, `implementation`, or `task-plan` (`implementation` includes security; `task-plan` is explicit-request only, outside the default feature workflow). Use `${KIMI_SKILL_DIR}/scripts/claude_review.py` to probe, start, and resume Claude. Unless the human explicitly requests otherwise, use `claude-opus-4-8` with `xhigh` effort for probe, initial review, and recheck; keep one reviewer model and effort throughout the session.
+Read `${KIMI_SKILL_DIR}/references/review-profiles.md` and select `prd`, `implementation`, or `task-plan` (`implementation` includes security; `task-plan` is explicit-request only and authoring skills must not offer it routinely). Use `${KIMI_SKILL_DIR}/scripts/claude_review.py` to probe, start, and resume Claude. Unless the human explicitly requests otherwise, use `claude-opus-4-8` with `xhigh` effort for probe, initial review, and recheck; keep one reviewer model and effort throughout the session.
 
 ## Readiness Gate
 
 - Read repository instructions and resolve exact artifact paths, version/hash, profile, and minimal canonical context.
-- Require each mutable target complete, self-contained, substantive, and `draft` or `proposed`, with no placeholders or decisions hidden only in chat.
-- Name every unresolved human decision explicitly and require human confirmation of full review; an earlier clear request in the conversation counts.
+- Require the mutable target complete, self-contained, substantive, and `draft` or `proposed`, with no placeholders or decisions hidden only in chat. For changes to an accepted artifact, include the accepted baseline and intended delta as context when available.
+- Require explicit human approval for review of this artifact and profile; an earlier clear request counts. An authoring skill's recommendation, complexity assessment, risk classification, or generic permission to continue does not count. Name every unresolved human decision explicitly.
 - Keep canonical documents unchanged. If initial review, corrections, human decisions, and one full recheck cannot fit safely in the session (check capacity with `/usage`), invoke the `feature-context-handoff` skill (via the Skill tool, `/skill:feature-context-handoff`) and move the atomic loop to a fresh session.
 
 Return incomplete artifacts to their authoring skill.
@@ -32,7 +32,7 @@ On failure, report the exact error and stop. Do not retry, change models, or byp
 ## Review Loop
 
 1. Create an owner-only scratch directory outside canonical project truth, copy mutable targets into it, and pass it as `--scratch-root`.
-2. Start one reviewer session with the selected profile, scratch artifact, and minimal canonical context; retain the returned `session_id` only in the live conversation.
+2. Start one reviewer session with the selected profile, scratch artifact, and minimal canonical context; retain the returned `session_id` only in the live conversation. For an update to an accepted artifact, pass its baseline and intended delta as context when available.
 
    ```bash
    python3 "$REVIEW_HELPER" start --cwd "$PWD" --profile implementation \

@@ -1,4 +1,4 @@
 interface:
   display_name: "Feature Delivery Plan"
   short_description: "Build executable tasks and readiness"
-  default_prompt: "Use $feature-delivery-plan to map the approved feature, implementation controls, and human prerequisites into a checked tracker-ready delivery plan."
+  default_prompt: "Use $feature-delivery-plan to create or revise the checked tracker-ready task plan from these approved feature decisions."

@@ -1,6 +1,6 @@
 ---
 name: feature-security-review
-description: Deepen a proposed implementation design before its combined cross-model implementation/security review when a feature involves payments, identity, privileged secrets, sensitive user data, multi-tenant isolation, destructive or irreversible operations, comparable high impact, or an explicit human request. Add durable controls and risk decisions to the implementation draft. Do not act as a routine post-delivery gate, review task graphs, publish issues, or run a separate cross-family review.
+description: Deepen a proposed implementation design when a feature involves payments, identity, privileged secrets, sensitive user data, multi-tenant isolation, destructive or irreversible operations, comparable high impact, or an explicit human request. Add durable controls and risk decisions to the implementation draft, then return it for a separate human decision about optional cross-model review and final approval. Do not act as a routine post-delivery gate, review task graphs, publish issues, or run a cross-family review.
 ---
 
 # Feature Security Review
@@ -21,7 +21,7 @@ Require an accepted PRD and a complete proposed implementation draft. If product
 4. Propose the smallest controls that preserve the accepted business outcome. Give durable controls and verification stable IDs such as `SEC-*` and `VER-*`.
 5. Stop for human resolution when mitigation changes product behavior or architecture materially, accepts material residual risk, or requires an irreversible operational commitment.
 6. Put confirmed requirements and accepted risks into the proposed implementation design. Do not create a separate report or modify delivery tasks.
-7. Return the enriched draft to the `implementation-design` skill (via the Skill tool, `/skill:implementation-design`) for its single combined cross-model review with the `implementation` profile and human approval.
+7. Return the enriched draft to the `implementation-design` skill (via the Skill tool, `/skill:implementation-design`) for its separate human decision about optional cross-model review and final approval.
 
 ## Gate Result
 
@@ -36,7 +36,7 @@ List the implementation sections changed, control IDs added, residual risks, and
 
 ## Boundaries
 
-- Do not invoke the `cross-model-review` skill; the `implementation-design` skill owns the one combined review.
+- Do not invoke or presume approval for the `cross-model-review` skill; the `implementation-design` skill owns the explicit review decision.
 - Do not review or amend delivery plans.
 - Do not accept material risk for the human.
 - Do not publish tracker issues or implement code.

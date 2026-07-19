@@ -1,4 +1,4 @@
 interface:
   display_name: "Deep Feature Security"
   short_description: "Deepen exceptional feature security design"
-  default_prompt: "Use $feature-security-review to deepen this high-risk proposed implementation before its single combined cross-model review."
+  default_prompt: "Use $feature-security-review to deepen this high-risk proposed implementation and return it for my review decision and approval."

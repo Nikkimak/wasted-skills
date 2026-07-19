@@ -1,4 +1,4 @@
 interface:
   display_name: "Implementation Design"
-  short_description: "Design technical and security contracts"
-  default_prompt: "Use $implementation-design to turn this approved PRD into the smallest security-aware technical contract and prepare it for one combined implementation review."
+  short_description: "Design only needed technical contracts"
+  default_prompt: "Use $implementation-design to decide whether this approved PRD needs a technical design, draft it if justified, and ask me before any cross-model review."

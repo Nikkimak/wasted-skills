@@ -1,4 +1,4 @@
 interface:
   display_name: "Feature Design"
-  short_description: "Turn product ideas into approved PRDs"
-  default_prompt: "Use $feature-design to guide this feature discussion, ask adaptive questions, and produce an approved business-led PRD without planning implementation or tasks."
+  short_description: "Create and revise human-approved PRDs"
+  default_prompt: "Use $feature-design to create or revise this PRD, then ask me before any cross-model review."

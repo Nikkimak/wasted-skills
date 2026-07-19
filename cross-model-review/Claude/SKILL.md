@@ -1,19 +1,19 @@
 ---
 name: cross-model-review
-description: Run a bounded live cross-family review of a complete review-ready PRD, security-aware implementation design, explicitly requested task plan, or approved-feature revision bundle. Use when the human wants GPT to challenge complete artifacts, reconcile evidence-backed findings, and recheck the corrected artifact set. Implementation and revision reviews include security and execution-prerequisite coverage. Do not use during discovery or partial drafting, and do not create review ledgers or durable findings artifacts.
+description: Run a bounded live cross-family review of a complete review-ready PRD, security-aware implementation design, or explicitly requested task plan. Use only after the human explicitly asks for or approves review of the specific complete artifact. Keep Claude as author and GPT/Codex as a read-only challenger, reconcile evidence-backed findings, and recheck the corrected artifact. Implementation review includes security and execution-prerequisite coverage. Do not infer consent from complexity or risk, use during partial drafting, or create durable review artifacts.
 ---
 
 # Cross-Model Review
 
 Keep the current Claude conversation as sole author and editor. Use one resumable, read-only GPT/Codex session and preserve only the approved artifact set.
 
-Read `${CLAUDE_SKILL_DIR}/references/review-profiles.md`, select `prd`, `implementation`, `task-plan`, or `revision`, and use `${CLAUDE_SKILL_DIR}/scripts/gpt_review.py` to probe, start, and resume the GPT reviewer through the local `codex exec` CLI (read-only sandbox, resumable session). `implementation` and `revision` include security; `task-plan` is explicit-request only. Unless the human chooses otherwise, use `gpt-5.6-sol` with `high` reasoning effort for probe, review, and recheck; never change reviewer model or effort mid-session.
+Read `${CLAUDE_SKILL_DIR}/references/review-profiles.md`, select `prd`, `implementation`, or `task-plan`, and use `${CLAUDE_SKILL_DIR}/scripts/gpt_review.py` to probe, start, and resume the GPT reviewer through the local `codex exec` CLI (read-only sandbox, resumable session). `implementation` includes security; `task-plan` is explicit-request only and authoring skills must not offer it routinely. Unless the human chooses otherwise, use `gpt-5.6-sol` with `high` reasoning effort for probe, review, and recheck; never change reviewer model or effort mid-session.
 
 ## Readiness Gate
 
 - Read repository instructions and resolve exact artifact paths, versions/hashes, profile, and minimal canonical context.
-- Require complete, self-contained `draft` or `proposed` targets with no placeholders or decisions hidden only in chat. For `revision`, also require accepted baselines, change intent, and baseline-to-proposal diff.
-- Require human confirmation of full review; an earlier clear request counts. Name every unresolved human decision explicitly.
+- Require a complete, self-contained `draft` or `proposed` target with no placeholders or decisions hidden only in chat. For changes to an accepted artifact, include the accepted baseline and intended delta as context when available.
+- Require explicit human approval for review of this artifact and profile; an earlier clear request counts. An authoring skill's recommendation, complexity assessment, risk classification, or generic permission to continue does not count. Name every unresolved human decision explicitly.
 - Keep canonical documents unchanged. If the initial review, corrections, human decisions, and full recheck cannot fit safely, use the `feature-context-handoff` skill (via the Skill tool, `/feature-context-handoff`) before review.
 
 Return incomplete inputs to their authoring skill.
@@ -32,7 +32,7 @@ The probe verifies executable, login, and access to `gpt-5.6-sol` at `high` effo
 ## Review Loop
 
 1. Create an owner-only scratch directory outside canonical truth (`mktemp -d`, `chmod 700`), copy mutable targets into it, and pass it as `--scratch-root`.
-2. Start one reviewer session with the selected profile, scratch artifacts, and minimal context. Keep its `session_id` only in the live conversation. For `revision`, repeat `--artifact` for proposed documents and `--context` for baselines, intent, diff, and unchanged related documents.
+2. Start one reviewer session with the selected profile, scratch artifact, and minimal context. Keep its `session_id` only in the live conversation. For an update to an accepted artifact, pass its baseline and intended delta as context when available.
 
    ```bash
    python3 "$REVIEW_HELPER" start --cwd "$PWD" --profile implementation \
