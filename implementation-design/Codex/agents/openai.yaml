@@ -1,4 +1,4 @@
 interface:
   display_name: "Implementation Design"
-  short_description: "Design only needed technical contracts"
-  default_prompt: "Use $implementation-design to decide whether this approved PRD needs a technical design, draft it if justified, and ask me before any cross-model review."
+  short_description: "Design only changed shared technical contracts"
+  default_prompt: "Use $implementation-design to identify the material delta and create or amend only the shared technical and security contract that actually changes."

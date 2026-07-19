@@ -53,7 +53,7 @@ Use `committed` for current-version acceptance and `deferred` for visible later 
 ## Local checks
 
 - Map every committed PRD acceptance criterion to task scope and parent acceptance.
-- Map every implementation invariant, `SEC-*` control, and `VER-*` obligation to an owning task and executable evidence.
+- Map every implementation invariant, `SEC-*` control, and `VER-*` obligation applicable to this delivery delta to an owning task and executable evidence; do not taskify unchanged baseline controls.
 - Reject behavior absent from accepted upstream documents.
 - Require complete, directional, acyclic dependencies and minimal bounded task count.
 - Require proportional validation, explicit merge targets, and combined parent acceptance.

@@ -1,11 +1,11 @@
 ---
 name: feature-security-review
-description: Deepen a proposed implementation design when a feature involves payments, identity, privileged secrets, sensitive user data, multi-tenant isolation, destructive or irreversible operations, comparable high impact, or an explicit human request. Add durable controls and risk decisions to the implementation draft, then return it for a separate human decision about optional cross-model review and final approval. Do not act as a routine post-delivery gate, review task graphs, publish issues, or run a cross-family review.
+description: Deepen a proposed implementation design only when its delta introduces or materially changes payments, identity, privileged secrets, sensitive data, tenant isolation, destructive/irreversible behavior, or comparable high-impact boundaries, or when the human explicitly requests it. Review only affected risk, add only new or changed durable controls to the implementation draft, and create no separate report. Do not act as a routine gate, review task graphs, publish issues, or run cross-family review.
 ---
 
 # Feature Security Review
 
-Use this as an exceptional implementation-design escalation, not a mandatory final stage. Review the proposed change rather than the repository in the abstract.
+Use this as an exceptional implementation-design escalation. Review the material delta, not the feature domain or repository in the abstract.
 
 Read the target repository's instructions, accepted PRD, proposed implementation design, and canonical security/architecture decisions. Read `references/security-readiness-checklist.md` completely.
 
@@ -15,24 +15,24 @@ Require an accepted PRD and a complete proposed implementation draft. If product
 
 ## Workflow
 
-1. Confirm the exceptional trigger and affected assets, actors, privileges, trust boundaries, data, secrets, integrations, and irreversible operations.
-2. Trace entry points, authorization decisions, data lifecycle, abuse cases, dependency failure, recovery, rollback, and audit evidence.
-3. Distinguish blocking risk, required mitigation, residual risk requiring human acceptance, non-blocking hardening, and unsupported concern.
-4. Propose the smallest controls that preserve the accepted business outcome. Give durable controls and verification stable IDs such as `SEC-*` and `VER-*`.
-5. Stop for human resolution when mitigation changes product behavior or architecture materially, accepts material residual risk, or requires an irreversible operational commitment.
-6. Put confirmed requirements and accepted risks into the proposed implementation design. Do not create a separate report or modify delivery tasks.
-7. Return the enriched draft to `$implementation-design` for its separate human decision about optional `$cross-model-review` and final approval.
+1. Compare the proposed delta with accepted security baselines. If it introduces or materially changes no high-impact boundary, return `deep_security_review_not_required` without editing the design.
+2. For a deep delta, inspect only affected assets, actors, privileges, boundaries, data/secrets, inputs, integrations, failure/recovery, and audit evidence using the checklist. Cite unchanged baseline controls once; do not restate them.
+3. Distinguish blocking risk, required mitigation, human-accepted residual risk, optional hardening, and unsupported concern.
+4. Add the smallest new or changed controls that preserve the accepted outcome. Reuse existing IDs for unchanged obligations; create `SEC-*`/`VER-*` only for new ones.
+5. Stop for human resolution only when mitigation changes product/architecture materially, accepts material residual risk, or requires an irreversible commitment.
+6. Put confirmed changes in the implementation design, create no separate report or task edits, and return to `$implementation-design` for its review decision and approval.
 
 ## Gate Result
 
 Return one of:
 
 - `deep_security_design_ready`;
+- `deep_security_review_not_required`;
 - `changes_required`;
 - `blocked_on_human_risk_decision`;
 - `blocked_on_product_or_architecture_revision`.
 
-List the implementation sections changed, control IDs added, residual risks, and exact human decisions still required.
+For `deep_security_review_not_required`, cite the baseline and delta reason. Otherwise list changed sections/IDs, residual risks, and exact human decisions.
 
 ## Boundaries
 

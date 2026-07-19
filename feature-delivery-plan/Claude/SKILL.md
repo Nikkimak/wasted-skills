@@ -1,13 +1,13 @@
 ---
 name: feature-delivery-plan
-description: Create or revise the smallest executable vertical task graph from an approved PRD and approved security-aware implementation design, or an explicit no-document result. Map product criteria, technical invariants, security controls, verification, dependencies, routing, merge targets, and human/external prerequisites; create a conditional feature-local execution-readiness manifest; run deterministic local checks and obtain human approval. Do not offer routine cross-model review; run task-plan review only on explicit human request. Do not change upstream decisions, publish issues, or implement code.
+description: Create or revise the smallest executable vertical task graph from an approved PRD and accepted implementation design, no-document result, or no-change result. Map only applicable product, technical, security, verification, dependency, routing, merge, and prerequisite obligations; create execution readiness only when needed; run local checks and obtain human approval. Do not offer routine cross-model review, change upstream decisions, publish issues, or implement code.
 ---
 
 # Feature Delivery Plan
 
 Convert accepted meaning into the smallest executable task graph. Do not redesign product, architecture, or security during decomposition.
 
-Read the target repository's instructions, accepted PRD, accepted implementation design or `implementation_doc_not_required`, and current task/intake contracts. Read `references/delivery-plan-contract.md` completely. If any human or external execution dependency exists, also read `references/execution-readiness-contract.md` completely.
+Read the target repository's instructions, accepted PRD, accepted implementation design or `implementation_doc_not_required`/`implementation_change_not_required` result, and current task/intake contracts. Read `references/delivery-plan-contract.md` completely. If any human or external execution dependency exists, also read `references/execution-readiness-contract.md` completely.
 
 ## Session Continuity
 
@@ -18,7 +18,7 @@ For unfinished named work, use the `feature-context-handoff` skill (via the Skil
 1. Verify the exact accepted inputs. When revising a plan, preserve its accepted baseline and update only the tasks, dependencies, and readiness state affected by those inputs. Return product gaps to the `feature-design` skill (via the Skill tool, `/feature-design`) and shared technical/security gaps to the `implementation-design` skill (via the Skill tool, `/implementation-design`).
 2. Choose the smallest supported delivery shape (one bounded feature/task, one parent with substantial child slices, or one standalone fix) and decompose only into observable vertical increments with runnable verification. Group tightly coupled work; do not create one task per technical step. Split only at real size, repository, dependency, provider, or security boundaries.
 3. Define parent relations, acyclic dependencies, committed/deferred scope, execution and validation profiles, merge targets, and parent acceptance using `references/delivery-plan-contract.md`. For a large parent, use one integration branch, give each child a temporary branch/worktree, integrate children serially, and require full parent acceptance before the one merge to `main`.
-4. Map every committed acceptance criterion, implementation invariant, `SEC-*`, and `VER-*` obligation to executable task scope and final evidence.
+4. Map every committed acceptance criterion and every implementation, `SEC-*`, or `VER-*` obligation applicable to this delivery delta to executable task scope and final evidence; do not create tasks for unchanged baseline controls.
 5. When human or external dependencies exist, create one feature-local `EXECUTION-READINESS.md` under its contract, assign each item a stable `HIN-*` ID, and reference it from consuming tasks. Never record secret values or sensitive payloads.
 6. Run local checks for coverage, unauthorized or duplicate work, bounded scope, missing or cyclic dependencies, verification, merge targets, control mapping, and readiness blockers.
 7. Present the complete plan and one consolidated `needed now` / `needed later` human-input summary. Do not offer cross-model review routinely. Run it only if the human independently requests task-plan review; then obtain explicit approval of the resulting task graph and readiness posture. Otherwise obtain explicit human approval directly, close any obsolete handoff, and finish with a tracker-ready plan; publication remains a later explicit action through the target project's bounded intake path.

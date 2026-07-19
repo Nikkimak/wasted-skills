@@ -6,7 +6,7 @@ Capture technical and security meaning shared by multiple delivery tasks. Do not
 
 ## Semantic structure
 
-Adapt headings to the target repository while preserving:
+Use only the headings needed to make changed shared meaning self-contained; combine or omit irrelevant sections and reference unchanged canonical baselines instead of restating them:
 
 ```markdown
 # Implementation design: feature/version
@@ -29,9 +29,10 @@ Adapt headings to the target repository while preserving:
 ## Core rules
 
 - Bind the design to one accepted PRD version or hash.
-- Assign one owner to orchestration state and every durable contract.
-- Describe invariants and boundaries, not speculative file-by-file edits.
-- State partial success, retry, idempotency, concurrency, recovery, and rollback where relevant.
+- Define the material delta first; preserve and cite unchanged accepted contracts.
+- Assign one owner to each changed durable contract or state transition.
+- Describe affected invariants and boundaries, not file-by-file edits.
+- State partial success, retry, concurrency, recovery, and rollback only where relevant.
 - Enable an early meaningful end-to-end verification path.
 - Separate current-version requirements from future horizon.
 
@@ -39,22 +40,23 @@ Adapt headings to the target repository while preserving:
 
 Classify depth:
 
-- `quick`: no new material trust, sensitive-data, privilege, or external-input boundary;
-- `standard`: ordinary auth, stored data, external input, or integration risk;
-- `deep`: payment, identity, privileged secrets, sensitive user data, multi-tenant isolation, destructive/irreversible behavior, or comparable high impact.
+- `quick`: no material new or changed security boundary;
+- `standard`: the delta materially changes ordinary auth, stored data, external input, or integration risk without a high-impact boundary;
+- `deep`: the delta introduces or materially changes payment, identity, privileged-secret, sensitive-data, tenant-isolation, destructive/irreversible, or comparable high-impact boundaries.
 
-For relevant risks, define actors, assets, trust boundaries, authorization ownership, data and secret lifecycle, external-input abuse cases, dependency failure, fail-open/fail-closed behavior, recovery, and residual risk. Give required controls and verification stable IDs such as `SEC-01` and `VER-01` so delivery planning can map them without redesigning them.
+Existing high-impact functionality alone does not raise the depth. For affected risks, define only the actors, assets, boundaries, lifecycle, abuse/failure behavior, recovery, and residual risk needed to explain the delta. Reference inherited controls once; create `SEC-*` and `VER-*` IDs only for new or changed obligations.
 
 Invoke `$feature-security-review` only for `deep` risk or explicit human request and keep its durable result in this implementation document. After the document is complete, ask the human whether to run one `$cross-model-review` `implementation` pass; never infer approval from security depth or from having run the security enrichment.
 
 ## External prerequisites
 
-Record every known human-supplied asset, dataset, access, credential, environment, budget authorization, external approval, or human validation dependency. State why it is needed, the stage that consumes it, safe handling, and what may proceed without it. Never record secret values or sensitive payloads. Detailed status tracking belongs to delivery planning's conditional `EXECUTION-READINESS.md`.
+Record only known prerequisites affected or introduced by the change, with purpose, consuming stage, safe handling, and what may proceed without them. Never record secret values or sensitive payloads; status belongs to delivery planning's conditional `EXECUTION-READINESS.md`.
 
-## No-document result
+## No-change and no-document results
 
-Use `implementation_doc_not_required` only when one bounded task can safely own all shared notes and no material shared security decision exists. Give the reason and constraints that delivery planning must preserve.
+- `implementation_change_not_required`: an accepted design or no-document result remains valid and the delta changes no shared technical/security contract. Cite the baseline; do not edit, review, or reapprove it.
+- `implementation_doc_not_required`: one bounded task can own all notes and no new or changed shared contract/security decision exists. Give the reason and planning constraints for approval.
 
 ## Review readiness
 
-When the human approves cross-model review, it requires one complete, self-contained `draft` or `proposed` implementation artifact with substantive sections, no placeholders, an exact PRD reference, explicit open decisions, security depth, and known external prerequisites. A no-document result is approved directly by the human and is not a review artifact.
+Approved review requires one self-contained `draft` or `proposed` artifact with no placeholders, exact PRD/baseline references, explicit open decisions, delta-based security depth, and affected prerequisites. Completeness is about material decisions, not filled headings. No-change and no-document results are not review artifacts.

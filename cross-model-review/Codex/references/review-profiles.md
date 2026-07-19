@@ -8,18 +8,16 @@ Challenge business outcome, users, current/desired behavior, scope, non-goals, M
 
 Challenge the complete technical and security contract:
 
-- fidelity to the accepted PRD/version;
-- component ownership, contracts, data, migration, integration, concurrency, compatibility, rollout, rollback, and recovery;
-- authentication/authorization ownership, assets, actors, trust boundaries, privileges, isolation, secrets, sensitive-data lifecycle, and log/redaction behavior;
-- external inputs, abuse cases, replay/idempotency, resource bounds, dependency failure, and fail-open/fail-closed decisions;
-- observability, operations, testability, and executable security verification;
-- stable `SEC-*` and `VER-*` obligations sufficient for downstream task mapping;
+- fidelity to the accepted PRD and declared delta from any accepted baseline;
+- affected ownership, contracts, data/migration, integration, concurrency, compatibility, rollout, rollback, recovery, observability, and verification;
+- materially changed authentication/authorization, assets, boundaries, privileges/isolation, secrets/data lifecycle, external inputs, abuse/dependency failure, and fail-open/closed behavior;
+- new or changed `SEC-*`/`VER-*` obligations sufficient for delivery, without duplicating inherited controls or demanding prose for unaffected sections;
 - human-supplied assets, datasets, access, credentials, environments, approvals, budgets, and validation, including safe handling and known blocking stage;
 - unnecessary complexity and unresolved product, architecture, security, or residual-risk decisions.
 
 For a proposed update to an accepted implementation design, use its baseline and intended delta when provided, check affected downstream contracts, and still read the full proposed design.
 
-For deep-risk features, use the proposed implementation already enriched by `$feature-security-review`; do not create a second security review stage.
+For deep-risk deltas, use the implementation already enriched by `$feature-security-review`; do not create a second security review stage.
 
 ## Task plan
 

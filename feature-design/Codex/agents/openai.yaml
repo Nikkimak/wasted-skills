@@ -1,4 +1,4 @@
 interface:
   display_name: "Feature Design"
-  short_description: "Create and revise human-approved PRDs"
-  default_prompt: "Use $feature-design to create or revise this PRD, then ask me before any cross-model review."
+  short_description: "Triage fixes or create and revise PRDs"
+  default_prompt: "Use $feature-design to determine whether this change needs PRD work, keeping fixes lightweight."

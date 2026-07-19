@@ -52,6 +52,14 @@ Adapt headings to the target repository, but preserve this meaning:
 
 Classification is provisional until technical design and delivery planning confirm the shape. Do not decompose tasks during PRD authoring.
 
+## Lightweight triage
+
+- Return `prd_not_applicable` when a correction changes no observable product behavior or accepted requirement. This is not feature/fix classification and creates no PRD artifact or approval gate.
+- Return `prd_change_not_required` for a `fix` only when a canonical accepted artifact or decision establishes the exact intended behavior being restored. Cite that evidence; current code or reported behavior alone does not establish product intent.
+- If the evidence does not show whether the request restores accepted behavior or changes product meaning, ask the human one focused question instead of defaulting to a full PRD.
+- A confirmed change to observable behavior, scope, acceptance, or failure behavior requires PRD work. When revising an accepted PRD, preserve its baseline and change only the affected product meaning.
+- Neither no-PRD outcome is eligible for PRD cross-model review or PRD approval. Report downstream impact and route to the lightest valid next workflow.
+
 ## Review readiness
 
 The PRD is eligible for cross-model review only as one complete, self-contained `draft` or `proposed` artifact. Every required section must be substantive, placeholders and TODOs must be removed, current scope must be separated from horizon, and every known unresolved product decision must be explicitly listed. Discovery notes, question lists, outlines, and partial drafts are not review inputs. Cross-model review is optional and requires explicit human approval after the complete PRD is presented; acceptance always requires explicit human approval whether review is performed or declined.
