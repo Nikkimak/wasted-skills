@@ -1,4 +1,4 @@
 interface:
   display_name: "Project Docs Organizer"
-  short_description: "Untangle project docs and workspace structure"
-  default_prompt: "Use $project-docs-organizer to inspect this project, propose the smallest safe documentation and git-boundary cleanup, and stop for approval before backup and execution."
+  short_description: "Reduce project context and clarify ownership"
+  default_prompt: "Use $project-docs-organizer to audit this project, minimize mandatory context, and propose only evidence-supported documentation, runtime, or ownership changes."

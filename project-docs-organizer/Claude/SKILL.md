@@ -12,8 +12,9 @@ resources as read-only. For analysis-only requests, inspect and report only.
 
 Read only what the observed shape and action require:
 
-- Discovery: target instructions, `references/authority-and-intent-routing.md`,
-  and `references/project-shape-and-scope.md`.
+- Discovery: the target project's own instructions,
+  `references/authority-and-intent-routing.md`, and
+  `references/project-shape-and-scope.md`.
 - Documentation roles, locations, metadata, runtime-local docs, or routing:
   `references/documentation-architecture.md`.
 - Code-bearing bootstrap, architecture audit or contract, or scoped code
@@ -41,6 +42,16 @@ Do not read every reference merely because it exists.
    re-approve any expansion.
 6. Verify routing, context economy, ownership, applicable git/deploy boundaries,
    negative requirements, and integrity. Report changes, omissions, and risks.
+
+## Discovery Behavior
+
+Discovery uses read-only inspection: Glob and Grep for paths, terms, symbols,
+and ownership surfaces; Read for candidate slices; Bash only for non-mutating
+commands such as `git status`, `git rev-parse`, `git log`, and `git check-ignore`.
+Rank ownership candidates before opening content. When discovery would span many
+independent areas, delegate bounded read-only sweeps to Explore or general-purpose
+subagents and keep synthesis, the approval contract, and every mutation in this
+session.
 
 ## Decision Rules
 
@@ -82,8 +93,9 @@ intent_paths_to_validate: subset of local_known_owner | unknown_owner | product 
 ```
 
 Derive this contract; do not turn it into a questionnaire. Explain
-`existing_other`. No field grants another. Stop and wait for approval; tool
-permission is not approval.
+`existing_other`. No field grants another. Stop and wait for approval. A granted
+tool permission, an allowlisted command, and a permissive permission mode are
+not approval; only the human's explicit answer to this contract is.
 
 ## Backup And Execution
 
@@ -95,6 +107,8 @@ permission is not approval.
 - Back up and approve newly expanded scope before changing it.
 - Adapt templates to evidence; remove unused placeholders and preserve useful
   content and unrelated work.
+- Never commit, push, or deploy. Those remain separate human instructions even
+  after mutation is approved.
 
 ## Required Outcome
 

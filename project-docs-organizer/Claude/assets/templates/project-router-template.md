@@ -1,4 +1,7 @@
-# AGENTS.md
+# CLAUDE.md
+
+<!-- Use the project's existing router filename. `CLAUDE.md` is the Claude Code
+     default; `AGENTS.md` or another established equivalent is equally valid. -->
 
 ## Scope
 

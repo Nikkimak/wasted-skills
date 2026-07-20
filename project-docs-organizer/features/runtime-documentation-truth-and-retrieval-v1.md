@@ -1,253 +1,402 @@
 ---
-title: Runtime Documentation Truth And Retrieval V1
+title: Context-Efficient Project Documentation And Runtime Architecture V1
 doc_type: feature_prd
-status: proposed
+status: approved
 classification: large_feature
 owner: project-docs-organizer
-review_status: not_started
-human_approval: pending
+review_status: external_audits_incorporated
+human_approval: approved
 ---
 
-# Runtime Documentation Truth And Retrieval V1
+# Context-Efficient Project Documentation And Runtime Architecture V1
 
 ## Business Outcome
 
 Projects organized by `project-docs-organizer` should let a human or coding
-agent find the correct source for a question without mistaking product intent,
-historical decisions, or planning material for current runtime behavior.
+agent begin correct work with the smallest sufficient mandatory context.
+Documentation should improve authority selection, ownership discovery, and safe
+navigation without forcing every task to load the complete project memory.
 
-The skill should establish a simple documentation model that remains useful as
-a codebase grows, keeps implementation knowledge close to its owning runtime
-surface, and can later support precise code and documentation retrieval without
-turning the project wiki into a duplicate of the codebase.
+The same skill must remain useful for documentation-primary projects, a single
+runtime, a modular runtime with durable ownership zones, and projects with
+multiple runtime surfaces. These projects should share authority and navigation
+semantics without being forced into one physical folder tree or one source-code
+architecture.
+
+The primary principle is:
+
+> Minimize mandatory context before correct work starts, without reducing
+> source and owner accuracy.
 
 ## Users And Scenarios
 
 Primary users are:
 
-- project maintainers defining documentation and source-of-truth boundaries;
-- coding agents entering an unfamiliar repository;
-- engineers locating the runtime owner of a behavior before changing it;
-- reviewers checking whether code, contracts, and documentation still agree.
+- maintainers organizing a new or existing project;
+- coding agents entering an unfamiliar code-bearing repository;
+- agents working in research, legal, knowledge, content, or other
+  documentation-primary projects;
+- engineers locating the runtime owner and test surface of a behavior;
+- reviewers checking whether product intent, accepted rationale, deployed
+  state, implementation, and evidence still agree.
 
 Core scenarios are:
 
-1. A user asks how a service or runtime flow currently works. The agent reaches
-   the owning runtime documentation, code, and tests before consulting feature
-   or decision history as behavioral truth.
-2. A user asks why an architectural boundary exists. The agent reaches the
-   accepted decision and then verifies how the boundary is represented in code.
-3. A user asks what is deployed. The agent uses deployment/runtime evidence
-   rather than assuming that the working tree, a feature document, or an ADR is
-   the live contour.
-4. A project grows beyond a single high-level runtime map. The documentation can
-   zoom from project topology into ownership areas, selected runtime scenarios,
-   module contracts, code, and tests without duplicating the same mutable facts.
-5. A project later adds code-aware retrieval. Search preserves source class,
-   authority, repository state, and ownership instead of blending all documents
-   into one undifferentiated semantic corpus.
+1. A known-owner local code change starts from short project instructions and
+   the nearest runtime or ownership documentation, then reaches code and tests
+   without reading the project queue or complete central wiki.
+2. An unknown-owner investigation uses deterministic path, lexical, symbol, and
+   ownership search to rank likely surfaces before opening detailed content.
+3. A product question reaches the applicable product or feature contract rather
+   than treating current code as intended product meaning.
+4. A rationale question reaches the accepted decision and then verifies how the
+   boundary is represented in current code or documents.
+5. A deployed-state question uses runtime and deployment evidence rather than
+   assuming that the working tree, an ADR, or a feature document is live.
+6. An operational question reaches the applicable runbook without loading
+   unrelated product and architecture material.
+7. A documentation-primary project gets precise authority and search routing
+   without an artificial `src/` tree or runtime documents.
+8. A code-bearing project keeps contributor-critical ownership, contracts, and
+   test guidance close to the runtime while central documentation remains
+   concise.
+9. A project with several durable ownership zones can organize them as
+   understandable, testable services without turning every module into a
+   separately deployed microservice.
 
 ## Current Behavior
 
 The skill currently provides a strong project-memory model for queues, current
-project state, decisions, future work, runbooks, components, and runtime-facing
-bridge documentation.
+state, decisions, future work, runbooks, components, runtime-facing bridge
+documentation, and git topology.
 
-Its source-of-truth hierarchy is primarily document-oriented. It does not yet
-define a complete authority model for questions about current implementation
-behavior, an intent-specific startup path, a vertical runtime documentation
-hierarchy, or a repository-state-aware retrieval contract.
+Its workflow still has four material problems:
 
-As a result, a project can follow the documented folder structure while an agent
-still over-trusts high-level current-state, feature, or decision documents and
-stops before inspecting the owning runtime surface.
+- a universal canonical read sequence encourages agents to load documents that
+  are irrelevant to the current intent;
+- a large canonical playbook must be read completely before a structural
+  recommendation, weakening progressive disclosure inside the skill itself;
+- the source-of-truth model is primarily document-oriented and does not fully
+  distinguish product intent, accepted rationale, working-tree implementation,
+  deployed state, operations, plans, and evidence;
+- code-bearing and documentation-primary projects are described through one
+  broad structure, which can encourage unnecessary runtime documents or an
+  overly literal physical tree.
+
+The result can be high token use before useful work begins, over-trust in broad
+current-state documents, duplicated implementation prose, and structural
+ceremony that is not justified by the project.
 
 ## Desired Behavior
 
-The skill defines authority by question type rather than one global ordering of
-all sources.
+### Context Economy And Intent Routing
 
-At minimum, it distinguishes:
+The skill replaces one universal read order with bounded read paths selected by
+task intent. At minimum it distinguishes:
 
+- local known-owner implementation work;
+- unknown-owner investigation;
 - product intent and desired outcomes;
 - accepted rationale and architectural boundaries;
 - current implementation behavior;
 - deployed/runtime contour;
 - operational procedures;
 - active work and future plans;
-- verification evidence.
+- verification evidence;
+- documentation-primary lookup.
 
-For current implementation behavior, code and executable tests are the final
-authority. Runtime-owned documentation provides the shortest safe navigation
-path into that code and describes relationships, ownership, contracts, and
-failure semantics that are not obvious from isolated files.
+For current implementation behavior, inspected code and executable tests are
+the final authority. For deployed state, deployment and runtime evidence are
+authoritative. Feature documents define intended outcomes and scope, while
+accepted decisions define rationale and invariants. No one document class is a
+global source of truth for every question.
 
-Feature documents remain the authority for intended product outcomes and scope,
-not proof of implemented behavior. Decision records explain why a rule or
-boundary was accepted, not every detail of its current implementation.
+Project `AGENTS.md` remains a short router and constraint surface. It does not
+become a project encyclopedia. A concrete coding task does not automatically
+require `WORKPLAN.md`, all current-state documents, or the complete decisions
+index.
 
-The skill also defines a vertical runtime documentation model that can zoom
-through these levels when they add value:
+### Project Shape Selection
 
-1. runtime entrypoint and ownership index;
-2. ownership-area or service documentation close to the code;
-3. selected architecturally significant runtime scenarios;
-4. module or public API contracts;
-5. implementation and tests.
+The skill selects one observed project shape only to route applicable
+references and templates:
 
-Projects should create only the levels justified by their size and complexity.
+- `documentation_primary`: documents are the primary work surface; incidental
+  scripts do not make the project runtime-first;
+- `single_runtime`: one runtime entrypoint is sufficient for safe local work,
+  and cross-zone contracts do not require a separate documentation model;
+- `modular_runtime`: durable ownership zones have public boundaries,
+  independent test surfaces, or protected internals that justify local
+  ownership documentation;
+- `multiple_runtime_surfaces`: more than one runtime work surface must be
+  navigated or operated explicitly.
+
+Project shape is not a maturity ladder and does not select git topology,
+documentation volume, or permission to mutate code. The number of domains is
+only a weak signal. The skill defaults to `documentation_primary` or
+`single_runtime` unless project evidence justifies escalation.
+
+`multiple_runtime_surfaces` is distinct from a multi-repository model: shape
+answers how runtime work is divided, while repo model answers which git history
+and deploy boundary own each path.
+
+### Documentation Scope
+
+Every project receives only a baseline authority and navigation contract.
+Operations, decisions, future-work areas, runtime ownership documentation, and
+other document classes are added only when project evidence requires them.
+
+Legacy `minimal`, `standard`, and `full` terminology may be recognized for
+compatibility or reporting, but it must not drive project shape, runtime
+structure, or automatic document creation.
+
+Documentation-primary projects must not receive artificial runtime directories
+or templates. Code-bearing projects must keep contributor-critical runtime
+knowledge close to the owning code without duplicating the central project
+wiki.
+
+### Runtime And Ownership Documentation
+
+For an applicable code-bearing project, runtime documentation provides:
+
+1. a concise runtime entrypoint and ownership map;
+2. local ownership documentation only where a durable service or module boundary
+   benefits from it;
+3. public contract, dependency, failure, and test guidance that is not cheap to
+   recover from file names and symbols alone;
+4. links to applicable decisions, operations, and deployed-state evidence.
+
+Physical layouts are examples, not mandatory templates. The skill must not
+create empty service layers or invent folders such as `domain`, `application`,
+`contract`, or `infrastructure` unless the real project already benefits from
+those responsibility boundaries.
+
+### Codebase Architecture Guidance
+
+For code-bearing bootstrap, architecture audit, or approved major cleanup, the
+skill provides optional portable guidance for organizing a modular codebase.
+That guidance prefers durable domain ownership and testable service boundaries
+without treating each ownership zone as a separately deployed microservice.
+
+It establishes these semantics:
+
+- a service is a logical ownership boundary, not automatically a process,
+  repository, container, or deploy unit;
+- one owner holds business correctness for each domain behavior;
+- neighboring services use explicit public contracts rather than importing
+  internal implementation details;
+- transport and integration layers do not become hidden business owners;
+- shared areas contain genuinely shared primitives rather than ownerless
+  business logic;
+- new code is placed by domain ownership and behavioral role;
+- tests follow ownership boundaries and make local behavior independently
+  verifiable;
+- decomposition separates responsibilities rather than moving unrelated logic
+  into generic helper files.
+
+File-size guidance is a review heuristic, not a style-linter or automatic
+failure. The skill may define portable default ranges and exception classes in
+an optional architecture reference. Project `AGENTS.md` keeps only a short
+rule, while an adapted project-local runtime contract records thresholds and
+exceptions only when they are useful. Existing large files are reported as
+debt; bootstrap does not force a rewrite without approval.
+
+The organizer is not the daily architecture authority after bootstrap or
+cleanup. The durable accepted contract belongs to the project through its
+runtime entrypoint, local ownership documents, and accepted decisions.
+
+### Retrieval
+
+Normative V1 retrieval is deterministic-first:
+
+- route by intent and authority class;
+- use path, lexical, and symbol search;
+- rank likely ownership surfaces before opening full content;
+- open only the relevant slices, local documentation, code, and tests;
+- exclude or downrank planning, generated output, artifacts, dependencies,
+  vendor code, and superseded material for current-runtime questions.
+
+V1 does not require a manifest, cache, embedding pipeline, vector database, or
+index artifact. Advanced retrieval assessment is optional and does not itself
+authorize creation of retrieval infrastructure. Any generated index or cache
+must be separately included in approved planned changes.
 
 ## Scope
 
-V1 covers the product semantics and reusable guidance of
-`project-docs-organizer`:
+V1 updates the Codex-native `project-docs-organizer` contract to include:
 
-- an authority matrix based on question type;
-- intent-based read paths for implementation, product, rationale, operations,
-  and deployment questions;
-- a minimal vertical runtime documentation model;
-- rules for separating project truth, implementation truth, deployed truth,
-  future intent, and evidence;
-- rules for keeping runtime documentation close to its owning code without
-  duplicating a project wiki;
-- guidance for selected runtime scenarios and ownership-area documentation;
-- maintenance and review principles that detect documentation drift without
-  requiring meaningless documentation churn for every code edit;
-- a tool-neutral retrieval model covering deterministic search,
-  structural/symbol navigation, selective semantic retrieval, graph expansion,
-  metadata, and repository-state awareness, with its normative versus optional
-  placement to be resolved before approval;
-- aligned updates to the skill workflow, canonical playbook, mode-selection
-  guidance, documentation matrix, templates, and validation checklist where the
-  accepted model requires them.
-
-The feature is defined at the logical skill level. Platform-specific Codex and
-Claude implementations may use different host mechanics while preserving the
-same accepted product semantics. A Kimi-native distribution remains separately
-scoped and is not part of this paired V1 rollout.
+- context economy as the primary optimization objective;
+- authority by question type instead of one global truth hierarchy;
+- intent-specific bounded read paths;
+- independent project-shape, documentation-scope, repo-model, mutation, runtime
+  documentation, code-architecture, retrieval, and backup decisions;
+- an evidence-selected baseline rather than fixed documentation depth driving
+  file creation;
+- conditional runtime and local ownership documentation for code-bearing
+  projects;
+- conditional portable codebase-architecture and file-decomposition guidance;
+- deterministic-first retrieval guidance with vector infrastructure deferred;
+- progressive disclosure inside the skill through bounded reference routing;
+- an approval contract that distinguishes inspection, project documentation,
+  proposed restructuring, and approved mutation;
+- validation of both skill execution context and resulting project startup
+  context;
+- aligned Codex workflow, references, templates, and checklists that express one
+  coherent model before synchronization.
 
 ## Non-Goals
 
 V1 does not:
 
-- reorganize or migrate any particular user project;
-- encode names, paths, services, or examples from a private project;
-- prescribe one programming language, framework, documentation generator,
-  parser, vector database, embedding model, or retrieval vendor;
-- build a code index, vector service, MCP server, or documentation portal;
-- require full-repository vectorization;
-- make generated summaries a second source of runtime truth;
-- replace direct code inspection, tests, or deployment verification;
-- require every project to adopt every documentation level;
-- author an implementation design or delivery task graph;
-- require a coordinated Kimi implementation or mechanical parity with the
-  Codex and Claude host workflows.
+- force one physical project, runtime, service, or test folder tree;
+- require source code or a `src/` directory in documentation-primary projects;
+- turn logical services into independently deployed microservices by default;
+- prescribe one language, framework, parser, documentation generator, or test
+  stack;
+- require a code manifest, embeddings, vector database, MCP server, or search
+  portal;
+- make generated summaries or indexes a second source of truth;
+- replace direct inspection of code, tests, runtime state, or deployment
+  evidence;
+- require every project to materialize every documentation level;
+- make the organizer a daily architecture authority after the project owns its
+  accepted runtime contract;
+- automatically migrate or reorganize an existing project;
+- force remediation of existing large files during documentation bootstrap;
+- authorize code moves, git changes, or retrieval infrastructure merely because
+  a project contains source code;
+- publish a partially migrated Codex package whose workflow, references,
+  templates, and checklists express different models;
+- update Kimi or create a Claude-native distribution in the first rollout;
+- author an implementation design or delivery task graph.
 
 ## Constraints And Accepted Assumptions
 
-- The model must remain portable across languages, frameworks, repository
-  layouts, and agent hosts.
-- The smallest sufficient documentation structure remains the default.
-- Human-readable information architecture comes before retrieval optimization.
-- Runtime documentation should explain ownership and behavior that cannot be
-  recovered cheaply from file names, public contracts, and tests.
-- Generated inventories may describe verifiable structure, but generated prose
-  must not silently become canonical truth.
-- Retrieval must preserve source class and repository state. Working tree,
-  accepted branch, and deployed release may represent different valid truths for
-  different questions.
+- The model must remain portable across project domains, languages, frameworks,
+  repository layouts, and agent hosts.
+- Human-readable information architecture comes before retrieval
+  infrastructure.
+- The smallest sufficient mandatory context is preferred over completeness of
+  initial reading.
+- Reduced token use must not reduce correct source or owner selection.
+- Strong existing documentation and unconventional but clear project structures
+  are preserved by default.
+- Project shape is inferred from evidence and is not a user questionnaire or a
+  persisted maturity score.
+- Approval fields are produced by the agent after discovery; non-applicable
+  fields remain compact rather than creating ceremony.
+- Working tree, accepted ref, and deployed release may be different valid states
+  for different questions.
 - Planning and historical corpora must not rank as current implementation truth
-  merely because they are semantically similar to a query.
-- The existing discovery and explicit approval boundary of
-  `project-docs-organizer` remains in force for changes to a target project.
+  merely because they are semantically similar.
+- Default file-size ranges are soft review triggers. Generated code,
+  declarative schemas, migrations, fixtures, framework aggregators, and other
+  justified cohesive files may be exceptions.
+- Internal implementation may proceed in phases, but the installed mirror is
+  synchronized only after the complete Codex package is internally consistent,
+  validated, and ready as one coherent V1.
+- Existing discovery, explicit mutation approval, scoped backup, and preservation
+  of unrelated work remain mandatory.
 
 ## Acceptance Criteria
 
 The feature is acceptable when:
 
-1. A new skill user can determine which source is authoritative for product,
-   rationale, implementation, deployment, operations, planning, and evidence
-   questions.
-2. The skill no longer implies that one manually maintained current-state
-   document can override inspected code for current implementation behavior.
-3. The skill provides distinct, bounded read paths for common question types
-   instead of requiring the same full canonical read sequence for every task.
-4. The runtime documentation model identifies a concise entrypoint, local
-   ownership documentation, selected scenarios, module contracts, code, and
-   tests while making each level optional when it adds no value.
-5. Feature documents and ADRs retain clear roles without being treated as live
-   implementation descriptions.
-6. Current project/runtime topology documents stay concise and link into local
-   runtime truth instead of accumulating detailed feature implementation logs.
-7. Maintenance guidance distinguishes meaningful documentation-impact changes
-   from ordinary internal code edits and defines a reviewable drift signal.
-8. Retrieval guidance separates lexical/symbol search from semantic
-   retrieval, supports selective rather than complete vectorization, and carries
-   authority, ownership, path, symbol, content hash, and repository-state
-   metadata.
-9. Retrieval guidance excludes or downranks planning, artifacts, superseded
-   decisions, generated output, dependencies, and vendor code for current-runtime
-   questions unless the query explicitly requests those sources.
-10. All examples and templates are generic and portable, with no dependency on a
-    particular private repository or workstation path.
-11. The skill's workflow and all affected references/templates/checklists express
-    one consistent model with no contradictory source-of-truth rules.
-12. Validation can demonstrate the model against more than one language or
-    runtime shape without adding stack-specific requirements to the base skill.
+1. A new user can determine which source class is authoritative for product,
+   rationale, working implementation, deployed state, operations, planning, and
+   evidence questions.
+2. A known-owner local task reaches applicable local documentation, code, and
+   tests without mandatory reading of the project queue and complete central
+   documentation set.
+3. For unknown-owner evaluation prompts, the correct owner or source appears in
+   the top five ranked candidate surfaces without reducing accuracy relative to
+   the current skill.
+4. Mandatory startup files and tokens are measured by intent class. The target
+   reduction for known-owner and unknown-owner paths is at least 60 percent
+   against frozen current-skill baselines, subject to no regression in owner or
+   source accuracy.
+5. Evaluation records whether wrong-authority sources were opened before the
+   correct source and demonstrates a reduction from baseline.
+6. Skill execution context is measured separately from resulting project
+   startup context, proving that split references are selectively loaded rather
+   than all read automatically.
+7. A documentation-primary fixture receives authority and navigation guidance
+   without artificial runtime files.
+8. A single-runtime fixture receives a concise runtime entrypoint without
+   unnecessary ownership-document proliferation.
+9. A modular-runtime fixture exposes durable ownership, public boundaries, and
+   independent test surfaces without requiring microservice deployment.
+10. A multiple-runtime-surfaces fixture distinguishes runtime shape from repo and
+    deploy ownership.
+11. Physical layout examples are not copied mechanically, and no empty
+    architectural layers or ceremonial directories are created.
+12. Runtime and ownership documentation remains close to owning code, central
+    topology documents stay concise, and mutable implementation facts are not
+    duplicated across both layers.
+13. Code-architecture guidance is loaded only for applicable code-bearing audit,
+    bootstrap, or cleanup requests and does not block documentation work on
+    existing oversized files.
+14. Retrieval defaults to deterministic guidance; advanced assessment creates
+    no index, cache, manifest, or vector infrastructure without separate
+    approval.
+15. The approval contract distinguishes detected state, intended result, and
+    mutation authority, including code-architecture and git-topology scope.
+16. Existing projects are audited before change, strong equivalents are
+    preserved, and no migration or restructuring occurs without explicit
+    approval.
+17. `SKILL.md`, all affected references, templates, and checklists express one
+    consistent model before the canonical package is synchronized.
+18. The Codex package validates, its installed mirror matches the canonical
+    source after synchronization, and repository checks pass.
 
 ## Current Version / MVP
 
-V1 is the smallest coherent revision of the skill's documentation architecture.
-It defines the authority model, intent routing, vertical runtime documentation,
-maintenance contract, and tool-neutral retrieval principles, then aligns the
-existing skill resources with those semantics.
+V1 is one coherent Codex-native revision. It delivers context economy,
+intent-based authority routing, project-shape selection, conditional local
+runtime documentation, conditional codebase-architecture guidance, a revised
+approval contract, progressive skill reference routing, and deterministic-first
+retrieval guidance.
 
-V1 does not implement a retrieval engine. It must leave a project with a
-structure that works through ordinary file navigation and deterministic search
-before optional indexing is introduced.
+V1 may be authored through internal phases, but it is not shipped as a
+half-migrated package. The installed Codex mirror changes only after the full V1
+contract and all affected bundled resources are consistent and validated.
 
 ## Architecture Horizon
 
-The accepted V1 model must not block later additions such as:
+The accepted V1 model must allow later additions such as:
 
-- language-specific documentation and symbol adapters;
+- language- or framework-specific symbol and test adapters;
 - generated ownership and dependency catalogs;
-- documentation coverage and link validation;
+- documentation link, metadata, and drift validation;
 - repository-state-aware local indexes;
 - hybrid lexical and semantic retrieval;
-- graph-based expansion from ownership areas to symbols and tests;
-- retrieval evaluation suites with expected source and symbol results;
-- native Codex and Claude implementations with equivalent product semantics.
+- graph expansion from ownership areas to symbols, contracts, and tests;
+- quantitative retrieval evaluation fixtures;
+- a separate architecture-focused skill if real usage later demonstrates that
+  bootstrap and major cleanup no longer provide a sufficient trigger boundary;
+- native Kimi and Claude implementations that preserve accepted product
+  semantics through host-native mechanics.
 
-These capabilities should extend the base model rather than require another
-project documentation hierarchy.
+These capabilities must extend the project-owned authority and runtime model
+rather than establish another documentation hierarchy.
 
 ## Deferred Candidate Work
 
-- A concrete code-index manifest and interchange schema.
-- Stack adapters for common language ecosystems.
-- CI integrations for documentation coverage, drift, and generated catalog
-  verification.
-- A reference local retrieval implementation.
-- Migration guidance for projects already using the earlier global truth
+- Concrete code-index manifests, schemas, caches, and interchange formats.
+- Embedding or vector retrieval implementation.
+- Stack-specific architecture and symbol adapters.
+- CI enforcement for documentation coverage, drift, or file-size review.
+- Automatic migration of projects organized under the earlier global read
   hierarchy.
-- Quantitative retrieval evaluation guidance and benchmark fixtures.
-- A Claude-native `project-docs-organizer` distribution.
+- A separate daily codebase-architecture skill.
+- Kimi-native semantic alignment after the Codex rollout.
+- A future Claude-native distribution.
 
 ## Open Human Decisions
 
-1. Should V1 define one preferred physical location for ownership-area documents,
-   or specify only required semantics and let each runtime choose colocated versus
-   centralized paths?
-2. Should tool-neutral retrieval guidance be normative V1 behavior or an optional
-   advanced appendix layered on top of the documentation model?
-3. What minimum drift enforcement belongs in every mode, and what should remain a
-   recommendation for larger projects?
-4. Should the existing `minimal`, `standard`, and `full` modes gain a separate
-   runtime-documentation dimension, or should runtime depth remain part of each
-   existing mode definition?
-5. Should the first implementation update only the Codex distribution, or should
-   shared semantics be approved before native Codex and Claude implementations
-   are scheduled separately?
-6. What backward-compatibility and migration promises should the skill make for
-   projects previously organized under the current playbook?
+No unresolved product-scope decisions remain from discovery.
+
+Before this PRD can be accepted, the human must decide whether to request an
+optional cross-model PRD review and must explicitly approve the final proposed
+PRD. Implementation details, file decomposition, and delivery sequencing belong
+to the later implementation-design and delivery-planning stages.

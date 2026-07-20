@@ -36,9 +36,9 @@ Every logical skill owns separate native distributions:
 | `cross-model-review` | Runs a live review-and-recheck loop with the other model family while keeping findings ephemeral. | Yes | Yes | Yes |
 | `feature-security-review` | Deepens exceptional high-risk implementation designs without authorizing cross-model review. | Yes | Yes | Yes |
 | `feature-context-handoff` | Preserves the minimal state of unfinished feature work across fresh sessions. | Yes | Yes | Yes |
-| `project-docs-organizer` | Bootstraps or substantially reorganizes project documentation, source-of-truth boundaries, and repository structure. | Yes | Not yet | Yes |
+| `project-docs-organizer` | Audits or reorganizes project documentation, authority routing, runtime ownership guidance, and repository structure with minimal mandatory context. | V1 | V1 | Previous |
 
-The feature-preparation skills are available as separate native packages. All three distributions use the same human-controlled review workflow: security is embedded in implementation design, exceptional deep security analysis enriches that same draft, and no cross-model review runs without explicit human approval. Their host mechanics remain native: Codex and Kimi use Claude as reviewer, Claude uses GPT/Codex, and Kimi is not a reviewer provider for the other flows. `feature-context-handoff` ships for all three platforms, while `project-docs-organizer` ships for Codex and Kimi.
+The feature-preparation skills are available as separate native packages. All three distributions use the same human-controlled review workflow: security is embedded in implementation design, exceptional deep security analysis enriches that same draft, and no cross-model review runs without explicit human approval. Their host mechanics remain native: Codex and Kimi use Claude as reviewer, Claude uses GPT/Codex, and Kimi is not a reviewer provider for the other flows. `feature-context-handoff` ships for all three platforms. `project-docs-organizer` ships current V1 packages for Codex and Claude Code, plus a previous-generation Kimi package awaiting a native port.
 
 ## Feature Preparation Suite
 
@@ -109,9 +109,17 @@ For a large feature, later stages may additionally produce a justified shared `i
 
 ## Project Docs Organizer
 
-Use `project-docs-organizer` for an initial bootstrap, one-time migration, or major structural cleanup, not routine project maintenance.
+Use `project-docs-organizer` for an initial bootstrap, one-time context-economy or documentation audit, migration, or major structural cleanup, not routine project maintenance.
 
-It reviews existing docs and git boundaries, chooses the smallest safe organization mode, requests explicit approval before mutation, creates the approved preflight backup, and applies the bundled canonical playbook without replacing stronger project-specific documentation.
+Both native versions route by task intent and observed project shape instead of imposing one universal read order or physical tree. They support documentation-primary projects, code-bearing runtimes, durable modular ownership zones, and multiple runtime surfaces; keep runtime contributor guidance close to code; treat code organization, git topology, and retrieval infrastructure as separately approved scopes; and default to deterministic search before optional advanced indexing. They request explicit approval before mutation, create the approved preflight backup, and preserve stronger project-specific documentation and clear existing structures.
+
+Platform status:
+
+- **Codex:** Context-Efficient V1 is the current canonical implementation.
+- **Claude Code:** Context-Efficient V1, ported from the Codex product semantics. It keeps the same shape, scope, approval, and backup contract, states discovery in Claude-native read-only terms (Glob/Grep/Read plus non-mutating git commands, with optional bounded subagent sweeps), treats permissive permission modes as explicitly not equal to approval, and defaults the project router template to `CLAUDE.md` while accepting an existing `AGENTS.md` or equivalent.
+- **Kimi Code:** the existing package is the previous playbook generation; native V1 alignment is deferred to a separate Kimi-owned port from the Codex product semantics.
+
+Each platform package remains an independent native source under its own `Codex/`, `Claude/`, or `Kimi/` directory. Porting V1 means preserving the agreed product semantics while adapting host-specific metadata, invocation, tools, and paths; it does not mean copying the Codex entrypoint verbatim.
 
 ## Development And Installation
 

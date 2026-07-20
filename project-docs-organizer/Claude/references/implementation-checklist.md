@@ -22,7 +22,8 @@ Use this only after discovery and explicit mutation approval.
 - Do not create local ownership docs without durable modular boundaries or real
   ambiguity.
 - Treat physical trees as examples; create no empty architecture layers.
-- Keep project `AGENTS.md` short and routing-focused.
+- Keep the project router (`CLAUDE.md` or its established equivalent) short and
+  routing-focused.
 - Keep implementation knowledge close to code without duplicating product,
   rationale, deployed state, or operations.
 - Report oversized or mixed-responsibility code without restructuring it beyond
@@ -64,6 +65,7 @@ Use this only after discovery and explicit mutation approval.
 - No personal paths, project-specific names, credentials, or external symlinks
   entered a portable package.
 - Relevant validation intents pass without lower owner/source accuracy.
-- `git diff --check` and platform validation pass.
+- `git diff --check` passes and the project's own type/lint checks still pass
+  when the approved scope touched code.
 - Report selected scopes, backup result, created/updated/verified files,
   intentional omissions, negative checks, remaining debt, and unresolved risks.

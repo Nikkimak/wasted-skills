@@ -5,8 +5,8 @@ authority.
 
 ## Selection
 
-- Use `project-agents-template.md` only when creating or materially rewriting a
-  project router.
+- Use `project-router-template.md` only when creating or materially rewriting a
+  project router; keep the project's existing router filename.
 - Use `context-readme-template.md` for a real central documentation index.
 - Use project-state, runtime-map, repo-map, decisions-index, deploy-runbook, and
   future-work templates only when the corresponding authority role exists.
