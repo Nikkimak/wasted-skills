@@ -76,10 +76,19 @@ an explicit request.
 ## Selection Procedure
 
 1. Inspect real work, instructions, docs, runtimes, tests, git, and deploy owners.
-2. Choose the least structure that makes ownership and safe work clear.
-3. Add only areas required by evidence, ambiguity, operations, or coordination.
-4. Preserve clear repo models, including `existing_other`.
-5. Separate assessment, documentation, proposals, and approved restructuring;
+2. Identify what each named thing is before choosing its path: workspace,
+   project, application, runtime, feature, or document. Do not let an empty tree
+   decide that relationship.
+3. Reuse established target vocabulary and identifiers. Treat adjacent projects
+   as examples unless the human or target instructions establish a shared
+   convention; never invent prefixes or numbering merely for neatness.
+4. Choose the least structure that makes ownership and safe work clear. Prefer
+   one file for one coherent artifact; create an entity folder only for multiple
+   current artifacts or a durable boundary, not anticipated future files.
+5. Add only areas required by evidence, ambiguity, operations, or coordination.
+   Do not duplicate a project overview across a root entrypoint and a docs index.
+6. Preserve clear repo models, including `existing_other`.
+7. Separate assessment, documentation, proposals, and approved restructuring;
    present only applicable approval fields.
 
 If an empty or nearly empty target lacks product context, ask the human rather
