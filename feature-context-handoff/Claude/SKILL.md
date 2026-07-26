@@ -1,6 +1,6 @@
 ---
 name: feature-context-handoff
-description: Preserve or restore the minimal working state of one unfinished feature across fresh Claude sessions. Use when the user asks to pause, end, hand off, or continue a named feature; when product, implementation/security design, delivery, or execution-readiness work cannot safely finish in the remaining context; when a blocker pauses incomplete feature work; or when Claude must create, refresh, read, or remove a feature-local WORK-HANDOFF.md. Do not use for completed work, routine turn summaries, or durable decisions that belong in canonical documents.
+description: Preserve or restore the minimal working state of one unfinished feature across fresh Claude sessions. Use when the user asks to pause, end, hand off, or continue a named feature; when product, implementation/security design, delivery, execution-readiness, or execution work cannot safely finish in the remaining context; when a blocker pauses incomplete feature work; or when Claude must create, refresh, read, or remove a feature-local WORK-HANDOFF.md. Do not use for completed work, routine turn summaries, or durable decisions that belong in canonical documents.
 ---
 
 # Feature Context Handoff
@@ -15,7 +15,7 @@ Read repository instructions, resolve the named canonical feature folder without
 
 ### Resume
 
-1. If no handoff exists, report that and continue through the active authoring skill from canonical documents and the work plan; do not invent one retrospectively.
+1. If no handoff exists, report that and continue from canonical documents and the work plan — through the active authoring skill when one owns the phase, and directly when the phase is execution; do not invent a handoff retrospectively.
 2. Verify referenced paths, phase, canonical state, work plan, and relevant working tree. Repair a stale handoff, with canonical truth taking precedence.
 3. Read the listed inputs in order and continue from `Exact next step`; do not reread transcripts or full history without evidence that it is needed.
 
@@ -41,7 +41,7 @@ Keep the file direct and normally within roughly 1,000-2,000 tokens. Use this st
 # Work handoff: <feature>
 
 Updated: <date/time or date>
-Phase: <feature-design|implementation-design|deep-security-design|delivery-plan|execution-readiness|other>
+Phase: <feature-design|implementation-design|deep-security-design|delivery-plan|execution-readiness|execution|other>
 Status: <precise incomplete state>
 
 ## Read first

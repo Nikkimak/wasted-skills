@@ -23,6 +23,12 @@ For unfinished named work, use the `feature-context-handoff` skill (via the Skil
 6. Run local checks for coverage, unauthorized or duplicate work, bounded scope, missing or cyclic dependencies, verification, merge targets, control mapping, and readiness blockers.
 7. Present the complete plan and one consolidated `needed now` / `needed later` human-input summary. Do not offer cross-model review routinely. Run it only if the human independently requests task-plan review; then obtain explicit approval of the resulting task graph and readiness posture. Otherwise obtain explicit human approval directly, close any obsolete handoff, and finish with a tracker-ready plan; publication remains a later explicit action through the target project's bounded intake path.
 
+## Plan Output
+
+Write the canonical plan as `<feature-folder>/delivery-plan.md` beside its PRD
+and any implementation design. Do not create another feature identity or a
+parallel package.
+
 ## Boundaries
 
 - Do not redesign accepted product, architecture, or security. Return gaps upstream.

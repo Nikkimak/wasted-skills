@@ -1,40 +1,39 @@
 # Ownership README
 
-Use this only for a durable service, module, package, or feature ownership zone.
-Do not create it for a trivial directory.
+Use this only for a durable service, module, package, or feature ownership zone,
+and only for knowledge the code does not already express. Do not create it for a
+trivial directory.
 
-## Responsibility
+Every section below is conditional: keep what applies and delete the rest. Any
+fact recoverable from code, schemas, configuration, or tests becomes a link to
+that path, symbol, or test — never a paragraph restating it.
 
-- behavior and state owned here
-- behavior explicitly owned elsewhere
+## Code Anchors
 
-## Public Contract
+- owning path, primary entrypoint or symbol, tests
 
-- supported entrypoints, commands, events, or interfaces
-- invariants visible to neighboring zones
+## Responsibility Boundary
 
-## Dependencies And Integrations
+- what is owned here and what is explicitly owned elsewhere, when the code
+  structure does not already make that obvious
 
-- allowed dependencies
-- external providers or adapters
-- private internals that neighboring zones must not import
+## Non-Obvious Invariants
+
+- rules a reader would violate after reading the code alone
+
+## External Constraints
+
+- provider, protocol, regulatory, or legacy limits the code cannot state itself
 
 ## Failure And Recovery
 
-- meaningful failure semantics
-- retry, idempotency, rollback, or recovery rules when applicable
-
-## Tests
-
-- unit tests
-- contract tests
-- integration tests
-- minimum verified commands
+- semantics that cannot be inferred safely from the implementation
+- link the applicable runbook instead of copying its procedure
 
 ## Related Authority
 
-- accepted decisions
-- runtime/deploy evidence
-- runbooks
+- accepted decisions, runtime or deploy evidence, runbooks
 
-Implementation details remain in code and tests.
+Do not restate here: file listings, method signatures, the dependency graph, APIs
+or schemas already expressed in code, request flows, the current algorithm, or
+change history.

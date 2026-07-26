@@ -17,6 +17,7 @@ it here.
 
 ## Route By Intent
 
+- capability or domain owner → `<ownership map path or n/a>`
 - known-owner code change → nearest runtime/ownership README, code, tests
 - unknown owner → path/lexical/symbol search, then top ownership candidates
 - product meaning → `<product contract or n/a>`
@@ -45,8 +46,8 @@ Name `working_tree`, `accepted_ref`, or `deployed` when state matters.
 
 - runtime entrypoint and ownership docs: `<paths>`
 - place code by domain owner and behavioral role
-- review responsibility around 300–500 lines; require decomposition review
-  above 500 lines while allowing cohesive exceptions
+- contributor rules and thresholds: `<owning runtime README or contributor
+  contract, or n/a>` — never restated here
 - do not create microservices without a concrete runtime or ownership reason
 - integrations and shared helpers do not own hidden business rules
 
@@ -55,6 +56,8 @@ Name `working_tree`, `accepted_ref`, or `deployed` when state matters.
 - update only the authority whose durable meaning changed
 - internal edits that preserve product, ownership, deployment, and procedure do
   not require ceremonial documentation churn
+- a move that changes ownership navigation updates the ownership map even when
+  behavior is unchanged
 - analysis does not authorize mutation; code-bearing does not authorize
   restructuring
 - git, commit, push, deploy, secrets, destructive actions, and retrieval

@@ -20,6 +20,12 @@ For unfinished named work, use `$feature-context-handoff`; canonical artifacts o
 7. Make any document self-contained and `draft` or `proposed`. Recommend review only for material uncertainty, broad impact, or complex revision; ask before `$cross-model-review`, and use `$feature-context-handoff` first if the full loop cannot fit.
 8. After the review decision and any approved review, obtain explicit human approval, close obsolete handoff state, and hand off to `$feature-delivery-plan`.
 
+## Design Output
+
+When a design document is required, write it as
+`<feature-folder>/implementation-design.md` beside the accepted `prd.md`. Do not
+create another feature identity or place the design in a parallel package.
+
 ## Boundaries
 
 - Do not change accepted business scope, create task graphs, choose executors, publish issues, or implement code.

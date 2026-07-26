@@ -32,13 +32,16 @@ Do not read every reference merely because it exists.
    routine maintenance elsewhere.
 2. Classify intent and authority, then inspect only the target unless external
    references are approved. Resolve root, instructions, work surface, docs,
-   runtime/tests, applicable git/deploy ownership, and conflicting truth. For an
-   empty target, distinguish the workspace, project, application, and feature
-   before encoding them in paths or identifiers.
+   runtime/tests, git/deploy ownership, and conflicting truth. In an empty
+   target, distinguish workspace, project, application, and feature before
+   encoding them in paths or identifiers. Keep discovery read-only: prefer
+   `rg`/`rg --files`, narrow reads, and non-mutating git commands; delegate only
+   bounded read-only sweeps, retaining synthesis, approval, and mutation.
 3. Select the least structural evidence-supported shape and independent scopes.
    Preserve strong equivalents and established naming. Start with one document
    per real semantic role; add an entity folder only when multiple present
-   artifacts or a durable ownership boundary require it.
+   artifacts or a durable ownership boundary require it. Treat a canonical
+   `FEATURE-NNN-short-name/` package as such a boundary from its first PRD.
 4. For analysis-only work, report and stop. Otherwise present the approval
    contract and wait for explicit approval.
 5. After approval, create the scoped backup, apply only approved changes, and
@@ -53,8 +56,8 @@ Do not read every reference merely because it exists.
   code unless durable contracts, protected internals, or independent tests
   justify more structure.
 - Never create evidence-free runtime docs, empty layers, or ceremonial folders.
-- Never invent an identifier namespace, numbering scheme, or entity boundary to
-  complete a tree. Record unresolved identity as an open decision instead.
+- Use `FEATURE-NNN-short-name` for every new feature package; never transfer
+  that namespace to applications, decisions, or other entities.
 - Keep contributor guidance near code; keep product, rationale, deployment,
   operations, planning, and evidence distinct.
 - Code/tests own implementation behavior; verified runtime evidence owns
@@ -88,8 +91,9 @@ intent_paths_to_validate: subset of local_known_owner | unknown_owner | product 
 ```
 
 Derive this contract; do not turn it into a questionnaire. Explain
-`existing_other`. No field grants another. Stop and wait for approval; tool
-permission is not approval.
+`existing_other`. No field grants another. Stop and wait for approval. Tool
+permission, an allowlisted command, and permissive mode are not approval; only
+the human's explicit answer to this contract is.
 
 ## Backup And Execution
 
@@ -101,6 +105,8 @@ permission is not approval.
 - Back up and approve newly expanded scope before changing it.
 - Adapt templates to evidence; remove unused placeholders and preserve useful
   content and unrelated work.
+- Never commit, push, or deploy. Those remain separate human instructions even
+  after mutation is approved.
 
 ## Required Outcome
 

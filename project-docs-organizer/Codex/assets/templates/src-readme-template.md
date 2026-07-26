@@ -6,7 +6,10 @@ rationale, deployed-state, and operations authority instead of copying it.
 ## Entry Points And Ownership
 
 - runtime entrypoints
-- ownership zone → responsibility → path → tests/local README
+- capability or domain → owning path → entrypoint or symbol → tests → optional
+  local note
+- one line per top-level capability; record `tests: missing` instead of an
+  invented path
 
 ## Run, Build, And Test
 

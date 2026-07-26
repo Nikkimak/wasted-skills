@@ -41,11 +41,23 @@ Use this only after discovery and explicit mutation approval.
   distinct.
 - Indexes route to facts and do not claim authority over linked content.
 - Split references are loaded conditionally rather than all at once.
+- Trace one named local change end to end: router → ownership map → local README
+  → code and tests, adding the project runtime map hop when several runtimes
+  exist, and without opening the documentation index, the queue, or the full
+  decision set.
 
 ## Runtime And Codebase
 
 - Runtime entrypoints exist only where applicable and identify ownership and
   test commands.
+- A code-bearing result exposes the canonical ownership chain from its router —
+  one map for a single runtime, one per runtime plus a project-level runtime map
+  when several exist — covers each top-level capability at one line, and stays a
+  zone map rather than a file listing.
+- Ownership-map entries name real paths and tests; a zone without a single
+  entrypoint carries no invented symbol, and an absent test surface is recorded
+  as `tests: missing`.
+- Every mapped path, symbol, and test anchor resolves in the working tree.
 - Logical service boundaries do not imply separate deployment.
 - Public contracts and tests support any documented modular boundary.
 - Shared areas do not become ownerless business-logic dumps.
@@ -62,6 +74,9 @@ Use this only after discovery and explicit mutation approval.
 ## Verify And Close
 
 - Required internal links resolve and no obsolete reference remains.
+- No central document narrates current implementation, component structure,
+  runtime flow, or live integration state.
+- No local README restates code, schemas, or tests instead of linking them.
 - No personal paths, project-specific names, credentials, or external symlinks
   entered a portable package.
 - Relevant validation intents pass without lower owner/source accuracy.

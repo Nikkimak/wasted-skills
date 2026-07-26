@@ -33,25 +33,29 @@ Do not read every reference merely because it exists.
    routine maintenance elsewhere.
 2. Classify intent and authority, then inspect only the target unless external
    references are approved. Resolve root, instructions, work surface, docs,
-   runtime/tests, applicable git/deploy ownership, and conflicting truth.
+   runtime/tests, git/deploy ownership, and conflicting truth. In an empty
+   target, distinguish workspace, project, application, and feature before
+   encoding them in paths or identifiers.
 3. Select the least structural evidence-supported shape and independent scopes.
-   Preserve strong equivalents.
+   Preserve strong equivalents and established naming. Start with one document
+   per real semantic role; add an entity folder only for multiple present
+   artifacts or a durable ownership boundary, which a canonical
+   `FEATURE-NNN-short-name/` package is from its first PRD.
 4. For analysis-only work, report and stop. Otherwise present the approval
    contract and wait for explicit approval.
 5. After approval, create the scoped backup, apply only approved changes, and
    re-approve any expansion.
-6. Verify routing, context economy, ownership, applicable git/deploy boundaries,
-   negative requirements, and integrity. Report changes, omissions, and risks.
+6. Verify routing, context economy, ownership, git/deploy boundaries, negative
+   requirements, and integrity. Report changes, omissions, and risks.
 
 ## Discovery Behavior
 
-Discovery uses read-only inspection: Glob and Grep for paths, terms, symbols,
-and ownership surfaces; Read for candidate slices; Bash only for non-mutating
-commands such as `git status`, `git rev-parse`, `git log`, and `git check-ignore`.
-Rank ownership candidates before opening content. When discovery would span many
-independent areas, delegate bounded read-only sweeps to Explore or general-purpose
-subagents and keep synthesis, the approval contract, and every mutation in this
-session.
+Discovery is read-only: Glob and Grep for paths, terms, symbols, and ownership
+surfaces; Read for candidate slices; Bash only for non-mutating commands such as
+`git status`, `git rev-parse`, `git log`, and `git check-ignore`. Rank ownership
+candidates before opening content. Delegate bounded read-only sweeps to Explore
+or general-purpose subagents when discovery spans many independent areas, and
+keep synthesis, the approval contract, and every mutation in this session.
 
 ## Decision Rules
 
@@ -60,10 +64,12 @@ session.
   code unless durable contracts, protected internals, or independent tests
   justify more structure.
 - Never create evidence-free runtime docs, empty layers, or ceremonial folders.
+- Use `FEATURE-NNN-short-name` for every new feature package; never transfer that
+  namespace to applications, decisions, or other entities.
 - Keep contributor guidance near code; keep product, rationale, deployment,
   operations, planning, and evidence distinct.
-- Code/tests own implementation behavior; verified runtime evidence owns
-  deployed state. Documents route to them and own durable meaning.
+- Code/tests own implementation behavior; verified runtime evidence owns deployed
+  state. Documents route to them and own durable meaning.
 - Code does not authorize restructuring; logical services are not deploy units.
 - Preserve git topology. Use deterministic retrieval unless separately approved.
 
@@ -94,8 +100,8 @@ intent_paths_to_validate: subset of local_known_owner | unknown_owner | product 
 
 Derive this contract; do not turn it into a questionnaire. Explain
 `existing_other`. No field grants another. Stop and wait for approval. A granted
-tool permission, an allowlisted command, and a permissive permission mode are
-not approval; only the human's explicit answer to this contract is.
+tool permission, an allowlisted command, and a permissive permission mode are not
+approval; only the human's explicit answer to this contract is.
 
 ## Backup And Execution
 

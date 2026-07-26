@@ -29,7 +29,7 @@ For an existing named feature, use the `feature-context-handoff` skill (via the 
 
 ## PRD Output
 
-For a triage result, produce no PRD artifact. Otherwise produce one canonical Markdown draft in the repository's existing feature-document structure and naming (not JSON, not only chat prose), preserving the semantic contract in `references/prd-contract.md`. Keep findings and transcripts ephemeral; keep implementation or task detail out of the PRD.
+For a triage result, produce no PRD artifact. For a new feature, create or resolve `<feature-area>/FEATURE-NNN-short-name/prd.md` as a canonical Markdown draft (not JSON, not only chat prose), using the next number above the highest existing project feature ID and starting at `FEATURE-001`. Keep the ID stable, begin the PRD title with it, and record `feature_id: FEATURE-NNN` when frontmatter is used. Preserve an existing canonical feature package or legacy path rather than duplicating it, and preserve the semantic contract in `references/prd-contract.md`. Keep findings and transcripts ephemeral; keep implementation or task detail out of the PRD.
 
 ## Boundaries
 

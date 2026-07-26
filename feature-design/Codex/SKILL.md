@@ -25,7 +25,14 @@ For an existing named feature, use `$feature-context-handoff` to locate unfinish
 
 ## PRD Output
 
-Produce one canonical Markdown document in the repository's existing feature-document structure. Keep findings and transcripts ephemeral and keep implementation or task detail out of the PRD.
+For a new feature, create or resolve
+`<feature-area>/FEATURE-NNN-short-name/prd.md`, using the next number above the
+highest existing project feature ID and starting at `FEATURE-001`. Keep the ID
+stable, begin the PRD title with it, and record `feature_id: FEATURE-NNN` when
+frontmatter is used.
+Preserve an existing canonical feature package or legacy path rather than
+duplicating it. Keep findings and transcripts ephemeral and keep implementation
+or task detail out of the PRD.
 
 ## Boundaries
 

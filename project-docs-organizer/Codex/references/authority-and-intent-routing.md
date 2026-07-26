@@ -26,25 +26,20 @@ or commit), and `deployed` (verified release/artifact). Name the relevant state.
 
 ## Bounded Read Paths
 
-### Known Owner
+**Known owner.** Read nearest instructions → local runtime/ownership entrypoint →
+relevant code, contract, and tests. Load product, decision, runbook, or queue
+material only when the task crosses that boundary; an already specified local
+task does not require `WORKPLAN.md`.
 
-Read nearest instructions → local runtime/ownership entrypoint → relevant code,
-contract, and tests. Load product, decision, runbook, or queue material only when
-the task crosses that boundary; an already specified local task does not require
-`WORKPLAN.md`.
+**Unknown owner.** Search paths and terms, then symbols and entrypoints; rank
+ownership surfaces before opening content. Inspect local docs, code, and tests
+for the best candidates and expand centrally only if ownership remains unclear.
+Put the correct owner or source in the top five; raw match count is irrelevant.
 
-### Unknown Owner
-
-Search paths/terms, then symbols/entrypoints; rank ownership surfaces before
-opening content. Inspect local docs, code, and tests for the best candidates and
-expand centrally only if ownership remains unclear. Put the correct owner/source
-in the top five; raw match count is irrelevant.
-
-### Boundary Questions
-
-Open the requested authority class first. Cross-check another only when needed:
-product → code/tests for implementation status; decision → code for current
-representation; runbook → deploy evidence for live result.
+**Boundary questions.** Open the requested authority class first. Cross-check
+another only when needed: product → code/tests for implementation status;
+decision → code for current representation; runbook → deploy evidence for live
+result.
 
 ## Conflict Handling
 
@@ -56,8 +51,8 @@ representation; runbook → deploy evidence for live result.
 ## Context-Economy Evaluation
 
 Measure context before the first correct source, not repository size. Separate
-organizer files/tokens from resulting project startup files/tokens; record
-top-five owner/source placement, earlier wrong-authority opens, and final
+organizer files and tokens from resulting project startup files and tokens;
+record top-five owner/source placement, earlier wrong-authority opens, and final
 correctness. Evaluate `local_known_owner`, `unknown_owner`, `product`,
-`rationale`, `deployed_state`, `operations`, and `documentation_lookup`.
-Accept reduction only without owner/source accuracy regression.
+`rationale`, `deployed_state`, `operations`, and `documentation_lookup`. Accept
+reduction only without owner or source accuracy regression.

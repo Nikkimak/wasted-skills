@@ -2,8 +2,8 @@
 
 ## Project Shape
 
-Shape selects guidance/templates, never maturity, documentation volume, git, or
-permission.
+Shape selects guidance and templates, never maturity, documentation volume, git,
+or permission.
 
 | Shape | Evidence and consequence |
 | --- | --- |
@@ -14,63 +14,32 @@ permission.
 
 ## Independent Selection Axes
 
-Resolve every axis independently.
+Resolve every axis independently; none grants another.
 
-### Repository Model
+**Repository model.** `single_repo` — one git history owns documentation and
+runtime paths; `split_src_repo` — the root and a nested `src/` own separate
+histories; `multi_repo_runtime` — more than one runtime history exists;
+`existing_other` — a clear existing topology fits none of the labels;
+`no_git_found`. Runtime shape and repo model answer different questions; never
+derive one from the other.
 
-- `single_repo`: one git history owns project documentation and runtime paths;
-- `split_src_repo`: the project root and nested `src/` own separate histories;
-- `multi_repo_runtime`: more than one runtime history exists;
-- `existing_other`: a clear existing topology does not fit the supported labels;
-- `no_git_found`: no relevant git ownership was detected.
-
-Runtime shape and repo model answer different questions; never derive one from
-the other.
-
-### Documentation Scope
-
-- `baseline`: smallest evidence-supported authority/navigation contract;
-- `evidence_selected_areas`: baseline plus only evidenced decisions,
-  operations, runtime ownership, future work, knowledge, or other areas.
-
+**Documentation scope.** `baseline` is the smallest evidence-supported
+authority/navigation contract; `evidence_selected_areas` adds only evidenced
+decisions, operations, runtime ownership, future work, knowledge, or other areas.
 Derive scope; do not ask the user to choose a tier.
 
-### Mutation
-
-- `audit_only`;
-- `update_existing`;
-- `create_missing`;
-- `reorganize`.
-
+**Mutation.** `audit_only`, `update_existing`, `create_missing`, `reorganize`.
 Mutation grants no code, git, or retrieval authority by implication.
 
-### Code Architecture Scope
+**Code architecture scope.** `none`, `assess_only`, `document_contract`,
+`propose_restructure`, `approved_restructure`. Code-bearing may still use `none`;
+large or mixed files remain findings until restructuring is explicitly approved.
 
-- `none`;
-- `assess_only`;
-- `document_contract`;
-- `propose_restructure`;
-- `approved_restructure`.
+**Runtime documentation.** `not_applicable`, `existing_sufficient`,
+`update_entrypoint`, `add_ownership_docs`. Use `add_ownership_docs` only for
+durable modular evidence, real ambiguity, or an explicit request.
 
-Code-bearing may still use `none`; large/mixed files remain findings until
-restructuring is explicitly approved.
-
-### Runtime Documentation
-
-- `not_applicable`;
-- `existing_sufficient`;
-- `update_entrypoint`;
-- `add_ownership_docs`.
-
-Use `add_ownership_docs` only for durable modular evidence, real ambiguity, or
-an explicit request.
-
-### Retrieval Scope
-
-- `none`;
-- `deterministic_guidance`;
-- `assess_advanced`.
-
+**Retrieval scope.** `none`, `deterministic_guidance`, `assess_advanced`.
 `assess_advanced` is analysis-only; creation needs separate listed approval.
 
 ## Selection Procedure
@@ -81,10 +50,13 @@ an explicit request.
    decide that relationship.
 3. Reuse established target vocabulary and identifiers. Treat adjacent projects
    as examples unless the human or target instructions establish a shared
-   convention; never invent prefixes or numbering merely for neatness.
+   convention. For a new feature, use the standard feature package in
+   `documentation-architecture.md`; never transfer its prefix or number to an
+   application, decision, or other entity.
 4. Choose the least structure that makes ownership and safe work clear. Prefer
    one file for one coherent artifact; create an entity folder only for multiple
-   current artifacts or a durable boundary, not anticipated future files.
+   current artifacts or a durable boundary, not anticipated future files. A
+   standard feature package is a durable identity boundary from its first PRD.
 5. Add only areas required by evidence, ambiguity, operations, or coordination.
    Do not duplicate a project overview across a root entrypoint and a docs index.
 6. Preserve clear repo models, including `existing_other`.

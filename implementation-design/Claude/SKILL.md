@@ -24,6 +24,12 @@ For unfinished named work, use the `feature-context-handoff` skill (via the Skil
 7. Make any document self-contained and `draft` or `proposed`, with every open human decision explicit. Recommend cross-model review only for material uncertainty, broad impact, or complex revision; ask the human before invoking the `cross-model-review` skill (via the Skill tool, `/cross-model-review`) with the `implementation` profile, and use the `feature-context-handoff` skill first if the full review-and-recheck loop cannot fit safely. Never invoke review before explicit approval; an earlier clear request for this document counts.
 8. After the review decision and any approved review, obtain explicit human approval of the technical and security posture, close obsolete handoff state, and hand off to the `feature-delivery-plan` skill.
 
+## Design Output
+
+When a design document is required, write it as
+`<feature-folder>/implementation-design.md` beside the accepted `prd.md`. Do not
+create another feature identity or place the design in a parallel package.
+
 ## Boundaries
 
 - Do not change accepted business scope, create task graphs, choose executors, publish issues, or implement code.

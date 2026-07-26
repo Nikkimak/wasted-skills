@@ -21,14 +21,11 @@ superseded_by: null
 
 - linked proposed or accepted future-work documents
 
-## Accepted Already
-
-- decisions already promoted to accepted rationale
-
-## Implemented Already
-
-- behavior verified in code, tests, or deployment evidence
-
 ## Future Only
 
 - planned behavior that must not be treated as current implementation
+
+Keep proposed and accepted work while it remains open. Remove an entry once it is
+implemented, cancelled, superseded, or transferred to another active owner; the
+feature package, the applicable decision, the evidence, and git already own that
+history.
